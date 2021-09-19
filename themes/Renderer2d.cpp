@@ -38,7 +38,7 @@ void Renderer2d::render() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
-	glClearColor(0.f, 0.f, 0.f, 1.f);
+	glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
 	glClearDepth(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	useShader(shader);

@@ -73,6 +73,12 @@ Vector2 Vector2::rotate(float angle) {
     };
 }
 
+Vector2 Vector2::rotateAbout(float angle, Vector2 p) {
+    Vector2 prev = { x - p.x, y - p.y }; // Translate the point back to the origin
+    Vector2 rot = prev.rotate(angle);    // Do the rotation
+    return { rot.x + p.x, rot.y + p.y }; // Translate back to original position
+}
+
 void Vector2::printDebug(const char* name) {
     printf("%s=Vector2(%f, %f)\n", name, x, y);
 }

@@ -10,6 +10,7 @@ struct WebglContext;
 struct Renderer2d {
 	Mat4x4 projection;
 	uint32 shader;
+    Vector4 clearColor;
 
 	struct {
 		int32 position;

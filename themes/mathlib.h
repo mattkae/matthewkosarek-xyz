@@ -36,6 +36,7 @@ struct Vector2 {
     Vector2 negate();
     Vector2 getPerp();
     Vector2 rotate(float angle);
+    Vector2 rotateAbout(float angle, Vector2 p);
     float determinant(Vector2 other);
     
     void printDebug(const char* name);

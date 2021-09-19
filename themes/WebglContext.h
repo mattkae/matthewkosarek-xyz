@@ -5,6 +5,8 @@
 #include <GLES2/gl2.h>
 #include <EGL/egl.h>
 
+EM_BOOL onScreenSizeChanged(int eventType, const EmscriptenUiEvent *uiEvent, void *userData);
+
 struct WebglContext {
 	EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context;
 	int width = 800;
@@ -26,6 +28,8 @@ struct WebglContext {
 		makeCurrentContext();
 
 		glClearColor(0, 0, 0, 0.0f);
+
+        emscripten_set_resize_callback(query, this, false, onScreenSizeChanged);
 	};
 	
 	void makeCurrentContext() {
