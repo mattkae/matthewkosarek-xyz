@@ -1,0 +1,28 @@
+#post_section {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+
+    font-family: Arial,Helvetica Neue,Helvetica,sans-serif !important;
+}
+
+article {
+    width: 100%;
+    text-align: left;
+    padding-top: 1rem;
+}
+
+article > h2 {
+    padding: 0;
+    margin: 0;
+}
+
+article > h3 {
+    color: lightgray;
+    font-size: 0.8rem;
+    font-weight: normal;
+    padding: 0;
+    margin: 0;
+}

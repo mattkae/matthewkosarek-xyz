@@ -1,0 +1,224 @@
+
+body {
+    width: 100vw;
+    height: 100vh;
+    font-family: Consolas, monaco, monospace; 
+    font-size: 16px;
+    background-color: #231f1d;
+    color: white;
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    text-align: center;
+    width: 60%;
+}
+
+header > h1 {
+	font-family: Georgia, sans-serif;
+	font-weight: normal;
+    font-size: 30px;
+    padding-top: 1rem;
+	padding-bottom: 0.5rem;
+    margin: 0;
+	letter-spacing: 0.25rem;
+	border-bottom: 1px solid white;
+}
+
+header > nav {	
+	font-family: Georgia, sans-serif;
+	padding-top: 0.5rem;
+}
+
+header > nav > ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+header > nav > ul a {
+    text-decoration: none;
+    color: inherit;
+    font-size: 16px;
+	border-bottom: 1px solid transparent;
+	transition: border-color 100ms linear;
+	transition: opacity 100ms linear;
+}
+
+header > nav > ul a:hover {
+	opacity: 0.8;
+	border-color: white;
+}
+
+#landing_page {
+    text-align: center;
+    flex: 1 1 100%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Carousel styling */
+#carousel {
+    width: 100%;
+    height: 360px;
+    position: relative;
+	overflow: hidden;
+}
+
+#carousel > button {
+    position: absolute;
+    top: calc(50% - 2rem);
+    font-size: 4rem;
+    border: none;
+    background-color: transparent;
+    color: white;
+}
+
+#carousel > button:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+#carousel_left {
+    left: 0;
+}
+
+#carousel_right {
+    right: 0;
+}
+
+#image_container {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    transition: left 200ms linear;
+}
+
+.carousel_image {
+    width: 240px;
+    transition: opacity 200ms linear;
+    padding: 0;
+    margin: 0;
+    padding-right: 12px;
+}
+
+.carousel_image > figcaption {
+    font-size: 10px;
+    font-style: italic;
+}
+
+.carousel_image > img {
+    width: 240px;
+    border-radius: 2px;
+}
+
+input {
+    outline: none;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+input:focus {
+    border: 1px solid lightgray;
+}
+
+.action_button {
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+    width: 108px;
+    height: 2rem;
+}
+
+.action_button:hover {
+    cursor: pointer;
+    opacity: 0.9;
+}
+
+/* Theme display */
+#theme_container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: transparent;
+	z-index: -1;
+}
+
+#theme_canvas {
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+}
+
+/* Theme Selector */
+#theme_selector {
+	position: fixed;
+	width: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	bottom: 1rem;
+}
+
+#theme_selector > button {
+	width: 5rem;
+	height: 2rem;
+	border-radius: 3px;
+	border: 1px solid black;
+	color: black;
+	background-color: white;
+	cursor: pointer;
+	transition: opacity 100ms linear;
+}
+
+#theme_selector > button:hover {
+	opacity: 0.8;
+}
+
+#theme_selector > #theme_button_default {
+}
+
+#theme_selector > #theme_button_autumn {
+	background-color: orange;
+}
+
+/* Phone screen adjustments */
+@media only screen and (device-width: 1280px),
+only screen and (max-width:1280px) {
+    body {
+        font-size: 12px;
+    }
+
+    header {
+        width: 90%;
+    }
+
+    section {
+        width: 100%;
+    }
+
+	#landing_page {
+		width: 75%;
+	}
+
+	#theme_selector {
+		width: 90%;
+	}
+}

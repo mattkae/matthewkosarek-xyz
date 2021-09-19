@@ -1,0 +1,7 @@
+
+var fullScreenButton = document.getElementById('full_screen_button'),
+    resumeContainer = document.getElementById('resume');
+
+fullScreenButton.addEventListener('click', function() {
+    resumeContainer.classList.add('resume_fullscreen');
+});
