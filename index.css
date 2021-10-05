@@ -162,8 +162,8 @@ input:focus {
 }
 
 #theme_canvas {
-	width: 100%;
-	height: 100%;
+	width: 800px;
+	height: 600px;
 	z-index: -1;
 }
 

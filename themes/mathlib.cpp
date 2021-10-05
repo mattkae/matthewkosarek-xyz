@@ -12,6 +12,13 @@
 
 // ***************************************
 // Vector2
+Vector2::Vector2() { }
+
+Vector2::Vector2(float inX, float inY) {
+    x = inX;
+    y = inY;
+}
+
 Vector2 getRandomNormalVector2() {
     Vector2 retval = {
 		static_cast<float>(rand()) / static_cast<float>(RAND_MAX),

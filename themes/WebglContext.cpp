@@ -8,4 +8,5 @@ EM_BOOL onScreenSizeChanged(int eventType, const EmscriptenUiEvent *uiEvent, voi
     
     context->width = uiEvent->documentBodyClientWidth;
     context->height = uiEvent->documentBodyClientHeight;
+    return true;
 }

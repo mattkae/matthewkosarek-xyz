@@ -2520,6 +2520,8 @@ var ASM_CONSTS = {
       GLctx.currentElementArrayBufferBinding = ibo ? (ibo.name | 0) : 0;
     }
 
+  function _glBlendFunc(x0, x1) { GLctx['blendFunc'](x0, x1) }
+
   function _glBufferData(target, size, data, usage) {
   
       if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
@@ -2533,6 +2535,14 @@ var ASM_CONSTS = {
         // randomly mixing both uses in calling code, to avoid any potential JS engine JIT issues.
         GLctx.bufferData(target, data ? HEAPU8.subarray(data, data+size) : size, usage);
       }
+    }
+
+  function _glBufferSubData(target, offset, size, data) {
+      if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
+        GLctx.bufferSubData(target, offset, HEAPU8, data, size);
+        return;
+      }
+      GLctx.bufferSubData(target, offset, HEAPU8.subarray(data, data+size));
     }
 
   function _glClear(x0) { GLctx['clear'](x0) }
@@ -2996,7 +3006,9 @@ var asmLibraryArg = {
   "glAttachShader": _glAttachShader,
   "glBindBuffer": _glBindBuffer,
   "glBindVertexArray": _glBindVertexArray,
+  "glBlendFunc": _glBlendFunc,
   "glBufferData": _glBufferData,
+  "glBufferSubData": _glBufferSubData,
   "glClear": _glClear,
   "glClearColor": _glClearColor,
   "glClearDepth": _glClearDepth,

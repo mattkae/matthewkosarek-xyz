@@ -7,7 +7,7 @@
 
 struct WebglContext;
 
-struct Renderer2d {
+struct TreeRenderer {
 	Mat4x4 projection;
 	uint32 shader;
     Vector4 clearColor;
@@ -15,7 +15,6 @@ struct Renderer2d {
 	struct {
 		int32 position;
 		int32 color;
-		int32 transform;
 	} attributes;
 
 	struct {
@@ -23,24 +22,15 @@ struct Renderer2d {
 		int32 model;
 	} uniforms;
 
+    float32 timeElapsed = 0.f;
+    float32 frequency = 5.f;
+
 	void load(WebglContext* context);
-	void render();
+	void render(float32 dtSeconds);
 	void unload();
 };
 
-struct Renderer2dVertex {
+struct TreeRendererVertex {
 	Vector2 position;
 	Vector4 color;
-	Vector2 scale;
-};
-
-struct Renderer2dShape {
-	uint32 vao;
-	uint32 vbo;
-	uint32 numVertices = 0;
-	Mat4x4 model;
-
-	void load(Renderer2dVertex* vertices, uint32 numVertices, Renderer2d* renderer);
-	void render(Renderer2d* renderer, GLenum drawType = GL_TRIANGLES);
-	void unload();
 };

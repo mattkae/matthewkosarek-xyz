@@ -2,7 +2,18 @@
 #include "types.h"
 #include "mathlib.h"
 
-struct TreeBranch {
+struct TreeLoadData {
+	float32 trunkHeight        = 96.f; // Height of the trunk start
+	float32 trunkWidth         = 32.f;  // Width of the trunk start
+    float32 trunkHeightScalerMin  = 0.7f;
+    float32 trunkHeightScalerMax  = 0.8f;
+    float32 trunkWidthScalerMin   = 0.35f;
+    float32 trunkWidthScalerMax   = 0.75f;
+    int32 divisionsPerBranch   = 2;     // How many branches to split into at each branch split
+    int32 numBranchLevels      = 8;     // How many branch levels to display
+};
+
+struct TreeBranchLoadData {
 	float32 width = 0.f;
 	float32 height = 0.f;
 	Vector2 position; // Center point
@@ -16,84 +27,33 @@ struct TreeBranch {
     Vector2 topRight;
     Vector2 topMidpoint;
 
-	void fillVertices(Renderer2dVertex* vertices) {
-	    bottomLeft = Vector2 { position.x - width / 2.f, position.y }.rotateAbout(rotation, position);
-	    bottomRight = Vector2 { position.x + width / 2.f, position.y }.rotateAbout(rotation, position);
-		topLeft = (Vector2 { position.x - width / 2.f, position.y + height }).rotateAbout(rotation, position);
-		topRight = (Vector2 { position.x + width / 2.f, position.y + height }).rotateAbout(rotation, position);
+	void fillVertices(Renderer2dVertex* vertices, int branchTier);
+};
 
-        topMidpoint = topLeft + (topRight - topLeft) / 2.f;
-
-		vertices[0] = { bottomLeft, color };
-		vertices[1] = { bottomRight, color };
-		vertices[2] = { topLeft, color };
-		vertices[3] = { topLeft, color };
-		vertices[4] = { topRight, color };
-	    vertices[5] = { bottomRight, color };
-	}
+struct TreeBranchUpdateData {
+	int32 tier = 0;
+	float32 randomOffset = 0;
 };
 
 struct TreeShape {
-	Renderer2dShape shape;
+	// Update data
+	TreeBranchUpdateData* updateData = NULL;
+	Renderer2dVertex* vertices = NULL;
+	float32 timeElapsedSeconds = 0.f;
+	float32 animateTimePerTier = 1.f;
+    float32 animateStaggerPerTier = 0.2f;
+	uint32 numBranches = 0;
 
-	float32 height             = 100.f; // Height of the whole tree
-	float32 width              = 40.f;  // Width of the whole tree
-    int32 divisionsPerBranch   = 2;     // How many branches to split into at each branch split
-    int32 numBranchLevels      = 8;     // How many branch levels to display
-	float32 animateTimeSeconds = 2.f;   // How long it takes the tree to form
+	// Render data
+	uint32 vao;
+	uint32 vbo;
+	uint32 numVertices = 0;
+	Mat4x4 model;
 
-	void load(Renderer2d* renderer) {
-		int32 numBranches = pow(divisionsPerBranch, numBranchLevels + 1);
-		TreeBranch* branches = new TreeBranch[numBranches];
-		int32 numVertices = 6 * numBranches;
-		Renderer2dVertex* vertices = new Renderer2dVertex[numVertices];
-		int32 branchIndex = 0;
-
-		createBranch(branches, numBranches, &branchIndex, 0, width, height, Vector2 { 100.f, 50.f }, 0, vertices);
-
-		shape.load(vertices, numVertices, renderer);
-
-		delete[] branches;
-		delete[] vertices;
-	}
-
-	void createBranch(TreeBranch* branchList, int32 numBranches, int32* branchIndex, int32 branchLevel, float32 width, float32 height, Vector2 position, float32 rotation, Renderer2dVertex* vertices) {
-		TreeBranch* branch = &branchList[*branchIndex];
-		branch->width = width;
-		branch->height = height;
-		branch->position = position;
-		branch->rotation = rotation;
-		branch->fillVertices(&vertices[(*branchIndex) * 6]);
-
-		if (branchLevel == numBranchLevels) {
-			return;
-		}
-
-		float32 branchWidth = width / divisionsPerBranch;
-		float32 branchHeight = height / (0.7 * divisionsPerBranch);
-        float32 branchRotationAmount = (PI / 4.f);
-        Vector2 topBranchPos = branch->topMidpoint;
-		for (int division = 0; division < divisionsPerBranch; division++) {
-            float32 weight = static_cast<float32>(division) / static_cast<float32>(divisionsPerBranch - 1);
-            
-			float32 branchXPosition = topBranchPos.x - width / 2.f + weight * width;
-			Vector2 branchPosition = (Vector2 { branchXPosition, topBranchPos.y });
-			float32 branchRotation =  branch->rotation + (weight * branchRotationAmount - branchRotationAmount / 2.f);
-			(*branchIndex)++;
-			createBranch(branchList, numBranches, branchIndex, branchLevel + 1, branchWidth, branchHeight, branchPosition, -branchRotation, vertices);
-		}
-	}
-
-	void update(float32 dtSeconds) {
-
-	}
-	
-	void render(Renderer2d* renderer) {
-		shape.render(renderer);
-	}
-	
-	void unload() {
-		shape.unload();
-	}
+	void load(Renderer2d* renderer);
+	void createBranch(TreeLoadData* ld, TreeBranchLoadData* branchList, int32 numBranches, int32* branchIndex, int32 branchLevel, float32 width, float32 height, Vector2 position, float32 rotation, Renderer2dVertex* vertices);
+	void update(float32 dtSeconds);
+	void render(Renderer2d* renderer);
+	void unload();
 };
 

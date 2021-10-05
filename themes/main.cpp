@@ -1,3 +1,4 @@
+#include "Renderer2d.h"
 #include "WebglContext.h"
 #include "MainLoop.h"
 #include "Renderer2d.h"
