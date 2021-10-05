@@ -36,7 +36,9 @@ function runCarousel() {
     }
 
     function updateCarousel() {
-        var children = imageContainer.children;
+        var children = imageContainer.children,
+            selectedChildPosition = -imageContainer.children[carouselPosition].offsetLeft + 240;
+        imageContainer.style.transform = 'translate(' + selectedChildPosition + 'px, 0)';
         for (var i = 0; i < children.length; i++) {
             var image = children[i];
             if (i !== carouselPosition) {
@@ -52,7 +54,6 @@ function runCarousel() {
             }
         }
 
-        imageContainer.style.left = 'calc(' + (-carouselPosition * 252) + 'px + 50% - 120px)';
         rightButton.style.visibility = (carouselPosition === numImages - 1) ? 'hidden' : 'visible';
         leftButton.style.visibility = (carouselPosition === 0) ? 'hidden' : 'visible';
     }
