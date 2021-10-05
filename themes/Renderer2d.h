@@ -8,6 +8,7 @@
 struct WebglContext;
 
 struct Renderer2d {
+	WebglContext* context = NULL;
 	Mat4x4 projection;
 	uint32 shader;
     Vector4 clearColor;
@@ -31,7 +32,7 @@ struct Renderer2d {
 struct Renderer2dVertex {
 	Vector2 position;
 	Vector4 color;
-	Vector2 scale;
+	Vector4 transform;
 };
 
 struct Renderer2dShape {

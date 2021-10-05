@@ -22,8 +22,8 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShape *tree) {
     glEnableVertexAttribArray(renderer->attributes.color);
     glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-    glEnableVertexAttribArray(renderer->attributes.scale);
-    glVertexAttribPointer(renderer->attributes.scale, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, scale));
+    glEnableVertexAttribArray(renderer->attributes.transform);
+    glVertexAttribPointer(renderer->attributes.transform, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, transform));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);

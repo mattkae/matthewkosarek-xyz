@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "WebglContext.h"
 #include "mathlib.h"
+#include <cstdio>
 
 // Note: In the 'transform' attribute, the transform.x is the scale,
 // transform.y is the rotation, and transform.zw is the translatiob.
@@ -13,7 +14,7 @@ const char* renderer2dVertexShader =
 "uniform mat4 model; \n"
 "varying lowp vec4 VertexColor; \n"
 "void main() { \n"
-"    vec4 fragmentPosition = projection * model * vec4(position.x * transform.x, position.y * transform.x, 1, 1); \n"
+"    vec4 fragmentPosition = projection * model * vec4(position.x + transform.x, position.y + transform.x, 1, 1); \n"
 "    gl_Position = fragmentPosition; \n"
 "    VertexColor = color; \n"
 "}";
@@ -24,19 +25,35 @@ const char* renderer2dFragmentShader =
 "    gl_FragColor = VertexColor; \n"
 "}";
 
-void Renderer2d::load(WebglContext* context) {
+EM_BOOL onScreenSizeChanged(int eventType, const EmscriptenUiEvent *uiEvent, void *userData) {
+    Renderer2d* renderer = (Renderer2d*)userData;
+    
+    renderer->context->width = uiEvent->documentBodyClientWidth;
+    renderer->context->height = uiEvent->documentBodyClientHeight;
+	EMSCRIPTEN_RESULT result = emscripten_set_canvas_element_size( renderer->context->query, renderer->context->width, renderer->context->height);
+	if (result != EMSCRIPTEN_RESULT_SUCCESS) {
+		printf("Failed to resize element at query: %s\n", renderer->context->query);
+	}
+
+    return true;
+}
+
+void Renderer2d::load(WebglContext* inContext) {
+	context = inContext;
 	printf("Compiling Renderer2d shader...\n");
 	shader = loadShader(renderer2dVertexShader, renderer2dFragmentShader);
 
 	useShader(shader);
 	attributes.position = getShaderAttribute(shader, "position");
 	attributes.color = getShaderAttribute(shader, "color");
-	attributes.scale = getShaderAttribute(shader, "scale");
+	attributes.transform = getShaderAttribute(shader, "transform");
 	uniforms.projection = getShaderUniform(shader, "projection");
 	uniforms.model = getShaderUniform(shader, "model");
 	projection = Mat4x4().getOrthographicMatrix(0, context->width, 0, context->height);
 
 	printf("Renderer2d shader compiled.\n");
+
+	emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, false, onScreenSizeChanged);
 }
 	
 void Renderer2d::render() {
@@ -76,8 +93,8 @@ void Renderer2dShape::load(Renderer2dVertex* inVertices, uint32 inNumVertices, R
 	glEnableVertexAttribArray(renderer->attributes.color);
 	glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-	glEnableVertexAttribArray(renderer->attributes.scale);
-	glVertexAttribPointer(renderer->attributes.scale, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, scale));
+	glEnableVertexAttribArray(renderer->attributes.transform);
+	glVertexAttribPointer(renderer->attributes.transform, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, transform));
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

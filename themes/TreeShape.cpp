@@ -12,12 +12,12 @@ void TreeBranchLoadData::fillVertices(Renderer2dVertex* vertices, int branchTier
 
     topMidpoint = topLeft + (topRight - topLeft) / 2.f;
 
-    vertices[0] = { bottomLeft, color, Vector2(1, 1) };
-    vertices[1] = { bottomRight, color, Vector2(1, 1) };
-    vertices[2] = { topLeft, color, Vector2(1, 1) };
-    vertices[3] = { topLeft, color, Vector2(1, 1) };
-    vertices[4] = { topRight, color, Vector2(1, 1) };
-    vertices[5] = { bottomRight, color, Vector2(1, 1) };
+    vertices[0] = { bottomLeft, color, Vector4(0, 0, 0, 0) };
+    vertices[1] = { bottomRight, color, Vector4(0, 0, 0, 0) };
+    vertices[2] = { topLeft, color, Vector4(0, 0, 0, 0) };
+    vertices[3] = { topLeft, color, Vector4(0, 0, 0, 0) };
+    vertices[4] = { topRight, color, Vector4(0, 0, 0, 0) };
+    vertices[5] = { bottomRight, color, Vector4(0, 0, 0, 0) };
 };
 
 inline float32 randomFloatBetween(float32 min, float32 max) {
@@ -53,8 +53,8 @@ void TreeShape::load(Renderer2d* renderer) {
     glEnableVertexAttribArray(renderer->attributes.color);
     glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-    glEnableVertexAttribArray(renderer->attributes.scale);
-	glVertexAttribPointer(renderer->attributes.scale, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, scale));
+    glEnableVertexAttribArray(renderer->attributes.transform);
+	glVertexAttribPointer(renderer->attributes.transform, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, transform));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
