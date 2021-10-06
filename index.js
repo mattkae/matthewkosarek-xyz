@@ -37,7 +37,8 @@ function runCarousel() {
 
     function updateCarousel() {
         var children = imageContainer.children,
-            selectedChildPosition = -imageContainer.children[carouselPosition].offsetLeft + 240;
+            numChildren = imageContainer.children.length,
+            selectedChildPosition = -(carouselPosition * 240);
         imageContainer.style.transform = 'translate(' + selectedChildPosition + 'px, 0)';
         for (var i = 0; i < children.length; i++) {
             var image = children[i];

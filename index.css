@@ -98,16 +98,16 @@ header > nav > ul a:hover {
 }
 
 #image_container {
-    width: 100%;
+    padding-left: calc(50% - 120px);
     display: flex;
     flex-direction: row;
     height: 100%;
-    transition: left 200ms linear;
+    transition: transform 100ms linear;
 }
 
 .carousel_image {
     width: 240px;
-    transition: opacity 200ms linear;
+    transition: opacity 100ms linear;
     padding: 0;
     margin: 0;
     padding-right: 12px;
