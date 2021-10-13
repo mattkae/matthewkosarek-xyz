@@ -4,6 +4,7 @@
 #include "Renderer2d.h"
 #include "types.h"
 #include "TreeShape.h"
+#include "LeafParticleRender.h"
 
 enum Theme {
 	Default = 0,
@@ -12,6 +13,7 @@ enum Theme {
 
 struct AutumnTheme {
 	TreeShape tree;
+	LeafParticleRender leafParticles;
 
 	void load(Renderer2d* renderer);
 	void update(float32 dtSeconds);
@@ -114,18 +116,22 @@ EM_BOOL selectAutumn(int eventType, const EmscriptenMouseEvent* mouseEvent, void
 // -- Autumn theme3
 void AutumnTheme::load(Renderer2d* renderer) {
     renderer->clearColor = Vector4(252,76,2, 0.5).toNormalizedColor();
-	tree.load(renderer);
+	auto lr = tree.load(renderer);
+	leafParticles.load(renderer, &lr);
 }
 
 void AutumnTheme::update(float32 dtSeconds) {
 	tree.update(dtSeconds);
+	leafParticles.update(dtSeconds);
 }
 
 void AutumnTheme::render(Renderer2d* renderer) {
 	tree.render(renderer);
+	leafParticles.render(renderer);
 }
 
 void AutumnTheme::unload()  {
 	tree.unload();
+	leafParticles.unload();
 }
 

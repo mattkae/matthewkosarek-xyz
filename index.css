@@ -73,6 +73,7 @@ header > nav > ul a:hover {
 #carousel {
     width: 100%;
     position: relative;
+    overflow: hidden;
 }
 
 #carousel > button {

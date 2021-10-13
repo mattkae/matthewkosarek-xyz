@@ -348,7 +348,6 @@ void Vector4::printDebug(const char* name) {
     printf("%s=Vector4(%f, %f, %f, %f)\n", name, x, y, z, w);
 }
 
-
 // ***************************************
 // Mat4x4
 Mat4x4 Mat4x4::copy() {

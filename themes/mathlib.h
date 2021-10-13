@@ -21,6 +21,16 @@
 #define DEG_TO_RAD(x) (x * (PI / 180.f))
 #define RAD_TO_DEG(x) (x * (180.f / PI))
 
+// -- Random
+inline float randomFloatBetween(float min, float max) {
+    float random = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    return (max - min) * random + min;
+}
+
+inline int randomIntBetween(int min, int max) {
+    return static_cast<int>(randomFloatBetween(min, max));
+}
+
 struct Vector2 {
     float x = 0;
     float y = 0;

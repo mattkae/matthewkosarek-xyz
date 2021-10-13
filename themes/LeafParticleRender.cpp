@@ -1,11 +1,42 @@
 #include "LeafParticleRender.h"
 #include "Renderer2d.h"
+#include "mathlib.h"
+#include "TreeShape.h"
+#include "types.h"
 
-void LeafParticleRender::load(Renderer2d *renderer, TreeShape *tree) {
-    numVertices = 0;
-    numLeaves = 0;
+const int32 verticesPerLeaf = 6; 
+const float32 leafRadius = 3.f;
 
+inline void createLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 color) {
+    Vector2 bottomLeft = Vector2(-leafRadius, -leafRadius) + position;
+    Vector2 bottomRight = Vector2(leafRadius, -leafRadius) + position;
+    Vector2 topLeft = Vector2(-leafRadius, leafRadius) + position;
+    Vector2 topRight = Vector2(leafRadius, leafRadius) + position;
+
+    vertices[0] = { bottomLeft, color };
+    vertices[1] = { bottomRight, color };
+    vertices[2] = { topLeft, color };
+    vertices[3] = { topLeft, color };
+    vertices[4] = { topRight, color };
+    vertices[5] = { bottomRight, color };
+}
+
+void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
+    LeafParticleLoadData ld;
+    ld.numLeaves = 640;
+    numLeaves = ld.numLeaves;
+    numVertices = ld.numLeaves * verticesPerLeaf;
+
+    updateData = new LeafParticleUpdateData[numLeaves];
     vertices = new Renderer2dVertex[numVertices];
+
+    for (int32 leafIdx = 0; leafIdx < numLeaves; leafIdx++) {
+        int32 randomBranch = randomIntBetween(0, lr->numBranches);
+        int32 randomVertex = randomIntBetween(0, 6); // TODO: Manually entering num vertices per branch.
+        updateData[leafIdx].vertexToFollow = &lr->updateData[randomBranch].vertices[randomVertex];
+        updateData[leafIdx].color = Vector4(randomFloatBetween(0.3, 0.9), randomFloatBetween(0.1, 0.6), 0, 1);
+        updateData[leafIdx].vertexPtr = &vertices[leafIdx * verticesPerLeaf];
+    }
 
     useShader(renderer->shader);
 
@@ -22,15 +53,16 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShape *tree) {
     glEnableVertexAttribArray(renderer->attributes.color);
     glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-    glEnableVertexAttribArray(renderer->attributes.transform);
-    glVertexAttribPointer(renderer->attributes.transform, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, transform));
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
 void LeafParticleRender::update(float32 dtSeconds) {
-    
+    for (int32 leafIdx = 0; leafIdx < numLeaves; leafIdx++) {
+        auto updateDataItem = &updateData[leafIdx];
+
+        createLeaf(updateDataItem->vertexPtr, updateDataItem->vertexToFollow->position, updateDataItem->color);
+    }
 }
 
 void LeafParticleRender::render(Renderer2d *renderer) {
@@ -40,7 +72,7 @@ void LeafParticleRender::render(Renderer2d *renderer) {
     glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * sizeof(Renderer2dVertex), &vertices[0]);
 
     glBindVertexArray(vao);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6 * numVertices, numLeaves);
+    glDrawArrays(GL_TRIANGLES, 0, numVertices);
     glBindVertexArray(0);
 }
 

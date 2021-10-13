@@ -2,7 +2,7 @@
 #include "mathlib.h"
 #include <cstdio>
 #include <cstdlib>
-
+#include <cfloat>
 
 void TreeBranchLoadData::fillVertices(Renderer2dVertex* vertices, int branchTier) {
     bottomLeft = Vector2 { position.x - width / 2.f, position.y }.rotateAbout(rotation, position);
@@ -12,20 +12,17 @@ void TreeBranchLoadData::fillVertices(Renderer2dVertex* vertices, int branchTier
 
     topMidpoint = topLeft + (topRight - topLeft) / 2.f;
 
-    vertices[0] = { bottomLeft, color, Vector4(0, 0, 0, 0) };
-    vertices[1] = { bottomRight, color, Vector4(0, 0, 0, 0) };
-    vertices[2] = { topLeft, color, Vector4(0, 0, 0, 0) };
-    vertices[3] = { topLeft, color, Vector4(0, 0, 0, 0) };
-    vertices[4] = { topRight, color, Vector4(0, 0, 0, 0) };
-    vertices[5] = { bottomRight, color, Vector4(0, 0, 0, 0) };
+    vertices[0] = { bottomLeft, color};
+    vertices[1] = { bottomRight, color};
+    vertices[2] = { topLeft, color};
+    vertices[3] = { topLeft, color};
+    vertices[4] = { topRight, color};
+    vertices[5] = { bottomRight, color};
 };
 
-inline float32 randomFloatBetween(float32 min, float32 max) {
-    float32 random = static_cast<float32>(rand()) / static_cast<float32>(RAND_MAX);
-    return (max - min) * random + min;
-}
+TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
+    timeElapsedSeconds = 0;
 
-void TreeShape::load(Renderer2d* renderer) {
     TreeLoadData ld;
 
     numBranches = pow(ld.divisionsPerBranch, ld.numBranchLevels + 1);
@@ -35,8 +32,14 @@ void TreeShape::load(Renderer2d* renderer) {
     updateData = new TreeBranchUpdateData[numBranches];
     vertices = new Renderer2dVertex[numVertices];
 
+    // The load result will contain information that we can pass on to our leaf renderer.
+    TreeShapeLoadResult lr;
+    lr.lowerBounds = Vector2(FLT_MAX, FLT_MAX);
+    lr.upperBounds = Vector2(FLT_MIN, FLT_MIN);
+    lr.updateData = updateData;
+    lr.numBranches = numBranches;
     int32 branchIndex = 0;
-    createBranch(&ld, generationData, numBranches, &branchIndex, 0, ld.trunkWidth, ld.trunkHeight, Vector2 { 400.f, 50.f }, 0, vertices);
+    createBranch(&ld, generationData, numBranches, &branchIndex, 0, ld.trunkWidth, ld.trunkHeight, Vector2 { 300.f, 50.f }, 0, vertices, &lr);
 
     useShader(renderer->shader);
 
@@ -53,18 +56,17 @@ void TreeShape::load(Renderer2d* renderer) {
     glEnableVertexAttribArray(renderer->attributes.color);
     glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-    glEnableVertexAttribArray(renderer->attributes.transform);
-	glVertexAttribPointer(renderer->attributes.transform, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, transform));
-
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     delete [] generationData;
+
+    return lr;
 }
 
 const float32 ninetyDegreeRotation = PI / 2.f;
 
-void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationData, int32 numBranches, int32* branchIndex, int32 branchLevel, float32 width, float32 height, Vector2 position, float32 rotation, Renderer2dVertex* vertices) {
+void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationData, int32 numBranches, int32* branchIndex, int32 branchLevel, float32 width, float32 height, Vector2 position, float32 rotation, Renderer2dVertex* vertices, TreeShapeLoadResult* lr) {
     TreeBranchLoadData* branchLoadData = &generationData[*branchIndex];
     branchLoadData->width = width;
     branchLoadData->height = height;
@@ -72,9 +74,24 @@ void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationDat
     branchLoadData->rotation = rotation;
     branchLoadData->fillVertices(&vertices[(*branchIndex) * 6], branchLevel);
 
+    // Fil in the bounds for the LeafRenderer later.
+    if (branchLoadData->topMidpoint.x > lr->upperBounds.x) {
+        lr->upperBounds.x = branchLoadData->topMidpoint.x;
+    }
+    if (branchLoadData->topMidpoint.y > lr->upperBounds.y) {
+        lr->upperBounds.y = branchLoadData->topMidpoint.y;
+    }
+    if (branchLoadData->topMidpoint.x < lr->lowerBounds.x) {
+        lr->lowerBounds.x = branchLoadData->topMidpoint.x;
+    }
+    if (branchLoadData->topMidpoint.y < lr->lowerBounds.y) {
+        lr->lowerBounds.y = branchLoadData->topMidpoint.y;
+    }
+
     TreeBranchUpdateData* branchUpdateData = &updateData[*branchIndex];
     branchUpdateData->tier = branchLevel;
     branchUpdateData->randomOffset = randomFloatBetween(-1.f, 1.f);
+    branchUpdateData->vertices = &vertices[(*branchIndex) * 6];
 
     if (branchLevel == ld->numBranchLevels) {
         return;
@@ -104,7 +121,7 @@ void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationDat
         Vector2 branchPosition = branchLoadData->topLeft + ((branchLoadData->topRight - branchLoadData->topLeft) * weight)  - branchOffsetVertical; // Position of branch along the top of the parent branch
         
         (*branchIndex)++;
-        createBranch(ld, generationData, numBranches, branchIndex, branchLevel + 1, branchWidth, branchHeight, branchPosition, branchRotation, vertices);
+        createBranch(ld, generationData, numBranches, branchIndex, branchLevel + 1, branchWidth, branchHeight, branchPosition, branchRotation, vertices, lr);
     }
 }
 
@@ -129,14 +146,21 @@ void TreeShape::update(float32 dtSeconds) {
             alpha = (1.f - (animationEnd - timeElapsedSeconds)) / animateTimePerTier;
         }
 
-        int startParentIndex = bIdx * 6;
-        for (int32 sIdx = 0; sIdx < 6; sIdx++) {
-            int32 vidx = startParentIndex + sIdx;
-            vertices[vidx].color.w = alpha;
+        int32 startParentIndex = bIdx * 6;
+        float32 xOffset = ((branchUpdataData->randomOffset + branchUpdataData->tier) * 0.01f) * sinf(timeElapsedSeconds);
 
-            // Wind simualtion
-            vertices[vidx].position.x += ((branchUpdataData->randomOffset + branchUpdataData->tier) * 0.01f) * sinf(timeElapsedSeconds);
-        }
+        branchUpdataData->vertices[0].color.w = alpha;
+        branchUpdataData->vertices[0].position.x += xOffset;
+        branchUpdataData->vertices[1].color.w = alpha;
+        branchUpdataData->vertices[1].position.x += xOffset;
+        branchUpdataData->vertices[2].color.w = alpha;
+        branchUpdataData->vertices[2].position.x += xOffset;
+        branchUpdataData->vertices[3].color.w = alpha;
+        branchUpdataData->vertices[3].position.x += xOffset;
+        branchUpdataData->vertices[4].color.w = alpha;
+        branchUpdataData->vertices[4].position.x += xOffset;
+        branchUpdataData->vertices[5].color.w = alpha;
+        branchUpdataData->vertices[5].position.x += xOffset;
     }
 }
 	
@@ -156,4 +180,7 @@ void TreeShape::unload() {
     glDeleteBuffers(1, &vbo);
     delete[] vertices;
     delete [] updateData;
+    timeElapsedSeconds = 0;
+    vertices = NULL;
+    updateData = NULL;
 }

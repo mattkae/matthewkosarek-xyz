@@ -2,7 +2,7 @@
 #include "mathlib.h"
 #include "types.h"
 
-struct TreeShape;
+struct TreeShapeLoadResult;
 
 struct LeafParticleLoadData {
     Vector2 initPosition;
@@ -12,14 +12,18 @@ struct LeafParticleLoadData {
 
 struct LeafParticleUpdateData {
     bool canFall = false;
+    Renderer2dVertex* vertexToFollow = NULL;
     Vector4 color = Vector4(1.f, 0.f, 0.f, 0.f);
     float32 scale = 1.f;
     Vector2 fallDirection;
+    Renderer2dVertex* vertexPtr = NULL;
 };
 
 struct LeafParticleRender {
     // Update data
     int32 numLeaves = 0;
+
+    LeafParticleUpdateData* updateData = NULL;
     Renderer2dVertex* vertices = NULL;
 
     // Render data
@@ -28,7 +32,7 @@ struct LeafParticleRender {
 	uint32 numVertices = 0;
 	Mat4x4 model;
 
-    void load(Renderer2d* renderer, TreeShape* tree);
+    void load(Renderer2d* renderer, TreeShapeLoadResult* lr);
 	void update(float32 dtSeconds);
 	void render(Renderer2d* renderer);
 	void unload();

@@ -1,5 +1,6 @@
 body {
     font-size: 14px !important;
+    width: 100%;
 }
 
 header {
@@ -15,6 +16,7 @@ header {
 }
 
 #resume {
+    width: 80%;
     position: relative;
     text-align: left;
     background-color: white;

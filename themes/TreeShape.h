@@ -33,6 +33,15 @@ struct TreeBranchLoadData {
 struct TreeBranchUpdateData {
 	int32 tier = 0;
 	float32 randomOffset = 0;
+	Renderer2dVertex* vertices = NULL;
+};
+
+struct TreeShapeLoadResult {
+	Vector2 lowerBounds;
+	Vector2 upperBounds;
+	Vector2 center;
+	TreeBranchUpdateData* updateData;
+	uint32 numBranches = 0;
 };
 
 struct TreeShape {
@@ -50,8 +59,10 @@ struct TreeShape {
 	uint32 numVertices = 0;
 	Mat4x4 model;
 
-	void load(Renderer2d* renderer);
-	void createBranch(TreeLoadData* ld, TreeBranchLoadData* branchList, int32 numBranches, int32* branchIndex, int32 branchLevel, float32 width, float32 height, Vector2 position, float32 rotation, Renderer2dVertex* vertices);
+	TreeShapeLoadResult load(Renderer2d* renderer);
+	void createBranch(TreeLoadData* ld, TreeBranchLoadData* branchList, int32 numBranches, 
+		int32* branchIndex, int32 branchLevel, float32 width, float32 height, 
+		Vector2 position, float32 rotation, Renderer2dVertex* vertices, TreeShapeLoadResult* lr);
 	void update(float32 dtSeconds);
 	void render(Renderer2d* renderer);
 	void unload();
