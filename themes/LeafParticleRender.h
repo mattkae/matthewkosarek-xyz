@@ -15,11 +15,23 @@ struct LeafParticleUpdateData {
     Renderer2dVertex* vertexToFollow = NULL;
     Vector4 color = Vector4(1.f, 0.f, 0.f, 0.f);
     float32 scale = 1.f;
-    Vector2 fallDirection;
+
+    float32 timeFallingSeconds = 0.f;
+    bool isFalling = false;
+    int32 fallChance = -1;
+    Vector2 fallPosition;
+    float32 fallVerticalVelocity;
+    float32 fallHorizontalFrequency;
+    
+    bool onGround = false;
+
     Renderer2dVertex* vertexPtr = NULL;
 };
 
 struct LeafParticleRender {
+    float32 elapsedTimeSeconds = 0.5;
+    float32 fallIntervalSeconds = 1.f;
+
     // Update data
     int32 numLeaves = 0;
 

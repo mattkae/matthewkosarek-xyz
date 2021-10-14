@@ -3,11 +3,13 @@
 #include "mathlib.h"
 #include "TreeShape.h"
 #include "types.h"
+#include <math.h>
 
 const int32 verticesPerLeaf = 6; 
 const float32 leafRadius = 3.f;
+const int32 fallChanceMax = 100;
 
-inline void createLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 color) {
+inline void updateLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 color) {
     Vector2 bottomLeft = Vector2(-leafRadius, -leafRadius) + position;
     Vector2 bottomRight = Vector2(leafRadius, -leafRadius) + position;
     Vector2 topLeft = Vector2(-leafRadius, leafRadius) + position;
@@ -34,6 +36,7 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
         int32 randomBranch = randomIntBetween(0, lr->numBranches);
         int32 randomVertex = randomIntBetween(0, 6); // TODO: Manually entering num vertices per branch.
         updateData[leafIdx].vertexToFollow = &lr->updateData[randomBranch].vertices[randomVertex];
+        updateData[leafIdx].fallChance = randomIntBetween(0, fallChanceMax);
         updateData[leafIdx].color = Vector4(randomFloatBetween(0.3, 0.9), randomFloatBetween(0.1, 0.6), 0, 1);
         updateData[leafIdx].vertexPtr = &vertices[leafIdx * verticesPerLeaf];
     }
@@ -58,10 +61,47 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
 }
 
 void LeafParticleRender::update(float32 dtSeconds) {
+    elapsedTimeSeconds += dtSeconds;
+
+    // Every time the fallIntervalSeconds passes, we remove one leaf
+    // from the tree and send it barrelling towards the earth.
+    int32 fallRoll;
+    bool didGenerateFall = false;
+    if (elapsedTimeSeconds >= fallIntervalSeconds) {
+        fallRoll = randomIntBetween(0, fallChanceMax);
+        didGenerateFall = true;
+        elapsedTimeSeconds = 0;
+    }
+
     for (int32 leafIdx = 0; leafIdx < numLeaves; leafIdx++) {
         auto updateDataItem = &updateData[leafIdx];
 
-        createLeaf(updateDataItem->vertexPtr, updateDataItem->vertexToFollow->position, updateDataItem->color);
+        if (didGenerateFall) {
+            if (!updateDataItem->isFalling && updateDataItem->fallChance == fallRoll) {
+                updateDataItem->isFalling = true;
+                updateDataItem->fallPosition = updateDataItem->vertexToFollow->position;
+                updateDataItem->fallVerticalVelocity = -randomFloatBetween(15.f, 25.f);
+                updateDataItem->fallHorizontalFrequency = randomFloatBetween(3.f, 5.f);
+            }
+        }
+
+        if (updateDataItem->onGround) {
+
+        }
+        else if (updateDataItem->isFalling) {
+            updateDataItem->timeFallingSeconds += dtSeconds;
+            const float32 xPosUpdate = cosf(updateDataItem->fallHorizontalFrequency * updateDataItem->timeFallingSeconds);
+            updateDataItem->fallPosition.x += xPosUpdate;
+            updateDataItem->fallPosition.y += updateDataItem->fallVerticalVelocity * dtSeconds;
+            if (updateDataItem->fallPosition.y <= 25.f) { // TODO: Hardcoded ground for now
+                updateDataItem->fallPosition.y = 25.f;
+                updateDataItem->onGround = true;
+            }
+            updateLeaf(updateDataItem->vertexPtr, updateDataItem->fallPosition, updateDataItem->color);
+        }
+        else {
+            updateLeaf(updateDataItem->vertexPtr, updateDataItem->vertexToFollow->position, updateDataItem->color);
+        }
     }
 }
 
@@ -80,4 +120,6 @@ void LeafParticleRender::unload() {
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
     delete [] vertices;
+
+    elapsedTimeSeconds = 0;
 }
