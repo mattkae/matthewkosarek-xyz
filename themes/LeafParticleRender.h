@@ -24,6 +24,7 @@ struct LeafParticleUpdateData {
     float32 fallHorizontalFrequency;
     
     bool onGround = false;
+    float32 resetTime = 0.f;
 
     Renderer2dVertex* vertexPtr = NULL;
 };

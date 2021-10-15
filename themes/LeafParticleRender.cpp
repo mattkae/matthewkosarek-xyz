@@ -86,7 +86,17 @@ void LeafParticleRender::update(float32 dtSeconds) {
         }
 
         if (updateDataItem->onGround) {
+            updateDataItem->timeFallingSeconds += dtSeconds;
 
+            if (updateDataItem->timeFallingSeconds >= updateDataItem->resetTime) {
+                updateDataItem->onGround = false;
+                updateDataItem->isFalling = false;
+                updateDataItem->color.w = 1.f;
+            }
+            else {
+                updateDataItem->color.w = 1.f - (updateDataItem->timeFallingSeconds / updateDataItem->resetTime);
+                updateLeaf(updateDataItem->vertexPtr, updateDataItem->fallPosition, updateDataItem->color);
+            }
         }
         else if (updateDataItem->isFalling) {
             updateDataItem->timeFallingSeconds += dtSeconds;
@@ -96,6 +106,8 @@ void LeafParticleRender::update(float32 dtSeconds) {
             if (updateDataItem->fallPosition.y <= 25.f) { // TODO: Hardcoded ground for now
                 updateDataItem->fallPosition.y = 25.f;
                 updateDataItem->onGround = true;
+                updateDataItem->timeFallingSeconds = 0;
+                updateDataItem->resetTime = randomFloatBetween(2.f, 5.f); // TODO: Hardcoded reset interval
             }
             updateLeaf(updateDataItem->vertexPtr, updateDataItem->fallPosition, updateDataItem->color);
         }
