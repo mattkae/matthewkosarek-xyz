@@ -32,8 +32,11 @@ struct TreeBranchLoadData {
 
 struct TreeBranchUpdateData {
 	int32 tier = 0;
-	float32 randomOffset = 0;
+	float32 period = 0;
+	float32 amplitude = 0;
+	Vector2 currentOffset;
 	Renderer2dVertex* vertices = NULL;
+	TreeBranchUpdateData* branchToFollow = NULL;
 };
 
 struct TreeShapeLoadResult {
@@ -62,7 +65,7 @@ struct TreeShape {
 	TreeShapeLoadResult load(Renderer2d* renderer);
 	void createBranch(TreeLoadData* ld, TreeBranchLoadData* branchList, int32 numBranches, 
 		int32* branchIndex, int32 branchLevel, float32 width, float32 height, 
-		Vector2 position, float32 rotation, Renderer2dVertex* vertices, TreeShapeLoadResult* lr);
+		Vector2 position, float32 rotation, TreeBranchUpdateData* parent, Renderer2dVertex* vertices, TreeShapeLoadResult* lr);
 	void update(float32 dtSeconds);
 	void render(Renderer2d* renderer);
 	void unload();

@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cfloat>
+#include <ctime>
 
 void TreeBranchLoadData::fillVertices(Renderer2dVertex* vertices, int branchTier) {
     bottomLeft = Vector2 { position.x - width / 2.f, position.y }.rotateAbout(rotation, position);
@@ -21,6 +22,8 @@ void TreeBranchLoadData::fillVertices(Renderer2dVertex* vertices, int branchTier
 };
 
 TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
+    srand ( time(NULL) );
+    
     timeElapsedSeconds = 0;
 
     TreeLoadData ld;
@@ -39,7 +42,7 @@ TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
     lr.updateData = updateData;
     lr.numBranches = numBranches;
     int32 branchIndex = 0;
-    createBranch(&ld, generationData, numBranches, &branchIndex, 0, ld.trunkWidth, ld.trunkHeight, Vector2 { 300.f, 50.f }, 0, vertices, &lr);
+    createBranch(&ld, generationData, numBranches, &branchIndex, 0, ld.trunkWidth, ld.trunkHeight, Vector2 { 300.f, 50.f }, 0, NULL, vertices, &lr);
 
     useShader(renderer->shader);
 
@@ -66,7 +69,9 @@ TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
 
 const float32 ninetyDegreeRotation = PI / 2.f;
 
-void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationData, int32 numBranches, int32* branchIndex, int32 branchLevel, float32 width, float32 height, Vector2 position, float32 rotation, Renderer2dVertex* vertices, TreeShapeLoadResult* lr) {
+void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationData, int32 numBranches, int32* branchIndex, 
+    int32 branchLevel, float32 width, float32 height, Vector2 position, float32 rotation, 
+    TreeBranchUpdateData* parent, Renderer2dVertex* vertices, TreeShapeLoadResult* lr) {
     TreeBranchLoadData* branchLoadData = &generationData[*branchIndex];
     branchLoadData->width = width;
     branchLoadData->height = height;
@@ -90,7 +95,9 @@ void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationDat
 
     TreeBranchUpdateData* branchUpdateData = &updateData[*branchIndex];
     branchUpdateData->tier = branchLevel;
-    branchUpdateData->randomOffset = randomFloatBetween(-1.f, 1.f);
+    branchUpdateData->period = randomFloatBetween(3.f, 5.f);
+    branchUpdateData->amplitude = randomFloatBetween(0.01f, 0.05f);
+    branchUpdateData->branchToFollow = parent;
     branchUpdateData->vertices = &vertices[(*branchIndex) * 6];
 
     if (branchLevel == ld->numBranchLevels) {
@@ -121,7 +128,7 @@ void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationDat
         Vector2 branchPosition = branchLoadData->topLeft + ((branchLoadData->topRight - branchLoadData->topLeft) * weight)  - branchOffsetVertical; // Position of branch along the top of the parent branch
         
         (*branchIndex)++;
-        createBranch(ld, generationData, numBranches, branchIndex, branchLevel + 1, branchWidth, branchHeight, branchPosition, branchRotation, vertices, lr);
+        createBranch(ld, generationData, numBranches, branchIndex, branchLevel + 1, branchWidth, branchHeight, branchPosition, branchRotation, branchUpdateData, vertices, lr);
     }
 }
 
@@ -147,20 +154,34 @@ void TreeShape::update(float32 dtSeconds) {
         }
 
         int32 startParentIndex = bIdx * 6;
-        float32 xOffset = ((branchUpdataData->randomOffset + branchUpdataData->tier) * 0.01f) * sinf(timeElapsedSeconds);
 
-        branchUpdataData->vertices[0].color.w = alpha;
-        branchUpdataData->vertices[0].position.x += xOffset;
-        branchUpdataData->vertices[1].color.w = alpha;
-        branchUpdataData->vertices[1].position.x += xOffset;
+        branchUpdataData->currentOffset.x = branchUpdataData->amplitude * sinf(branchUpdataData->period * timeElapsedSeconds);
+        branchUpdataData->currentOffset.y = branchUpdataData->amplitude * sinf(branchUpdataData->period * timeElapsedSeconds);
+
+        if (branchUpdataData->branchToFollow != NULL) {
+            branchUpdataData->currentOffset += branchUpdataData->branchToFollow->currentOffset;
+            
+            // The root of the branch only moves according to the change of the end of the parent.
+            branchUpdataData->vertices[0].color.w = alpha;
+            branchUpdataData->vertices[0].position += branchUpdataData->branchToFollow->currentOffset;
+            branchUpdataData->vertices[1].color.w = alpha;
+            branchUpdataData->vertices[1].position += branchUpdataData->branchToFollow->currentOffset;
+            branchUpdataData->vertices[5].color.w = alpha;
+            branchUpdataData->vertices[5].position += branchUpdataData->branchToFollow->currentOffset;
+        }
+        else {
+            branchUpdataData->vertices[0].color.w = alpha;
+            branchUpdataData->vertices[1].color.w = alpha;
+            branchUpdataData->vertices[5].color.w = alpha;
+        }
+
+
         branchUpdataData->vertices[2].color.w = alpha;
-        branchUpdataData->vertices[2].position.x += xOffset;
+        branchUpdataData->vertices[2].position += branchUpdataData->currentOffset;
         branchUpdataData->vertices[3].color.w = alpha;
-        branchUpdataData->vertices[3].position.x += xOffset;
+        branchUpdataData->vertices[3].position += branchUpdataData->currentOffset;
         branchUpdataData->vertices[4].color.w = alpha;
-        branchUpdataData->vertices[4].position.x += xOffset;
-        branchUpdataData->vertices[5].color.w = alpha;
-        branchUpdataData->vertices[5].position.x += xOffset;
+        branchUpdataData->vertices[4].position += branchUpdataData->currentOffset;
     }
 }
 	
