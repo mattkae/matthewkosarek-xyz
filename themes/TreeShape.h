@@ -32,6 +32,7 @@ struct TreeBranchLoadData {
 
 struct TreeBranchUpdateData {
 	int32 tier = 0;
+	float32 periodOffset = 0;
 	float32 period = 0;
 	float32 amplitude = 0;
 	Vector2 currentOffset;

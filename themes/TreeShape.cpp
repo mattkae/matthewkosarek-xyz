@@ -95,6 +95,7 @@ void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationDat
 
     TreeBranchUpdateData* branchUpdateData = &updateData[*branchIndex];
     branchUpdateData->tier = branchLevel;
+    branchUpdateData->periodOffset = randomFloatBetween(0.f, 2.f * PI);
     branchUpdateData->period = randomFloatBetween(3.f, 5.f);
     branchUpdateData->amplitude = randomFloatBetween(0.01f, 0.05f);
     branchUpdateData->branchToFollow = parent;
@@ -155,8 +156,8 @@ void TreeShape::update(float32 dtSeconds) {
 
         int32 startParentIndex = bIdx * 6;
 
-        branchUpdataData->currentOffset.x = branchUpdataData->amplitude * sinf(branchUpdataData->period * timeElapsedSeconds);
-        branchUpdataData->currentOffset.y = branchUpdataData->amplitude * sinf(branchUpdataData->period * timeElapsedSeconds);
+        branchUpdataData->currentOffset.x = branchUpdataData->amplitude * cosf(branchUpdataData->periodOffset + branchUpdataData->period * timeElapsedSeconds);
+        branchUpdataData->currentOffset.y = branchUpdataData->amplitude * sinf(branchUpdataData->periodOffset + branchUpdataData->period * timeElapsedSeconds);
 
         if (branchUpdataData->branchToFollow != NULL) {
             branchUpdataData->currentOffset += branchUpdataData->branchToFollow->currentOffset;

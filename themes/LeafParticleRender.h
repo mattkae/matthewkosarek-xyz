@@ -10,20 +10,26 @@ struct LeafParticleLoadData {
     int numLeaves = 48;
 };
 
+enum LeafParticleState {
+    OnTree,
+    Falling,
+    OnGround,
+    Remerging
+};
+
 struct LeafParticleUpdateData {
-    bool canFall = false;
+    LeafParticleState state = LeafParticleState::Remerging;
+
     Renderer2dVertex* vertexToFollow = NULL;
     Vector4 color = Vector4(1.f, 0.f, 0.f, 0.f);
     float32 scale = 1.f;
 
-    float32 timeFallingSeconds = 0.f;
-    bool isFalling = false;
+    float32 timeElapsedSeconds = 0.f;
     int32 fallChance = -1;
     Vector2 fallPosition;
     float32 fallVerticalVelocity;
     float32 fallHorizontalFrequency;
     
-    bool onGround = false;
     float32 resetTime = 0.f;
 
     Renderer2dVertex* vertexPtr = NULL;

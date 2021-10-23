@@ -9,11 +9,12 @@ const int32 verticesPerLeaf = 6;
 const float32 leafRadius = 3.f;
 const int32 fallChanceMax = 100;
 
-inline void updateLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 color) {
-    Vector2 bottomLeft = Vector2(-leafRadius, -leafRadius) + position;
-    Vector2 bottomRight = Vector2(leafRadius, -leafRadius) + position;
-    Vector2 topLeft = Vector2(-leafRadius, leafRadius) + position;
-    Vector2 topRight = Vector2(leafRadius, leafRadius) + position;
+inline void updateLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 color, float32 scale) {
+    float32 radius = scale * leafRadius;
+    Vector2 bottomLeft = Vector2(-radius, -radius) + position;
+    Vector2 bottomRight = Vector2(radius, -radius) + position;
+    Vector2 topLeft = Vector2(-radius, radius) + position;
+    Vector2 topRight = Vector2(radius, radius) + position;
 
     vertices[0] = { bottomLeft, color };
     vertices[1] = { bottomRight, color };
@@ -25,7 +26,7 @@ inline void updateLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 col
 
 void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
     LeafParticleLoadData ld;
-    ld.numLeaves = 640;
+    ld.numLeaves = 256;
     numLeaves = ld.numLeaves;
     numVertices = ld.numLeaves * verticesPerLeaf;
 
@@ -39,6 +40,7 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
         updateData[leafIdx].fallChance = randomIntBetween(0, fallChanceMax);
         updateData[leafIdx].color = Vector4(randomFloatBetween(0.3, 0.9), randomFloatBetween(0.1, 0.6), 0, 1);
         updateData[leafIdx].vertexPtr = &vertices[leafIdx * verticesPerLeaf];
+        updateData[leafIdx].resetTime = randomFloatBetween(4.f, 6.f);
     }
 
     useShader(renderer->shader);
@@ -77,42 +79,64 @@ void LeafParticleRender::update(float32 dtSeconds) {
         auto updateDataItem = &updateData[leafIdx];
 
         if (didGenerateFall) {
-            if (!updateDataItem->isFalling && updateDataItem->fallChance == fallRoll) {
-                updateDataItem->isFalling = true;
+            if (updateDataItem->state == LeafParticleState::OnTree && updateDataItem->fallChance == fallRoll) {
+                updateDataItem->state = LeafParticleState::Falling;
                 updateDataItem->fallPosition = updateDataItem->vertexToFollow->position;
                 updateDataItem->fallVerticalVelocity = -randomFloatBetween(15.f, 25.f);
                 updateDataItem->fallHorizontalFrequency = randomFloatBetween(3.f, 5.f);
             }
         }
 
-        if (updateDataItem->onGround) {
-            updateDataItem->timeFallingSeconds += dtSeconds;
+        switch (updateDataItem->state) {
+        case (LeafParticleState::Remerging): {
+            updateDataItem->timeElapsedSeconds += dtSeconds;
 
-            if (updateDataItem->timeFallingSeconds >= updateDataItem->resetTime) {
-                updateDataItem->onGround = false;
-                updateDataItem->isFalling = false;
+            if (updateDataItem->timeElapsedSeconds >= updateDataItem->resetTime) {
+                updateDataItem->timeElapsedSeconds = 0.f;
+                updateDataItem->state = LeafParticleState::OnTree;
                 updateDataItem->color.w = 1.f;
+                updateDataItem->scale = 1.f;
             }
             else {
-                updateDataItem->color.w = 1.f - (updateDataItem->timeFallingSeconds / updateDataItem->resetTime);
-                updateLeaf(updateDataItem->vertexPtr, updateDataItem->fallPosition, updateDataItem->color);
+                updateDataItem->color.w = (updateDataItem->timeElapsedSeconds / updateDataItem->resetTime);
+                updateDataItem->scale = (updateDataItem->timeElapsedSeconds / updateDataItem->resetTime);
             }
+
+            updateLeaf(updateDataItem->vertexPtr, updateDataItem->vertexToFollow->position, updateDataItem->color, updateDataItem->scale);
+            break;
         }
-        else if (updateDataItem->isFalling) {
-            updateDataItem->timeFallingSeconds += dtSeconds;
-            const float32 xPosUpdate = cosf(updateDataItem->fallHorizontalFrequency * updateDataItem->timeFallingSeconds);
+        case (LeafParticleState::OnGround): {
+            updateDataItem->timeElapsedSeconds += dtSeconds;
+
+            if (updateDataItem->timeElapsedSeconds >= updateDataItem->resetTime) {
+                updateDataItem->timeElapsedSeconds = 0.f;
+                updateDataItem->color.w = 0.f;
+                updateDataItem->state = LeafParticleState::Remerging;
+            }
+            else {
+                updateDataItem->color.w = 1.f - (updateDataItem->timeElapsedSeconds / updateDataItem->resetTime);
+                updateLeaf(updateDataItem->vertexPtr, updateDataItem->fallPosition, updateDataItem->color, updateDataItem->scale);
+            }
+            break;
+        }
+        case (LeafParticleState::Falling): {
+            updateDataItem->timeElapsedSeconds += dtSeconds;
+            const float32 xPosUpdate = cosf(updateDataItem->fallHorizontalFrequency * updateDataItem->timeElapsedSeconds);
             updateDataItem->fallPosition.x += xPosUpdate;
             updateDataItem->fallPosition.y += updateDataItem->fallVerticalVelocity * dtSeconds;
-            if (updateDataItem->fallPosition.y <= 25.f) { // TODO: Hardcoded ground for now
-                updateDataItem->fallPosition.y = 25.f;
-                updateDataItem->onGround = true;
-                updateDataItem->timeFallingSeconds = 0;
+            if (updateDataItem->fallPosition.y <= 50.f) { // TODO: Hardcoded ground for now
+                updateDataItem->fallPosition.y = 50.f;
+                updateDataItem->state = LeafParticleState::OnGround;
+                updateDataItem->timeElapsedSeconds = 0;
                 updateDataItem->resetTime = randomFloatBetween(2.f, 5.f); // TODO: Hardcoded reset interval
             }
-            updateLeaf(updateDataItem->vertexPtr, updateDataItem->fallPosition, updateDataItem->color);
+            updateLeaf(updateDataItem->vertexPtr, updateDataItem->fallPosition, updateDataItem->color, updateDataItem->scale);
+            break;
         }
-        else {
-            updateLeaf(updateDataItem->vertexPtr, updateDataItem->vertexToFollow->position, updateDataItem->color);
+        case (LeafParticleState::OnTree): {
+            updateLeaf(updateDataItem->vertexPtr, updateDataItem->vertexToFollow->position, updateDataItem->color, updateDataItem->scale);
+            break;
+        }
         }
     }
 }
