@@ -2,6 +2,22 @@
 function main() {
     runCarousel();
     runPosts();
+
+    // -- Note! We require a black background to properly see the WebGL, so we handle that here.
+    var bodyElement = document.querySelector('body');
+    var themeButtonList = document.querySelectorAll('#theme_selector > button');
+    themeButtonList.forEach(function(themeButton) {
+        if (themeButton.id !== 'theme_button_default') {
+            themeButton.addEventListener('click', function() {
+                bodyElement.style.background = 'black';  
+            });
+        }
+        else {
+            themeButton.addEventListener('click', function() {
+                bodyElement.style.background = 'white';  
+            });
+        }
+    })
 }
 
 function runCarousel() {

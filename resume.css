@@ -1,6 +1,5 @@
 body {
     font-size: 14px !important;
-    width: 100%;
 }
 
 header {
@@ -16,20 +15,19 @@ header {
 }
 
 #resume {
-    width: 80%;
     position: relative;
     text-align: left;
     background-color: white;
     border-radius: 2px;
     color: black;
-    padding: 2rem;
     font-family: Arial,Helvetica Neue,Helvetica,sans-serif !important; 
     line-height: 1.2rem;
+    padding-bottom: 1rem;
 }
 
 #resume_button_container {
     position: absolute;
-    top: 1rem;
+    top: 0;
     right: 1rem;
     text-align: right;
     
@@ -49,6 +47,7 @@ header {
     position: fixed;
     top: 0;
     left: 0;
+    padding: 2rem;
     width: calc(100vw - 4rem);
     height: calc(100vh - 4rem);
     overflow: auto;
