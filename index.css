@@ -199,15 +199,10 @@ input:focus {
 
 /* Theme Selector */
 #theme_selector {
-	position: fixed;
 	width: 50%;
 	display: flex;
 	align-items: center;
 	bottom: 1rem;
-}
-
-#theme_selector > label {
-    font-weight: bold;
 }
 
 #theme_selector > button {
@@ -239,6 +234,14 @@ input:focus {
 only screen and (max-width:1280px) {
     header > h1 {
         font-size: 1.5rem;
+    }
+
+    body {
+        width: 90vw !important;
+    }
+    
+    #theme_selector  {
+        padding-bottom: 2rem !important;
     }
 
     .carousel_image_expanded_container > .carousel_image {
