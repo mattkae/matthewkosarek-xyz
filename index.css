@@ -110,12 +110,23 @@ section a:hover {
     transition: transform 50ms linear;
 }
 
-.carousel_image {
+#image_container .carousel_image {
     width: 240px;
     transition: opacity 50ms linear;
     padding: 0;
     margin: 0;
     padding-right: 12px;
+    cursor: pointer;
+    position: relative;
+}
+
+#image_container .carousel_image:hover::after {
+    position: absolute;
+    top: calc(50% - 6rem);
+    left: calc(50% - 3rem);
+    font-size: 6rem;
+    color: white;
+    content: "\26F6";
 }
 
 .carousel_image > figcaption {
@@ -124,8 +135,25 @@ section a:hover {
 }
 
 .carousel_image > img {
-    width: 240px;
+    width: inherit;
     border-radius: 2px;
+}
+
+.carousel_image_expanded_container {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.carousel_image_expanded_container > .carousel_image {
+    width: 35vw;
+    opacity: 1.0 !important;
 }
 
 input {
@@ -211,5 +239,9 @@ input:focus {
 only screen and (max-width:1280px) {
     header > h1 {
         font-size: 1.5rem;
+    }
+
+    .carousel_image_expanded_container > .carousel_image {
+        width: 100vw;
     }
 }

@@ -48,16 +48,28 @@ function runCarousel() {
     }
 
     function onImageClicked() {
-        
+        var background = document.createElement('div');
+        background.classList.add('carousel_image_expanded_container');
+        var clone = this.cloneNode(true);
+        clone.classList.add('expanded');
+        background.append(clone);
+        clone.addEventListener('click', function(event) { event.stopPropagation(); });
+        background.addEventListener('click', function() { background.remove(); });
+        document.body.parentElement.prepend(background);
+    }
+
+    function setImageClicked() {
+        for (var i = 0; i < numImages; i++) {
+            var image = imageList[i];
+            image.addEventListener('click', onImageClicked);
+        }
     }
 
     function updateCarousel() {
-        var children = imageContainer.children,
-            numChildren = imageContainer.children.length,
-            selectedChildPosition = -(carouselPosition * 240);
+        var selectedChildPosition = -(carouselPosition * 240);
         imageContainer.style.transform = 'translate(' + selectedChildPosition + 'px, 0)';
-        for (var i = 0; i < children.length; i++) {
-            var image = children[i];
+        for (var i = 0; i < numImages; i++) {
+            var image = imageList[i];
             if (i !== carouselPosition) {
                 if (i === (carouselPosition - 1) % numImages) {
                     image.style.opacity = 0.3;
@@ -75,6 +87,11 @@ function runCarousel() {
         leftButton.style.visibility = (carouselPosition === 0) ? 'hidden' : 'visible';
     }
 
+    // -- Set up on image clicked
+    var imageList = imageContainer.children,
+        numImages = imageContainer.children.length;
+
+    setImageClicked();
     updateCarousel();
 
     leftButton.addEventListener('click', onCarouselLeft);
