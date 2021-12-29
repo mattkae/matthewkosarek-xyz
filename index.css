@@ -107,17 +107,19 @@ section a:hover {
     display: flex;
     flex-direction: row;
     height: 100%;
-    transition: transform 50ms linear;
+    transition: all 100ms linear;
+    opacity: 0;
 }
 
 #image_container .carousel_image {
     width: 240px;
-    transition: opacity 50ms linear;
+    transition: opacity 100ms linear;
     padding: 0;
     margin: 0;
     padding-right: 12px;
     cursor: pointer;
     position: relative;
+    opacity: 0;
 }
 
 #image_container .carousel_image:hover::after {
@@ -203,6 +205,14 @@ input:focus {
 	display: flex;
 	align-items: center;
 	bottom: 1rem;
+    pointer-events: all;
+    opacity: 1;
+    transition: opacity 150ms linear;
+}
+
+#theme_selector.hidden {
+    pointer-events: none;
+    opacity: 0;
 }
 
 #theme_selector > button {

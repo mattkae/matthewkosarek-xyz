@@ -1,22 +1,9 @@
 
 function main() {
-    runCarousel();
+    var themeSelector = document.getElementById('theme_selector');
+    themeSelector.classList.remove('hidden');
 
-    // // -- Note! We require a black background to properly see the WebGL, so we handle that here.
-    // var themeElement = document.getElementById('theme_container');
-    // var themeButtonList = document.querySelectorAll('#theme_selector > button');
-    // themeButtonList.forEach(function(themeButton) {
-    //     if (themeButton.id !== 'theme_button_default') {
-    //         themeButton.addEventListener('click', function() {
-    //             themeElement.style.background = 'black';  
-    //         });
-    //     }
-    //     else {
-    //         themeButton.addEventListener('click', function() {
-    //             themeElement.style.background = 'white';  
-    //         });
-    //     }
-    // });
+    runCarousel();
 }
 
 function runCarousel() {
@@ -54,6 +41,7 @@ function runCarousel() {
         background.append(clone);
         clone.addEventListener('click', function(event) { event.stopPropagation(); });
         background.addEventListener('click', function() { background.remove(); });
+        window.addEventListener('keydown', function(e) { if (e.key === 'Escape') background.remove(); });
         document.body.parentElement.prepend(background);
     }
 
@@ -95,6 +83,9 @@ function runCarousel() {
 
     leftButton.addEventListener('click', onCarouselLeft);
     rightButton.addEventListener('click', onCarouselRight);
+
+    // -- Fade in the container
+    imageContainer.style.opacity = '1';
 }
 
-document.onload = main;
+window.onload = main;
