@@ -4,20 +4,20 @@ function main() {
     runPosts();
 
     // -- Note! We require a black background to properly see the WebGL, so we handle that here.
-    var bodyElement = document.querySelector('body');
+    var themeElement = document.getElementById('theme_container');
     var themeButtonList = document.querySelectorAll('#theme_selector > button');
     themeButtonList.forEach(function(themeButton) {
         if (themeButton.id !== 'theme_button_default') {
             themeButton.addEventListener('click', function() {
-                bodyElement.style.background = 'black';  
+                themeElement.style.background = 'black';  
             });
         }
         else {
             themeButton.addEventListener('click', function() {
-                bodyElement.style.background = 'white';  
+                themeElement.style.background = 'white';  
             });
         }
-    })
+    });
 }
 
 function runCarousel() {
