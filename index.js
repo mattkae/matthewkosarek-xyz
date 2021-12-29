@@ -1,23 +1,22 @@
 
 function main() {
     runCarousel();
-    runPosts();
 
-    // -- Note! We require a black background to properly see the WebGL, so we handle that here.
-    var themeElement = document.getElementById('theme_container');
-    var themeButtonList = document.querySelectorAll('#theme_selector > button');
-    themeButtonList.forEach(function(themeButton) {
-        if (themeButton.id !== 'theme_button_default') {
-            themeButton.addEventListener('click', function() {
-                themeElement.style.background = 'black';  
-            });
-        }
-        else {
-            themeButton.addEventListener('click', function() {
-                themeElement.style.background = 'white';  
-            });
-        }
-    });
+    // // -- Note! We require a black background to properly see the WebGL, so we handle that here.
+    // var themeElement = document.getElementById('theme_container');
+    // var themeButtonList = document.querySelectorAll('#theme_selector > button');
+    // themeButtonList.forEach(function(themeButton) {
+    //     if (themeButton.id !== 'theme_button_default') {
+    //         themeButton.addEventListener('click', function() {
+    //             themeElement.style.background = 'black';  
+    //         });
+    //     }
+    //     else {
+    //         themeButton.addEventListener('click', function() {
+    //             themeElement.style.background = 'white';  
+    //         });
+    //     }
+    // });
 }
 
 function runCarousel() {
@@ -98,8 +97,4 @@ function runCarousel() {
     rightButton.addEventListener('click', onCarouselRight);
 }
 
-function runPosts() {
-    
-}
-
-main();
+document.onload = main;

@@ -115,7 +115,7 @@ EM_BOOL selectAutumn(int eventType, const EmscriptenMouseEvent* mouseEvent, void
 
 // -- Autumn theme
 void AutumnTheme::load(Renderer2d* renderer) {
-    renderer->clearColor = Vector4(252, 210, 153, 125).toNormalizedColor();
+    renderer->clearColor = Vector4(252, 210, 153, 255).toNormalizedColor();
 	auto lr = tree.load(renderer);
 	leafParticles.load(renderer, &lr);
 }
