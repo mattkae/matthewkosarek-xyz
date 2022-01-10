@@ -8,7 +8,8 @@
 
 enum Theme {
 	Default = 0,
-    Autumn
+    Autumn,
+	Winter
 };
 
 struct AutumnTheme {
@@ -21,22 +22,32 @@ struct AutumnTheme {
 	void unload();
 };
 
+struct WinterTheme {
+	void load(Renderer2d* renderer);
+	void update(float32 dtSeconds);
+	void render(Renderer2d* renderer);
+	void unload();
+};
+
 void load(Theme theme);
 void unload();
 void update(float32 dtSeconds, void* userData);
 EM_BOOL selectNone(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 EM_BOOL selectAutumn(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
+EM_BOOL selectWinter(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 
 WebglContext context;
 Renderer2d renderer;
 MainLoop mainLoop;
 Theme activeTheme = Theme::Default;
 AutumnTheme autumnTheme;
+WinterTheme winterTheme;
 
 int main() {
 	context.init("#theme_canvas");
 	emscripten_set_click_callback("#theme_button_default", NULL, false, selectNone);
 	emscripten_set_click_callback("#theme_button_autumn", NULL, false, selectAutumn);
+	emscripten_set_click_callback("#theme_button_winter", NULL, false, selectWinter);
 	
 	return 0;
 }
@@ -58,6 +69,9 @@ void load(Theme theme) {
 	case Theme::Autumn:
 		autumnTheme.load(&renderer);
 		break;
+	case Theme::Winter:
+		winterTheme.load(&renderer);
+		break;
 	default:
 		break;
 	}
@@ -69,6 +83,9 @@ void update(float32 dtSeconds, void* userData) {
 	case Theme::Autumn:
 		autumnTheme.update(dtSeconds);
 		break;
+	case Theme::Winter:
+		winterTheme.update(dtSeconds);
+		break;
 	default:
 		break;
 	}
@@ -79,6 +96,9 @@ void update(float32 dtSeconds, void* userData) {
 	case Theme::Autumn:
 		autumnTheme.render(&renderer);
 		break;
+	case Theme::Winter:
+		winterTheme.render(&renderer);
+		break;
 	default:
 		break;
 	}
@@ -88,6 +108,9 @@ void unload() {
 	switch (activeTheme) {
 	case Theme::Autumn:
 		autumnTheme.unload();
+		break;
+	case Theme::Winter:
+		winterTheme.unload();
 		break;
 	default:
 		break;
@@ -113,6 +136,12 @@ EM_BOOL selectAutumn(int eventType, const EmscriptenMouseEvent* mouseEvent, void
 	return true;
 }
 
+EM_BOOL selectWinter(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
+	printf("Winter theme selected\n");
+	load(Theme::Winter);
+	return true;
+}
+
 // -- Autumn theme
 void AutumnTheme::load(Renderer2d* renderer) {
     renderer->clearColor = Vector4(252, 210, 153, 255).toNormalizedColor();
@@ -135,3 +164,16 @@ void AutumnTheme::unload()  {
 	leafParticles.unload();
 }
 
+// -- Winter theme
+void WinterTheme::load(Renderer2d* renderer) {
+    renderer->clearColor = Vector4(200, 229, 239, 255).toNormalizedColor();
+}
+
+void WinterTheme::update(float32 dtSeconds) {
+}
+
+void WinterTheme::render(Renderer2d* renderer) {
+}
+
+void WinterTheme::unload()  {
+}

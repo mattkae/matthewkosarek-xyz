@@ -184,7 +184,7 @@ input:focus {
 
 /* Theme display */
 #theme_container {
-	position: absolute;
+	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100vw;
@@ -237,6 +237,10 @@ input:focus {
 
 #theme_selector > #theme_button_autumn {
 	background-color: orange;
+}
+
+#theme_selector > #theme_button_winter {
+	background-color: #79C0D7;
 }
 
 /* Phone screen adjustments */

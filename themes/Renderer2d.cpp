@@ -27,12 +27,11 @@ const char* renderer2dFragmentShader =
 EM_BOOL onScreenSizeChanged(int eventType, const EmscriptenUiEvent *uiEvent, void *userData) {
     Renderer2d* renderer = (Renderer2d*)userData;
     
-    renderer->context->width = uiEvent->documentBodyClientWidth;
-    renderer->context->height = uiEvent->documentBodyClientHeight;
-	EMSCRIPTEN_RESULT result = emscripten_set_canvas_element_size( renderer->context->query, renderer->context->width, renderer->context->height);
+	EMSCRIPTEN_RESULT result = emscripten_set_canvas_element_size( renderer->context->query, uiEvent->documentBodyClientWidth, uiEvent->documentBodyClientHeight);
 	if (result != EMSCRIPTEN_RESULT_SUCCESS) {
 		printf("Failed to resize element at query: %s\n", renderer->context->query);
 	}
+	renderer->projection = Mat4x4().getOrthographicMatrix(0, renderer->context->width, 0, renderer->context->height);
 
     return true;
 }
