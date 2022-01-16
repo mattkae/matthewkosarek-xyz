@@ -16,12 +16,12 @@ inline void updateLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 col
     Vector2 topLeft = Vector2(-radius, radius) + position;
     Vector2 topRight = Vector2(radius, radius) + position;
 
-    vertices[0] = { bottomLeft, color, Mat4x4() };
-    vertices[1] = { bottomRight, color, Mat4x4() };
-    vertices[2] = { topLeft, color, Mat4x4() };
-    vertices[3] = { topLeft, color, Mat4x4() };
-    vertices[4] = { topRight, color, Mat4x4() };
-    vertices[5] = { bottomRight, color, Mat4x4() };
+    vertices[0] = { bottomLeft, color };
+    vertices[1] = { bottomRight, color };
+    vertices[2] = { topLeft, color };
+    vertices[3] = { topLeft, color };
+    vertices[4] = { topRight, color };
+    vertices[5] = { bottomRight, color };
 }
 
 void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
@@ -58,11 +58,6 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
     glEnableVertexAttribArray(renderer->attributes.color);
     glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-	for (int32 idx = 0; idx < 4; idx++) {
-		glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
-		glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)(offsetof(Renderer2dVertex, vMatrix) + (idx * 16)));
-	}
-	
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
@@ -161,6 +156,7 @@ void LeafParticleRender::unload() {
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
     delete [] vertices;
+	delete [] updateData;
 
     elapsedTimeSeconds = 0;
 }

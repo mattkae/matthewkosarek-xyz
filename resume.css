@@ -64,31 +64,43 @@ header {
 }
 
 #resume > header > h1 {
-    font-size: 2rem;
+    font-size: 1.7rem;
     padding: 0;
     margin: 0;
+	font-weight: 500;
 }
 
 #resume > header > h3 {
-    padding: 1rem;
+    padding-top: 0.8rem;
+	padding-bottom: 0.8rem;
     margin: 0;
-    color: #7a7a7a;
+    color: #396EB01;
+	font-weight: 400;
+	font-variant: small-caps;
+	font-size: 1.25rem;
 }
 
 #resume > header > div > span {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding-right: 1rem;
 }
 
-h2 {
+.resume_section > h2 {
     font-size: 1.25rem !important;
     font-variant: small-caps;
-    border-bottom: 1px solid #d9d9d9;
     font-weight: bold;
-    width: 100%;
     padding: 0;
     margin: 0;
-    line-height: 2rem;
+	padding: 0.5rem;
+    background-color: #2E4C6D;
+	color: white;
+	border-radius: 2px;
+}
+
+.resume_section > div {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
 }
 
 .skill-section {

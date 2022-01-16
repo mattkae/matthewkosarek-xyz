@@ -5,6 +5,7 @@
 #include "types.h"
 #include "TreeShape.h"
 #include "LeafParticleRender.h"
+#include "Snowflake.h"
 
 enum Theme {
 	Default = 0,
@@ -23,6 +24,8 @@ struct AutumnTheme {
 };
 
 struct WinterTheme {
+	SnowflakeParticleRenderer spr;
+	
 	void load(Renderer2d* renderer);
 	void update(float32 dtSeconds);
 	void render(Renderer2d* renderer);
@@ -167,13 +170,19 @@ void AutumnTheme::unload()  {
 // -- Winter theme
 void WinterTheme::load(Renderer2d* renderer) {
     renderer->clearColor = Vector4(200, 229, 239, 255).toNormalizedColor();
+	SnowflakeLoadParameters lp;
+	lp.spawnIntervalSeconds = 0.05;
+	spr.load(lp, renderer);
 }
 
 void WinterTheme::update(float32 dtSeconds) {
+	spr.update(dtSeconds);
 }
 
 void WinterTheme::render(Renderer2d* renderer) {
+	spr.render(renderer);
 }
 
 void WinterTheme::unload()  {
+	spr.unload();
 }

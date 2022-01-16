@@ -16,6 +16,7 @@ struct Renderer2d {
 	struct {
 		int32 position;
 		int32 color;
+		int32 vMatrix;
 	} attributes;
 
 	struct {
@@ -31,6 +32,7 @@ struct Renderer2d {
 struct Renderer2dVertex {
 	Vector2 position;
 	Vector4 color;
+	Mat4x4 vMatrix;
 };
 
 struct Renderer2dShape {

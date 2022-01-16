@@ -9,11 +9,12 @@
 const char* renderer2dVertexShader = 
 "attribute vec2 position; \n"
 "attribute vec4 color; \n"
+"attribute mat4 vMatrix; \n"
 "uniform mat4 projection; \n"
 "uniform mat4 model; \n"
 "varying lowp vec4 VertexColor; \n"
 "void main() { \n"
-"    vec4 fragmentPosition = projection * model * vec4(position.x, position.y, 0, 1); \n"
+"    vec4 fragmentPosition = projection * model * vMatrix * vec4(position.x, position.y, 0, 1); \n"
 "    gl_Position = fragmentPosition; \n"
 "    VertexColor = color; \n"
 "}";
@@ -44,6 +45,7 @@ void Renderer2d::load(WebglContext* inContext) {
 	useShader(shader);
 	attributes.position = getShaderAttribute(shader, "position");
 	attributes.color = getShaderAttribute(shader, "color");
+	attributes.vMatrix = getShaderAttribute(shader, "vMatrix");
 	uniforms.projection = getShaderUniform(shader, "projection");
 	uniforms.model = getShaderUniform(shader, "model");
 	projection = Mat4x4().getOrthographicMatrix(0, context->width, 0, context->height);
@@ -90,6 +92,11 @@ void Renderer2dShape::load(Renderer2dVertex* inVertices, uint32 inNumVertices, R
 	glEnableVertexAttribArray(renderer->attributes.color);
 	glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
+	for (int32 idx = 0; idx < 4; idx++) {
+			glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
+			glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)(offsetof(Renderer2dVertex, vMatrix) + (idx * 16)));
+	}
+	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
