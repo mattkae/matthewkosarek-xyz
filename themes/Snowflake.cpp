@@ -5,7 +5,7 @@
 
 const Vector4 snowColor = Vector4(1.0, 0.98, 0.98, 1);
 
-inline void generateSnowflakeShape(List<Renderer2dVertex>* vertices, int32 numArms, float32 radius) {
+inline void generateSnowflakeShape(List<Renderer2dVertex>* vertices, int32 numArms, float32 radius, float32 innerRadius) {
 	float32 dx = ((2 * PI) / numArms) / 3.0;
 	for (int32 centerIdx = 0; centerIdx < (3 * numArms); centerIdx+=3) {
 	    float32 degreeStart = dx * centerIdx;
@@ -20,8 +20,8 @@ inline void generateSnowflakeShape(List<Renderer2dVertex>* vertices, int32 numAr
 		Vector2 leftEnd = Vector2(radius * cosStart, radius * sinStart);
 		Vector2 rightEnd = Vector2(radius * cosEnd, radius * sinEnd);
 		Vector2 diff = (rightEnd - leftEnd) / 2.0;
-		Vector2 leftStart = Vector2(-diff.x, -diff.y);
-		Vector2 rightStart = diff;
+		Vector2 leftStart = Vector2(-diff.x, -diff.y) + Vector2(innerRadius * cosStart, innerRadius * sinStart);
+		Vector2 rightStart = diff + Vector2(innerRadius * cosEnd, innerRadius * sinEnd);
 
 		vertices->add({ leftStart, snowColor, Mat4x4() });
 		vertices->add({ leftEnd, snowColor, Mat4x4() });
@@ -34,7 +34,7 @@ inline void generateSnowflakeShape(List<Renderer2dVertex>* vertices, int32 numAr
 
 inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
 	ud->vtxIdx = renderer->vertices.numElements;
-	generateSnowflakeShape(&renderer->vertices, 6, randomFloatBetween(8.f, 24.f);
+	generateSnowflakeShape(&renderer->vertices, randomIntBetween(4, 16), randomFloatBetween(8.f, 16.f), randomFloatBetween(2.f, 6.f));
 	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
 }
 
@@ -113,8 +113,19 @@ void SnowflakeParticleRenderer::update(float32 dtSeconds) {
 		findAndSpawnNextFlake(this);
 	}
 
+	bool addWind = false;
+	timeUntilNextWindSeconds -= dtSeconds;
+	if (timeUntilNextWindSeconds < 0) {
+		timeUntilNextWindSeconds = windIntervalSeconds;
+		windSpeed = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-10, 0));
+		addWind = true;
+	}
+
 	for (int32 s = startIndex; s < endIndex; s++) {
 		SnowflakeUpdateData* ud = &updateData[s];
+
+		if (addWind) ud->velocity += windSpeed;
+		
 		ud->position += ud->velocity * dtSeconds;
 
 		Mat4x4 m = Mat4x4().translateByVec2(ud->position);

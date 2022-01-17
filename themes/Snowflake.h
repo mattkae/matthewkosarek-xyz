@@ -14,6 +14,7 @@ struct SnowflakeLoadParameters {
 	float32 flakeSizeDeviation = 1.f;
 	Vector4 snowColor = { 0.8, 0.8, 0.8, 1.0 };
 	float32 spawnIntervalSeconds = 0.3;
+	float32 windIntervalSeconds = 1.5;
 };
 
 struct SnowflakeUpdateData {
@@ -31,12 +32,14 @@ struct SnowflakeParticleRenderer {
 	float32 xMax = 0;
 	float32 yMax = 0;
 	float32 spawnIntervalSeconds = 0.3;
+	float32 windIntervalSeconds = 1.5;
 	int32 startIndex = 0;
 	int32 endIndex = 0;
 	int32 numSnowflakes = 0;
-    Vector3 windSpeed = { 0, 0, 0 };
+    Vector2 windSpeed;
 	SnowflakeUpdateData* updateData;
-	float32 timeUntilNextSpawnSeconds = 0;;
+	float32 timeUntilNextSpawnSeconds = 0;
+	float32 timeUntilNextWindSeconds = 0;
 
 	uint32 vao;
 	uint32 vbo;
