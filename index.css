@@ -83,8 +83,8 @@ section a:hover {
 
 #carousel > button {
     position: absolute;
-    top: calc(50% - 3rem);
-    font-size: 6rem;
+    top: calc(50% - 8rem);
+    font-size: 12rem;
     border: none;
     background-color: transparent;
 }
@@ -95,10 +95,12 @@ section a:hover {
 }
 
 #carousel_left {
+    visibility: hidden;
     left: 0;
 }
 
 #carousel_right {
+    visibility: hidden;
     right: 0;
 }
 

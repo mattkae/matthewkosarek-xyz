@@ -68,6 +68,8 @@ function runCarousel() {
             } else {
                 image.style.opacity = 1;
             }
+
+            image.style.pointerEvents = image.style.opacity > 0 ? 'all' : 'none';
         }
 
         rightButton.style.visibility = (carouselPosition === numImages - 1) ? 'hidden' : 'visible';
