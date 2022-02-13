@@ -1,3 +1,7 @@
+html {
+    overflow-y: overlay;
+}
+
 body {
     font-size: 14px !important;
 }
@@ -18,7 +22,6 @@ header {
     position: relative;
     text-align: left;
     background-color: white;
-    border-radius: 2px;
     color: black;
     font-family: Arial,Helvetica Neue,Helvetica,sans-serif !important; 
     line-height: 1.2rem;
@@ -70,18 +73,21 @@ header {
 	font-weight: 500;
 }
 
-#resume > header > h3 {
+#resume > header > div {
     padding-top: 0.8rem;
-	padding-bottom: 0.8rem;
-    margin: 0;
-    color: #396EB01;
-	font-weight: 400;
-	font-variant: small-caps;
-	font-size: 1.25rem;
 }
 
 #resume > header > div > span {
-    padding-right: 1rem;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+#resume > header > div > span > i {
+    padding-right: 0.25rem;
+}
+
+.resume_section {
+    width: 100%;
 }
 
 .resume_section > h2 {
@@ -93,7 +99,6 @@ header {
 	padding: 0.5rem;
     background-color: #2E4C6D;
 	color: white;
-	border-radius: 2px;
 }
 
 .resume_section > div {
@@ -124,4 +129,8 @@ header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.experience-item li {
+    width: 100%;
 }

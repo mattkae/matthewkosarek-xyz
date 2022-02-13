@@ -41,6 +41,7 @@ inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* 
 inline void spawnFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
 	ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
 	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, renderer->yMax + 256));
+	ud->isAlive = true;
 }
 
 inline void findAndSpawnNextFlake(SnowflakeParticleRenderer* renderer) {
@@ -49,7 +50,7 @@ inline void findAndSpawnNextFlake(SnowflakeParticleRenderer* renderer) {
 
 		if (renderer->endIndex >= renderer->numSnowflakes)
 			renderer->endIndex = 0;
-	} while (renderer->updateData[renderer->endIndex].onGround);
+	} while (renderer->updateData[renderer->endIndex].isAlive);
 
 	spawnFlake(renderer, &renderer->updateData[renderer->endIndex]);
 }
@@ -106,6 +107,26 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
     glBindVertexArray(0);
 }
 
+inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, int32 s, float32 dtSeconds, bool addWind) {
+	// Once the snowflake has been set to die in this interval, we try and increment the
+	// startIndex
+	if (!ud->isAlive && renderer->startIndex == s) {
+		renderer->startIndex = (renderer->startIndex + 1) % renderer->numSnowflakes;
+		return;
+	}
+
+	if (addWind) ud->velocity += renderer->windSpeed;		
+	ud->position += ud->velocity * dtSeconds;
+
+	if (ud->position.y < 0)
+		ud->isAlive = false;
+
+	Mat4x4 m = Mat4x4().translateByVec2(ud->position);
+	for (int32 v = ud->vtxIdx; v < (ud->vtxIdx + ud->numVertices); v++) {
+		renderer->vertices.data[v].vMatrix = m;
+	}
+}
+
 void SnowflakeParticleRenderer::update(float32 dtSeconds) {
 	timeUntilNextSpawnSeconds -= dtSeconds;
 	if (timeUntilNextSpawnSeconds < 0) {
@@ -121,16 +142,22 @@ void SnowflakeParticleRenderer::update(float32 dtSeconds) {
 		addWind = true;
 	}
 
-	for (int32 s = startIndex; s < endIndex; s++) {
-		SnowflakeUpdateData* ud = &updateData[s];
-
-		if (addWind) ud->velocity += windSpeed;
-		
-		ud->position += ud->velocity * dtSeconds;
-
-		Mat4x4 m = Mat4x4().translateByVec2(ud->position);
-		for (int32 v = ud->vtxIdx; v < (ud->vtxIdx + ud->numVertices); v++) {
-		    vertices.data[v].vMatrix = m;
+	if (startIndex < endIndex) {
+		for (int32 s = startIndex; s < endIndex; s++) {
+			SnowflakeUpdateData* ud = &updateData[s];
+			updateFlake(this, ud, s, dtSeconds, addWind);
+		}
+	}
+	else {
+		int32 endRange = startIndex - numSnowflakes;
+		for (int32 s = endIndex - 1; s >= endRange; s--) {
+			SnowflakeUpdateData* ud;
+			if (s < 0)
+				ud = &updateData[numSnowflakes + s];
+			else
+				ud = &updateData[s];
+			
+			updateFlake(this, ud, s, dtSeconds, addWind);
 		}
 	}
 }
