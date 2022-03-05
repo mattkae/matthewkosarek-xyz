@@ -6,10 +6,10 @@
 #include <ctime>
 
 void TreeBranchLoadData::fillVertices(Renderer2dVertex* vertices, int branchTier) {
-    bottomLeft = Vector2 { position.x - width / 2.f, position.y }.rotateAbout(rotation, position);
-    bottomRight = Vector2 { position.x + width / 2.f, position.y }.rotateAbout(rotation, position);
-    topLeft = (Vector2 { position.x - width / 2.f, position.y + height }).rotateAbout(rotation, position);
-    topRight = (Vector2 { position.x + width / 2.f, position.y + height }).rotateAbout(rotation, position);
+    bottomLeft = Vector2 { position.x - width / 2.f, position.y }.rotateAround(rotation, position);
+    bottomRight = Vector2 { position.x + width / 2.f, position.y }.rotateAround(rotation, position);
+    topLeft = (Vector2 { position.x - width / 2.f, position.y + height }).rotateAround(rotation, position);
+    topRight = (Vector2 { position.x + width / 2.f, position.y + height }).rotateAround(rotation, position);
 
     topMidpoint = topLeft + (topRight - topLeft) / 2.f;
 
