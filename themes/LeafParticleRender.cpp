@@ -5,12 +5,12 @@
 #include "types.h"
 #include <math.h>
 
-const int32 verticesPerLeaf = 6; 
-const float32 leafRadius = 3.f;
-const int32 fallChanceMax = 100;
+const i32 verticesPerLeaf = 6; 
+const f32 leafRadius = 3.f;
+const i32 fallChanceMax = 100;
 
-inline void updateLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 color, float32 scale) {
-    float32 radius = scale * leafRadius;
+inline void updateLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 color, f32 scale) {
+    f32 radius = scale * leafRadius;
     Vector2 bottomLeft = Vector2(-radius, -radius) + position;
     Vector2 bottomRight = Vector2(radius, -radius) + position;
     Vector2 topLeft = Vector2(-radius, radius) + position;
@@ -33,9 +33,9 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
     updateData = new LeafParticleUpdateData[numLeaves];
     vertices = new Renderer2dVertex[numVertices];
 
-    for (int32 leafIdx = 0; leafIdx < numLeaves; leafIdx++) {
-        int32 randomBranch = randomIntBetween(0, lr->numBranches);
-        int32 randomVertex = randomIntBetween(0, 6); // TODO: Manually entering num vertices per branch.
+    for (i32 leafIdx = 0; leafIdx < numLeaves; leafIdx++) {
+        i32 randomBranch = randomIntBetween(0, lr->numBranches);
+        i32 randomVertex = randomIntBetween(0, 6); // TODO: Manually entering num vertices per branch.
         updateData[leafIdx].vertexToFollow = &lr->updateData[randomBranch].vertices[randomVertex];
         updateData[leafIdx].fallChance = randomIntBetween(0, fallChanceMax);
         updateData[leafIdx].color = Vector4(randomFloatBetween(0.3, 0.9), randomFloatBetween(0.1, 0.6), 0, 1);
@@ -58,7 +58,7 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
     glEnableVertexAttribArray(renderer->attributes.color);
     glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-	for (int32 idx = 0; idx < 4; idx++) {
+	for (i32 idx = 0; idx < 4; idx++) {
 		glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
 		glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)(offsetof(Renderer2dVertex, vMatrix) + (idx * 16)));
 	}
@@ -67,12 +67,12 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
     glBindVertexArray(0);
 }
 
-void LeafParticleRender::update(float32 dtSeconds) {
+void LeafParticleRender::update(f32 dtSeconds) {
     elapsedTimeSeconds += dtSeconds;
 
     // Every time the fallIntervalSeconds passes, we remove one leaf
     // from the tree and send it barrelling towards the earth.
-    int32 fallRoll;
+    i32 fallRoll;
     bool didGenerateFall = false;
     if (elapsedTimeSeconds >= fallIntervalSeconds) {
         fallRoll = randomIntBetween(0, fallChanceMax);
@@ -80,7 +80,7 @@ void LeafParticleRender::update(float32 dtSeconds) {
         elapsedTimeSeconds = 0;
     }
 
-    for (int32 leafIdx = 0; leafIdx < numLeaves; leafIdx++) {
+    for (i32 leafIdx = 0; leafIdx < numLeaves; leafIdx++) {
         auto updateDataItem = &updateData[leafIdx];
 
         if (didGenerateFall) {
@@ -126,7 +126,7 @@ void LeafParticleRender::update(float32 dtSeconds) {
         }
         case (LeafParticleState::Falling): {
             updateDataItem->timeElapsedSeconds += dtSeconds;
-            const float32 xPosUpdate = cosf(updateDataItem->fallHorizontalFrequency * updateDataItem->timeElapsedSeconds);
+            const f32 xPosUpdate = cosf(updateDataItem->fallHorizontalFrequency * updateDataItem->timeElapsedSeconds);
             updateDataItem->fallPosition.x += xPosUpdate;
             updateDataItem->fallPosition.y += updateDataItem->fallVerticalVelocity * dtSeconds;
             if (updateDataItem->fallPosition.y <= 50.f) { // TODO: Hardcoded ground for now

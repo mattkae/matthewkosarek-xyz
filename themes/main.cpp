@@ -6,11 +6,15 @@
 #include "TreeShape.h"
 #include "LeafParticleRender.h"
 #include "Snowflake.h"
+#include <cstdio>
+#include <emscripten/fetch.h>
+
 
 enum Theme {
 	Default = 0,
     Autumn,
-	Winter
+	Winter,
+	Spring
 };
 
 struct AutumnTheme {
@@ -18,7 +22,7 @@ struct AutumnTheme {
 	LeafParticleRender leafParticles;
 
 	void load(Renderer2d* renderer);
-	void update(float32 dtSeconds);
+	void update(f32 dtSeconds);
 	void render(Renderer2d* renderer);
 	void unload();
 };
@@ -27,17 +31,25 @@ struct WinterTheme {
 	SnowflakeParticleRenderer spr;
 	
 	void load(Renderer2d* renderer);
-	void update(float32 dtSeconds);
+	void update(f32 dtSeconds);
+	void render(Renderer2d* renderer);
+	void unload();
+};
+
+struct SpringTheme {
+	void load(Renderer2d* renderer);
+	void update(f32 dtSeconds);
 	void render(Renderer2d* renderer);
 	void unload();
 };
 
 void load(Theme theme);
 void unload();
-void update(float32 dtSeconds, void* userData);
+void update(f32 dtSeconds, void* userData);
 EM_BOOL selectNone(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 EM_BOOL selectAutumn(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 EM_BOOL selectWinter(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
+EM_BOOL selectSpring(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 
 WebglContext context;
 Renderer2d renderer;
@@ -45,12 +57,14 @@ MainLoop mainLoop;
 Theme activeTheme = Theme::Default;
 AutumnTheme autumnTheme;
 WinterTheme winterTheme;
+SpringTheme springTheme;
 
 int main() {
 	context.init("#theme_canvas");
 	emscripten_set_click_callback("#theme_button_default", NULL, false, selectNone);
 	emscripten_set_click_callback("#theme_button_autumn", NULL, false, selectAutumn);
 	emscripten_set_click_callback("#theme_button_winter", NULL, false, selectWinter);
+	emscripten_set_click_callback("#theme_button_spring", NULL, false, selectSpring);
 	
 	return 0;
 }
@@ -75,12 +89,15 @@ void load(Theme theme) {
 	case Theme::Winter:
 		winterTheme.load(&renderer);
 		break;
+	case Theme::Spring:
+		springTheme.load(&renderer);
+		break;
 	default:
 		break;
 	}
 }
 
-void update(float32 dtSeconds, void* userData) {
+void update(f32 dtSeconds, void* userData) {
 	// -- Update
 	switch (activeTheme) {
 	case Theme::Autumn:
@@ -88,6 +105,9 @@ void update(float32 dtSeconds, void* userData) {
 		break;
 	case Theme::Winter:
 		winterTheme.update(dtSeconds);
+		break;
+	case Theme::Spring:
+		springTheme.update(dtSeconds);
 		break;
 	default:
 		break;
@@ -102,6 +122,9 @@ void update(float32 dtSeconds, void* userData) {
 	case Theme::Winter:
 		winterTheme.render(&renderer);
 		break;
+	case Theme::Spring:
+		springTheme.render(&renderer);
+		break;
 	default:
 		break;
 	}
@@ -114,6 +137,9 @@ void unload() {
 		break;
 	case Theme::Winter:
 		winterTheme.unload();
+		break;
+	case Theme::Spring:
+		springTheme.unload();
 		break;
 	default:
 		break;
@@ -145,6 +171,12 @@ EM_BOOL selectWinter(int eventType, const EmscriptenMouseEvent* mouseEvent, void
 	return true;
 }
 
+EM_BOOL selectSpring(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
+	printf("Spring theme selected\n");
+	load(Theme::Spring);
+	return true;
+}
+
 // -- Autumn theme
 void AutumnTheme::load(Renderer2d* renderer) {
     renderer->clearColor = Vector4(252, 210, 153, 255).toNormalizedColor();
@@ -152,7 +184,7 @@ void AutumnTheme::load(Renderer2d* renderer) {
 	leafParticles.load(renderer, &lr);
 }
 
-void AutumnTheme::update(float32 dtSeconds) {
+void AutumnTheme::update(f32 dtSeconds) {
 	tree.update(dtSeconds);
 	leafParticles.update(dtSeconds);
 }
@@ -175,7 +207,7 @@ void WinterTheme::load(Renderer2d* renderer) {
 	spr.load(lp, renderer);
 }
 
-void WinterTheme::update(float32 dtSeconds) {
+void WinterTheme::update(f32 dtSeconds) {
 	spr.update(dtSeconds);
 }
 
@@ -185,4 +217,37 @@ void WinterTheme::render(Renderer2d* renderer) {
 
 void WinterTheme::unload()  {
 	spr.unload();
+}
+
+// -- Spring theme
+void onBunnySuccess(emscripten_fetch_t *fetch) {
+  printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
+  // The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
+  emscripten_fetch_close(fetch); // Free data associated with the fetch.
+}
+
+void onBunnyFail(emscripten_fetch_t *fetch) {
+  printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
+  emscripten_fetch_close(fetch); // Also free data on failure.
+}
+
+void SpringTheme::load(Renderer2d* renderer) {
+    renderer->clearColor = Vector4(160, 231, 160, 255.f).toNormalizedColor();
+
+	emscripten_fetch_attr_t attr;
+	emscripten_fetch_attr_init(&attr);
+	strcpy(attr.requestMethod, "GET");
+	attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+	attr.onsuccess = onBunnySuccess;
+	attr.onerror = onBunnyFail;
+	emscripten_fetch(&attr, "themes/resources/bunny.obj");
+}
+
+void SpringTheme::update(f32 dtSeconds) {
+}
+
+void SpringTheme::render(Renderer2d* renderer) {
+}
+
+void SpringTheme::unload()  {
 }

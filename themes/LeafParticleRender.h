@@ -22,37 +22,37 @@ struct LeafParticleUpdateData {
 
     Renderer2dVertex* vertexToFollow = NULL;
     Vector4 color = Vector4(1.f, 0.f, 0.f, 0.f);
-    float32 scale = 1.f;
+    f32 scale = 1.f;
 
-    float32 timeElapsedSeconds = 0.f;
-    int32 fallChance = -1;
+    f32 timeElapsedSeconds = 0.f;
+    i32 fallChance = -1;
     Vector2 fallPosition;
-    float32 fallVerticalVelocity;
-    float32 fallHorizontalFrequency;
+    f32 fallVerticalVelocity;
+    f32 fallHorizontalFrequency;
     
-    float32 resetTime = 0.f;
+    f32 resetTime = 0.f;
 
     Renderer2dVertex* vertexPtr = NULL;
 };
 
 struct LeafParticleRender {
-    float32 elapsedTimeSeconds = 0.5;
-    float32 fallIntervalSeconds = 1.f;
+    f32 elapsedTimeSeconds = 0.5;
+    f32 fallIntervalSeconds = 1.f;
 
     // Update data
-    int32 numLeaves = 0;
+    i32 numLeaves = 0;
 
     LeafParticleUpdateData* updateData = NULL;
     Renderer2dVertex* vertices = NULL;
 
     // Render data
-	uint32 vao;
-	uint32 vbo;
-	uint32 numVertices = 0;
+	u32 vao;
+	u32 vbo;
+	u32 numVertices = 0;
 	Mat4x4 model;
 
     void load(Renderer2d* renderer, TreeShapeLoadResult* lr);
-	void update(float32 dtSeconds);
+	void update(f32 dtSeconds);
 	void render(Renderer2d* renderer);
 	void unload();
 };

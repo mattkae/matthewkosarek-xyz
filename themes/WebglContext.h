@@ -8,8 +8,8 @@
 
 struct WebglContext {
 	EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context;
-	int32 width = 800;
-	int32 height = 600;
+	i32 width = 800;
+	i32 height = 600;
 	char query[128];;
 
 	void init(const char* inQuery);

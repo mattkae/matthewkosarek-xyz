@@ -41,7 +41,7 @@ TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
     lr.upperBounds = Vector2(FLT_MIN, FLT_MIN);
     lr.updateData = updateData;
     lr.numBranches = numBranches;
-    int32 branchIndex = 0;
+    i32 branchIndex = 0;
     createBranch(&ld, generationData, numBranches, &branchIndex, 0, ld.trunkWidth, ld.trunkHeight, Vector2 { 300.f, 50.f }, 0, NULL, vertices, &lr);
 
     useShader(renderer->shader);
@@ -59,7 +59,7 @@ TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
     glEnableVertexAttribArray(renderer->attributes.color);
     glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-	for (int32 idx = 0; idx < 4; idx++) {
+	for (i32 idx = 0; idx < 4; idx++) {
 		glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
 		glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)(offsetof(Renderer2dVertex, vMatrix) + (idx * 16)));
 		glVertexAttribDivisor(renderer->attributes.vMatrix + idx, 1);
@@ -73,10 +73,10 @@ TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
     return lr;
 }
 
-const float32 ninetyDegreeRotation = PI / 2.f;
+const f32 ninetyDegreeRotation = PI / 2.f;
 
-void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationData, int32 numBranches, int32* branchIndex, 
-    int32 branchLevel, float32 width, float32 height, Vector2 position, float32 rotation, 
+void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationData, i32 numBranches, i32* branchIndex, 
+    i32 branchLevel, f32 width, f32 height, Vector2 position, f32 rotation, 
     TreeBranchUpdateData* parent, Renderer2dVertex* vertices, TreeShapeLoadResult* lr) {
     TreeBranchLoadData* branchLoadData = &generationData[*branchIndex];
     branchLoadData->width = width;
@@ -113,20 +113,20 @@ void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationDat
     
     for (int division = 0; division < ld->divisionsPerBranch; division++) {
         // Weight between [0, 1]
-        float weight = static_cast<float32>(division) / static_cast<float32>(ld->divisionsPerBranch - 1);
+        float weight = static_cast<f32>(division) / static_cast<f32>(ld->divisionsPerBranch - 1);
         
         // Normalize the weight between [-1, 1]
-        float32 normalizedWeight = (0.5f - (weight)) * 2.f;
+        f32 normalizedWeight = (0.5f - (weight)) * 2.f;
 
         // We want a rotation that takes the current rotation of the branch, and averages it between the two branches.
-        float32 branchRotationAmount = randomFloatBetween(PI / 8.f, PI / 3.f);
-        float32 branchRotation =  branchLoadData->rotation + (normalizedWeight * branchRotationAmount);
+        f32 branchRotationAmount = randomFloatBetween(PI / 8.f, PI / 3.f);
+        f32 branchRotation =  branchLoadData->rotation + (normalizedWeight * branchRotationAmount);
         
         // Since trees are taller vertically, we will find a normalized value that describes how far the direction is from
         // being horizontal. If it is closer to 1, we will make the branch taller on average.
-        float32 verticalHeightScaler = (fabs(fabs(branchRotation) - ninetyDegreeRotation) / ninetyDegreeRotation) * 0.1;
-        float32 branchWidth = width * randomFloatBetween(ld->trunkWidthScalerMin, ld->trunkWidthScalerMax);
-        float32 branchHeight = height * randomFloatBetween(ld->trunkHeightScalerMin + verticalHeightScaler, ld->trunkHeightScalerMax + verticalHeightScaler);
+        f32 verticalHeightScaler = (fabs(fabs(branchRotation) - ninetyDegreeRotation) / ninetyDegreeRotation) * 0.1;
+        f32 branchWidth = width * randomFloatBetween(ld->trunkWidthScalerMin, ld->trunkWidthScalerMax);
+        f32 branchHeight = height * randomFloatBetween(ld->trunkHeightScalerMin + verticalHeightScaler, ld->trunkHeightScalerMax + verticalHeightScaler);
 
 
         // We want the branch to start within the previous branch, so we drop it down into it based off of the rotation.
@@ -139,17 +139,17 @@ void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationDat
     }
 }
 
-void TreeShape::update(float32 dtSeconds) {
+void TreeShape::update(f32 dtSeconds) {
     timeElapsedSeconds += dtSeconds;
 
-    for (int32 bIdx = 0; bIdx < numBranches; bIdx++) {
+    for (i32 bIdx = 0; bIdx < numBranches; bIdx++) {
         TreeBranchUpdateData* branchUpdataData = &updateData[bIdx];
 
         // Fade in simulation. We fade in based on the tier.
-        float32 animationStart = (branchUpdataData->tier * animateStaggerPerTier);
-        float32 animationEnd = animationStart + animateTimePerTier;
+        f32 animationStart = (branchUpdataData->tier * animateStaggerPerTier);
+        f32 animationEnd = animationStart + animateTimePerTier;
 
-        float32 alpha = 0.f;
+        f32 alpha = 0.f;
         if (timeElapsedSeconds < animationStart) {
             alpha = 0.f;
         }
@@ -160,7 +160,7 @@ void TreeShape::update(float32 dtSeconds) {
             alpha = (1.f - (animationEnd - timeElapsedSeconds)) / animateTimePerTier;
         }
 
-        int32 startParentIndex = bIdx * 6;
+        i32 startParentIndex = bIdx * 6;
 
         branchUpdataData->currentOffset.x = branchUpdataData->amplitude * cosf(branchUpdataData->periodOffset + branchUpdataData->period * timeElapsedSeconds);
         branchUpdataData->currentOffset.y = branchUpdataData->amplitude * sinf(branchUpdataData->periodOffset + branchUpdataData->period * timeElapsedSeconds);

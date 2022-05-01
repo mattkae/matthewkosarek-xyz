@@ -4,10 +4,10 @@
 
 void WebglContext::init(const char* inQuery) {
     strcpy(query, inQuery);
-    float64 inWidth, inHeight;
+    f64 inWidth, inHeight;
     emscripten_get_element_css_size(query, &inWidth, &inHeight);
-    width = static_cast<int32>(inWidth);
-    height = static_cast<int32>(inHeight);
+    width = static_cast<i32>(inWidth);
+    height = static_cast<i32>(inHeight);
     emscripten_set_canvas_element_size( query, width, height);
     
     EmscriptenWebGLContextAttributes attrs;

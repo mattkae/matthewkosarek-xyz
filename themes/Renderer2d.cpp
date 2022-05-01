@@ -75,7 +75,7 @@ void Renderer2d::unload() {
 }
 
 
-void Renderer2dShape::load(Renderer2dVertex* inVertices, uint32 inNumVertices, Renderer2d* renderer) {
+void Renderer2dShape::load(Renderer2dVertex* inVertices, u32 inNumVertices, Renderer2d* renderer) {
 	numVertices = inNumVertices;
 	useShader(renderer->shader);
 
@@ -92,7 +92,7 @@ void Renderer2dShape::load(Renderer2dVertex* inVertices, uint32 inNumVertices, R
 	glEnableVertexAttribArray(renderer->attributes.color);
 	glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-	for (int32 idx = 0; idx < 4; idx++) {
+	for (i32 idx = 0; idx < 4; idx++) {
 			glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
 			glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)(offsetof(Renderer2dVertex, vMatrix) + (idx * 16)));
 	}

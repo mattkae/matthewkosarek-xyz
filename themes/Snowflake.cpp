@@ -5,17 +5,17 @@
 
 const Vector4 snowColor = Vector4(1.0, 0.98, 0.98, 1);
 
-inline void generateSnowflakeShape(List<Renderer2dVertex>* vertices, int32 numArms, float32 radius, float32 innerRadius) {
-	float32 dx = ((2 * PI) / numArms) / 3.0;
-	for (int32 centerIdx = 0; centerIdx < (3 * numArms); centerIdx+=3) {
-	    float32 degreeStart = dx * centerIdx;
-		float32 degreeEnd = dx * (centerIdx + 1);
+inline void generateSnowflakeShape(List<Renderer2dVertex>* vertices, i32 numArms, f32 radius, f32 innerRadius) {
+	f32 dx = ((2 * PI) / numArms) / 3.0;
+	for (i32 centerIdx = 0; centerIdx < (3 * numArms); centerIdx+=3) {
+	    f32 degreeStart = dx * centerIdx;
+		f32 degreeEnd = dx * (centerIdx + 1);
 
-		float32 cosStart = cosf(degreeStart);
-		float32 cosEnd = cosf(degreeEnd);
+		f32 cosStart = cosf(degreeStart);
+		f32 cosEnd = cosf(degreeEnd);
 
-		float32 sinStart = sinf(degreeStart);
-		float32 sinEnd = sinf(degreeEnd);
+		f32 sinStart = sinf(degreeStart);
+		f32 sinEnd = sinf(degreeEnd);
 
 		Vector2 leftEnd = Vector2(radius * cosStart, radius * sinStart);
 		Vector2 rightEnd = Vector2(radius * cosEnd, radius * sinEnd);
@@ -63,11 +63,11 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 
 	updateData = new SnowflakeUpdateData[params.maxSnowflakes];
 
-	xMax = static_cast<float32>(renderer->context->width);
-    yMax = static_cast<float32>(renderer->context->height);
+	xMax = static_cast<f32>(renderer->context->width);
+    yMax = static_cast<f32>(renderer->context->height);
 	
 	// Initialize each snow flake with its shape
-	for (int32 s = 0; s < numSnowflakes; s++) {
+	for (i32 s = 0; s < numSnowflakes; s++) {
 		auto ud = &updateData[s];
 	    initFlake(this, ud);
 
@@ -91,8 +91,8 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
     glEnableVertexAttribArray(renderer->attributes.color);
     glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
 
-	for (int32 idx = 0; idx < 4; idx++) {
-		int32 offset = (4 * sizeof(float32)) * idx;
+	for (i32 idx = 0; idx < 4; idx++) {
+		i32 offset = (4 * sizeof(f32)) * idx;
 		glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
 		glVertexAttribPointer(renderer->attributes.vMatrix + idx,
 							  4,
@@ -107,7 +107,7 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
     glBindVertexArray(0);
 }
 
-inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, int32 s, float32 dtSeconds, bool addWind) {
+inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds, bool addWind) {
 	// Once the snowflake has been set to die in this interval, we try and increment the
 	// startIndex
 	if (!ud->isAlive && renderer->startIndex == s) {
@@ -122,12 +122,12 @@ inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData
 		ud->isAlive = false;
 
 	Mat4x4 m = Mat4x4().translateByVec2(ud->position);
-	for (int32 v = ud->vtxIdx; v < (ud->vtxIdx + ud->numVertices); v++) {
+	for (i32 v = ud->vtxIdx; v < (ud->vtxIdx + ud->numVertices); v++) {
 		renderer->vertices.data[v].vMatrix = m;
 	}
 }
 
-void SnowflakeParticleRenderer::update(float32 dtSeconds) {
+void SnowflakeParticleRenderer::update(f32 dtSeconds) {
 	timeUntilNextSpawnSeconds -= dtSeconds;
 	if (timeUntilNextSpawnSeconds < 0) {
 		timeUntilNextSpawnSeconds = spawnIntervalSeconds;
@@ -143,14 +143,14 @@ void SnowflakeParticleRenderer::update(float32 dtSeconds) {
 	}
 
 	if (startIndex < endIndex) {
-		for (int32 s = startIndex; s < endIndex; s++) {
+		for (i32 s = startIndex; s < endIndex; s++) {
 			SnowflakeUpdateData* ud = &updateData[s];
 			updateFlake(this, ud, s, dtSeconds, addWind);
 		}
 	}
 	else {
-		int32 endRange = startIndex - numSnowflakes;
-		for (int32 s = endIndex - 1; s >= endRange; s--) {
+		i32 endRange = startIndex - numSnowflakes;
+		for (i32 s = endIndex - 1; s >= endRange; s--) {
 			SnowflakeUpdateData* ud;
 			if (s < 0)
 				ud = &updateData[numSnowflakes + s];
@@ -165,7 +165,7 @@ void SnowflakeParticleRenderer::update(float32 dtSeconds) {
 void SnowflakeParticleRenderer::render(Renderer2d* renderer) {
 	auto startVertex = &updateData[startIndex];
 	auto endVertex = &updateData[endIndex];
-	int32 numVertices = (endVertex->vtxIdx + endVertex->numVertices) - startVertex->vtxIdx;
+	i32 numVertices = (endVertex->vtxIdx + endVertex->numVertices) - startVertex->vtxIdx;
 	setShaderMat4(renderer->uniforms.model, model);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);

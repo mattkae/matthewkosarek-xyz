@@ -10,18 +10,18 @@ struct WebglContext;
 struct Renderer2d {
 	WebglContext* context = NULL;
 	Mat4x4 projection;
-	uint32 shader;
+	u32 shader;
     Vector4 clearColor;
 
 	struct {
-		int32 position;
-		int32 color;
-		int32 vMatrix;
+		i32 position;
+		i32 color;
+		i32 vMatrix;
 	} attributes;
 
 	struct {
-		int32 projection;
-		int32 model;
+		i32 projection;
+		i32 model;
 	} uniforms;
 
 	void load(WebglContext* context);
@@ -36,12 +36,12 @@ struct Renderer2dVertex {
 };
 
 struct Renderer2dShape {
-	uint32 vao;
-	uint32 vbo;
-	uint32 numVertices = 0;
+	u32 vao;
+	u32 vbo;
+	u32 numVertices = 0;
 	Mat4x4 model;
 
-	void load(Renderer2dVertex* vertices, uint32 numVertices, Renderer2d* renderer);
+	void load(Renderer2dVertex* vertices, u32 numVertices, Renderer2d* renderer);
 	void render(Renderer2d* renderer, GLenum drawType = GL_TRIANGLES);
 	void unload();
 };

@@ -3,21 +3,21 @@
 #include "mathlib.h"
 
 struct TreeLoadData {
-	float32 trunkHeight        = 96.f; // Height of the trunk start
-	float32 trunkWidth         = 32.f;  // Width of the trunk start
-    float32 trunkHeightScalerMin  = 0.7f;
-    float32 trunkHeightScalerMax  = 0.8f;
-    float32 trunkWidthScalerMin   = 0.35f;
-    float32 trunkWidthScalerMax   = 0.75f;
-    int32 divisionsPerBranch   = 2;     // How many branches to split into at each branch split
-    int32 numBranchLevels      = 8;     // How many branch levels to display
+	f32 trunkHeight        = 96.f; // Height of the trunk start
+	f32 trunkWidth         = 32.f;  // Width of the trunk start
+    f32 trunkHeightScalerMin  = 0.7f;
+    f32 trunkHeightScalerMax  = 0.8f;
+    f32 trunkWidthScalerMin   = 0.35f;
+    f32 trunkWidthScalerMax   = 0.75f;
+    i32 divisionsPerBranch   = 2;     // How many branches to split into at each branch split
+    i32 numBranchLevels      = 8;     // How many branch levels to display
 };
 
 struct TreeBranchLoadData {
-	float32 width = 0.f;
-	float32 height = 0.f;
+	f32 width = 0.f;
+	f32 height = 0.f;
 	Vector2 position; // Center point
-	float32 rotation = 0; // How much we are rotated off of the center point in radians
+	f32 rotation = 0; // How much we are rotated off of the center point in radians
 	Vector4 color = Vector4(101,56,24, 1.f).toNormalizedColor();
 
     // Calculated while filling in vertices
@@ -31,10 +31,10 @@ struct TreeBranchLoadData {
 };
 
 struct TreeBranchUpdateData {
-	int32 tier = 0;
-	float32 periodOffset = 0;
-	float32 period = 0;
-	float32 amplitude = 0;
+	i32 tier = 0;
+	f32 periodOffset = 0;
+	f32 period = 0;
+	f32 amplitude = 0;
 	Vector2 currentOffset;
 	Renderer2dVertex* vertices = NULL;
 	TreeBranchUpdateData* branchToFollow = NULL;
@@ -45,29 +45,29 @@ struct TreeShapeLoadResult {
 	Vector2 upperBounds;
 	Vector2 center;
 	TreeBranchUpdateData* updateData;
-	uint32 numBranches = 0;
+	u32 numBranches = 0;
 };
 
 struct TreeShape {
 	// Update data
 	TreeBranchUpdateData* updateData = NULL;
 	Renderer2dVertex* vertices = NULL;
-	float32 timeElapsedSeconds = 0.f;
-	float32 animateTimePerTier = 1.f;
-    float32 animateStaggerPerTier = 0.2f;
-	uint32 numBranches = 0;
+	f32 timeElapsedSeconds = 0.f;
+	f32 animateTimePerTier = 1.f;
+    f32 animateStaggerPerTier = 0.2f;
+	u32 numBranches = 0;
 
 	// Render data
-	uint32 vao;
-	uint32 vbo;
-	uint32 numVertices = 0;
+	u32 vao;
+	u32 vbo;
+	u32 numVertices = 0;
 	Mat4x4 model;
 
 	TreeShapeLoadResult load(Renderer2d* renderer);
-	void createBranch(TreeLoadData* ld, TreeBranchLoadData* branchList, int32 numBranches, 
-		int32* branchIndex, int32 branchLevel, float32 width, float32 height, 
-		Vector2 position, float32 rotation, TreeBranchUpdateData* parent, Renderer2dVertex* vertices, TreeShapeLoadResult* lr);
-	void update(float32 dtSeconds);
+	void createBranch(TreeLoadData* ld, TreeBranchLoadData* branchList, i32 numBranches, 
+		i32* branchIndex, i32 branchLevel, f32 width, f32 height, 
+		Vector2 position, f32 rotation, TreeBranchUpdateData* parent, Renderer2dVertex* vertices, TreeShapeLoadResult* lr);
+	void update(f32 dtSeconds);
 	void render(Renderer2d* renderer);
 	void unload();
 };

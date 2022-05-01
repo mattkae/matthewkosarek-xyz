@@ -245,6 +245,10 @@ input:focus {
 	background-color: #79C0D7;
 }
 
+#theme_selector > #theme_button_spring {
+	background-color: #00FF7F;
+}
+
 /* Phone screen adjustments */
 @media only screen and (device-width: 1280px),
 only screen and (max-width:1280px) {

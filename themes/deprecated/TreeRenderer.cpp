@@ -35,7 +35,7 @@ void TreeRenderer::load(WebglContext* context) {
 	printf("TreeRenderer shader compiled.\n");
 }
 	
-void TreeRenderer::render(float32 dtSeconds) {
+void TreeRenderer::render(f32 dtSeconds) {
     timeElapsed += dtSeconds;
 
 	glEnable(GL_DEPTH_TEST);
