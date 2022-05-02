@@ -65,7 +65,7 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 
 	xMax = static_cast<f32>(renderer->context->width);
     yMax = static_cast<f32>(renderer->context->height);
-	
+
 	// Initialize each snow flake with its shape
 	for (i32 s = 0; s < numSnowflakes; s++) {
 		auto ud = &updateData[s];

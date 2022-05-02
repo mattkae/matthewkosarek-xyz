@@ -71,3 +71,11 @@ void Renderer3D::unload() {
     glClear(GL_COLOR_BUFFER_BIT);
 	glDeleteProgram(shader);
 }
+
+Mesh3d Mesh3d_fromObj(std::string content) {
+	Mesh3d result;
+
+	
+
+	return result;
+}

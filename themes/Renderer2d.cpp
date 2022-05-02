@@ -25,18 +25,6 @@ const char* renderer2dFragmentShader =
 "    gl_FragColor = VertexColor; \n"
 "}";
 
-EM_BOOL onScreenSizeChanged(int eventType, const EmscriptenUiEvent *uiEvent, void *userData) {
-    Renderer2d* renderer = (Renderer2d*)userData;
-    
-	EMSCRIPTEN_RESULT result = emscripten_set_canvas_element_size( renderer->context->query, uiEvent->documentBodyClientWidth, uiEvent->documentBodyClientHeight);
-	if (result != EMSCRIPTEN_RESULT_SUCCESS) {
-		printf("Failed to resize element at query: %s\n", renderer->context->query);
-	}
-	renderer->projection = Mat4x4().getOrthographicMatrix(0, renderer->context->width, 0, renderer->context->height);
-
-    return true;
-}
-
 void Renderer2d::load(WebglContext* inContext) {
 	context = inContext;
 	printf("Compiling Renderer2d shader...\n");
@@ -51,11 +39,11 @@ void Renderer2d::load(WebglContext* inContext) {
 	projection = Mat4x4().getOrthographicMatrix(0, context->width, 0, context->height);
 
 	printf("Renderer2d shader compiled.\n");
-
-	emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, false, onScreenSizeChanged);
 }
 	
 void Renderer2d::render() {
+	projection = Mat4x4().getOrthographicMatrix(0, context->width, 0, context->height);
+	
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
