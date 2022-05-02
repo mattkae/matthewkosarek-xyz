@@ -29,19 +29,19 @@ struct Renderer2d {
 	void unload();
 };
 
-struct Renderer2dVertex {
+struct Vertex2D {
 	Vector2 position;
 	Vector4 color;
 	Mat4x4 vMatrix;
 };
 
-struct Renderer2dShape {
+struct Mesh2D {
 	u32 vao;
 	u32 vbo;
 	u32 numVertices = 0;
 	Mat4x4 model;
 
-	void load(Renderer2dVertex* vertices, u32 numVertices, Renderer2d* renderer);
+	void load(Vertex2D* vertices, u32 numVertices, Renderer2d* renderer);
 	void render(Renderer2d* renderer, GLenum drawType = GL_TRIANGLES);
 	void unload();
 };

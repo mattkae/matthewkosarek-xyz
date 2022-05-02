@@ -1,11 +1,11 @@
 #include "Snowflake.h"
 #include "Renderer2d.h"
 #include "mathlib.h"
-#include "List.h"
+#include "list.h"
 
 const Vector4 snowColor = Vector4(1.0, 0.98, 0.98, 1);
 
-inline void generateSnowflakeShape(List<Renderer2dVertex>* vertices, i32 numArms, f32 radius, f32 innerRadius) {
+inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms, f32 radius, f32 innerRadius) {
 	f32 dx = ((2 * PI) / numArms) / 3.0;
 	for (i32 centerIdx = 0; centerIdx < (3 * numArms); centerIdx+=3) {
 	    f32 degreeStart = dx * centerIdx;
@@ -83,13 +83,13 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.numElements * sizeof(Renderer2dVertex), &vertices.data[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.numElements * sizeof(Vertex2D), &vertices.data[0], GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(renderer->attributes.position);
-    glVertexAttribPointer(renderer->attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)0);
+    glVertexAttribPointer(renderer->attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)0);
 
     glEnableVertexAttribArray(renderer->attributes.color);
-    glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
+    glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)offsetof(Vertex2D, color));
 
 	for (i32 idx = 0; idx < 4; idx++) {
 		i32 offset = (4 * sizeof(f32)) * idx;
@@ -98,8 +98,8 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 							  4,
 							  GL_FLOAT,
 							  GL_FALSE,
-							  sizeof(Renderer2dVertex),
-							  (GLvoid *)(offsetof(Renderer2dVertex, vMatrix) + offset));
+							  sizeof(Vertex2D),
+							  (GLvoid *)(offsetof(Vertex2D, vMatrix) + offset));
 		//glVertexAttribDivisor(renderer->attributes.vMatrix + idx, 1);
 	}
 
@@ -169,7 +169,7 @@ void SnowflakeParticleRenderer::render(Renderer2d* renderer) {
 	setShaderMat4(renderer->uniforms.model, model);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * sizeof(Renderer2dVertex), &vertices.data[startVertex->vtxIdx]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * sizeof(Vertex2D), &vertices.data[startVertex->vtxIdx]);
 
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);

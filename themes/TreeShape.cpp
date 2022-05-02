@@ -5,7 +5,7 @@
 #include <cfloat>
 #include <ctime>
 
-void TreeBranchLoadData::fillVertices(Renderer2dVertex* vertices, int branchTier) {
+void TreeBranchLoadData::fillVertices(Vertex2D* vertices, int branchTier) {
     bottomLeft = Vector2 { position.x - width / 2.f, position.y }.rotateAround(rotation, position);
     bottomRight = Vector2 { position.x + width / 2.f, position.y }.rotateAround(rotation, position);
     topLeft = (Vector2 { position.x - width / 2.f, position.y + height }).rotateAround(rotation, position);
@@ -33,7 +33,7 @@ TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
 
     TreeBranchLoadData* generationData = new TreeBranchLoadData[numBranches];
     updateData = new TreeBranchUpdateData[numBranches];
-    vertices = new Renderer2dVertex[numVertices];
+    vertices = new Vertex2D[numVertices];
 
     // The load result will contain information that we can pass on to our leaf renderer.
     TreeShapeLoadResult lr;
@@ -51,17 +51,17 @@ TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Renderer2dVertex), &vertices[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Vertex2D), &vertices[0], GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(renderer->attributes.position);
-    glVertexAttribPointer(renderer->attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)0);
+    glVertexAttribPointer(renderer->attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)0);
 
     glEnableVertexAttribArray(renderer->attributes.color);
-    glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
+    glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)offsetof(Vertex2D, color));
 
 	for (i32 idx = 0; idx < 4; idx++) {
 		glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
-		glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)(offsetof(Renderer2dVertex, vMatrix) + (idx * 16)));
+		glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)(offsetof(Vertex2D, vMatrix) + (idx * 16)));
 		glVertexAttribDivisor(renderer->attributes.vMatrix + idx, 1);
 	}
 
@@ -77,7 +77,7 @@ const f32 ninetyDegreeRotation = PI / 2.f;
 
 void TreeShape::createBranch(TreeLoadData* ld, TreeBranchLoadData* generationData, i32 numBranches, i32* branchIndex, 
     i32 branchLevel, f32 width, f32 height, Vector2 position, f32 rotation, 
-    TreeBranchUpdateData* parent, Renderer2dVertex* vertices, TreeShapeLoadResult* lr) {
+    TreeBranchUpdateData* parent, Vertex2D* vertices, TreeShapeLoadResult* lr) {
     TreeBranchLoadData* branchLoadData = &generationData[*branchIndex];
     branchLoadData->width = width;
     branchLoadData->height = height;
@@ -196,7 +196,7 @@ void TreeShape::render(Renderer2d* renderer) {
     setShaderMat4(renderer->uniforms.model, model);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * sizeof(Renderer2dVertex), &vertices[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * sizeof(Vertex2D), &vertices[0]);
 
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);

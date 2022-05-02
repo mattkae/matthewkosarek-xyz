@@ -1,7 +1,7 @@
-#include "Renderer2d.h"
 #include "WebglContext.h"
 #include "MainLoop.h"
 #include "Renderer2d.h"
+#include "Renderer3d.h"
 #include "types.h"
 #include "TreeShape.h"
 #include "LeafParticleRender.h"
@@ -37,9 +37,9 @@ struct WinterTheme {
 };
 
 struct SpringTheme {
-	void load(Renderer2d* renderer);
+	void load(Renderer3D* renderer);
 	void update(f32 dtSeconds);
-	void render(Renderer2d* renderer);
+	void render(Renderer3D* renderer);
 	void unload();
 };
 
@@ -52,7 +52,8 @@ EM_BOOL selectWinter(int eventType, const EmscriptenMouseEvent* mouseEvent, void
 EM_BOOL selectSpring(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 
 WebglContext context;
-Renderer2d renderer;
+Renderer2d renderer2d;
+Renderer3D renderer3d;
 MainLoop mainLoop;
 Theme activeTheme = Theme::Default;
 AutumnTheme autumnTheme;
@@ -79,18 +80,20 @@ void load(Theme theme) {
     unload(); // Try and unload before we load, so that we start fresh
 
 	activeTheme = theme;
-	renderer.load(&context);
 	mainLoop.run(update);
 
 	switch (activeTheme) {
 	case Theme::Autumn:
-		autumnTheme.load(&renderer);
+		renderer2d.load(&context);
+		autumnTheme.load(&renderer2d);
 		break;
 	case Theme::Winter:
-		winterTheme.load(&renderer);
+		renderer2d.load(&context);
+		winterTheme.load(&renderer2d);
 		break;
 	case Theme::Spring:
-		springTheme.load(&renderer);
+		renderer3d.load(&context);
+		springTheme.load(&renderer3d);
 		break;
 	default:
 		break;
@@ -114,16 +117,18 @@ void update(f32 dtSeconds, void* userData) {
 	}
 	
 	// -- Render
-	renderer.render();
 	switch (activeTheme) {
 	case Theme::Autumn:
-		autumnTheme.render(&renderer);
+		renderer2d.render();
+		autumnTheme.render(&renderer2d);
 		break;
 	case Theme::Winter:
-		winterTheme.render(&renderer);
+		renderer2d.render();
+		winterTheme.render(&renderer2d);
 		break;
 	case Theme::Spring:
-		springTheme.render(&renderer);
+		renderer3d.render();
+		springTheme.render(&renderer3d);
 		break;
 	default:
 		break;
@@ -148,7 +153,8 @@ void unload() {
 	activeTheme = Theme::Default;
 	if (mainLoop.isRunning) {
 		mainLoop.stop();
-		renderer.unload();
+		renderer2d.unload();
+		renderer3d.unload();
 	}
 }
 
@@ -231,7 +237,7 @@ void onBunnyFail(emscripten_fetch_t *fetch) {
   emscripten_fetch_close(fetch); // Also free data on failure.
 }
 
-void SpringTheme::load(Renderer2d* renderer) {
+void SpringTheme::load(Renderer3D* renderer) {
     renderer->clearColor = Vector4(160, 231, 160, 255.f).toNormalizedColor();
 
 	emscripten_fetch_attr_t attr;
@@ -246,7 +252,7 @@ void SpringTheme::load(Renderer2d* renderer) {
 void SpringTheme::update(f32 dtSeconds) {
 }
 
-void SpringTheme::render(Renderer2d* renderer) {
+void SpringTheme::render(Renderer3D* renderer) {
 }
 
 void SpringTheme::unload()  {

@@ -20,7 +20,7 @@ enum LeafParticleState {
 struct LeafParticleUpdateData {
     LeafParticleState state = LeafParticleState::Remerging;
 
-    Renderer2dVertex* vertexToFollow = NULL;
+    Vertex2D* vertexToFollow = NULL;
     Vector4 color = Vector4(1.f, 0.f, 0.f, 0.f);
     f32 scale = 1.f;
 
@@ -32,7 +32,7 @@ struct LeafParticleUpdateData {
     
     f32 resetTime = 0.f;
 
-    Renderer2dVertex* vertexPtr = NULL;
+    Vertex2D* vertexPtr = NULL;
 };
 
 struct LeafParticleRender {
@@ -43,7 +43,7 @@ struct LeafParticleRender {
     i32 numLeaves = 0;
 
     LeafParticleUpdateData* updateData = NULL;
-    Renderer2dVertex* vertices = NULL;
+    Vertex2D* vertices = NULL;
 
     // Render data
 	u32 vao;

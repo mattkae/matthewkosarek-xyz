@@ -1,9 +1,9 @@
 #include "types.h"
 #include "mathlib.h"
-#include "List.h"
+#include "list.h"
 
 struct Renderer2d;
-struct Renderer2dVertex;
+struct Vertex2D;
 
 struct SnowflakeLoadParameters {
 	i32 maxSnowflakes = 1000;
@@ -45,7 +45,7 @@ struct SnowflakeParticleRenderer {
 	u32 vao;
 	u32 vbo;
 	Mat4x4 model;
-	List<Renderer2dVertex> vertices;
+	matte::List<Vertex2D> vertices;
 	
 	void load(SnowflakeLoadParameters params, Renderer2d* renderer);
 	void update(f32 dtSeconds);

@@ -6,7 +6,7 @@
 
 // Note: In the 'transform' attribute, the transform.x is the scale,
 // transform.y is the rotation, and transform.zw is the translatiob.
-const char* renderer2dVertexShader = 
+const char* Vertex2DShader = 
 "attribute vec2 position; \n"
 "attribute vec4 color; \n"
 "attribute mat4 vMatrix; \n"
@@ -40,7 +40,7 @@ EM_BOOL onScreenSizeChanged(int eventType, const EmscriptenUiEvent *uiEvent, voi
 void Renderer2d::load(WebglContext* inContext) {
 	context = inContext;
 	printf("Compiling Renderer2d shader...\n");
-	shader = loadShader(renderer2dVertexShader, renderer2dFragmentShader);
+	shader = loadShader(Vertex2DShader, renderer2dFragmentShader);
 
 	useShader(shader);
 	attributes.position = getShaderAttribute(shader, "position");
@@ -75,7 +75,7 @@ void Renderer2d::unload() {
 }
 
 
-void Renderer2dShape::load(Renderer2dVertex* inVertices, u32 inNumVertices, Renderer2d* renderer) {
+void Mesh2D::load(Vertex2D* inVertices, u32 inNumVertices, Renderer2d* renderer) {
 	numVertices = inNumVertices;
 	useShader(renderer->shader);
 
@@ -84,24 +84,24 @@ void Renderer2dShape::load(Renderer2dVertex* inVertices, u32 inNumVertices, Rend
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, inNumVertices * sizeof(Renderer2dVertex), &inVertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, inNumVertices * sizeof(Vertex2D), &inVertices[0], GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(renderer->attributes.position);
-	glVertexAttribPointer(renderer->attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)0);
+	glVertexAttribPointer(renderer->attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)0);
 
 	glEnableVertexAttribArray(renderer->attributes.color);
-	glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
+	glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)offsetof(Vertex2D, color));
 
 	for (i32 idx = 0; idx < 4; idx++) {
 			glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
-			glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)(offsetof(Renderer2dVertex, vMatrix) + (idx * 16)));
+			glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)(offsetof(Vertex2D, vMatrix) + (idx * 16)));
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 
-void Renderer2dShape::render(Renderer2d* renderer, GLenum drawType) {
+void Mesh2D::render(Renderer2d* renderer, GLenum drawType) {
 	setShaderMat4(renderer->uniforms.model, model);
 
 	glBindVertexArray(vao);
@@ -109,7 +109,7 @@ void Renderer2dShape::render(Renderer2d* renderer, GLenum drawType) {
 	glBindVertexArray(0);
 }
 
-void Renderer2dShape::unload() {
+void Mesh2D::unload() {
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &vbo);
 }

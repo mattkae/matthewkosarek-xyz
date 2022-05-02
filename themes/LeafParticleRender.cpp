@@ -9,7 +9,7 @@ const i32 verticesPerLeaf = 6;
 const f32 leafRadius = 3.f;
 const i32 fallChanceMax = 100;
 
-inline void updateLeaf(Renderer2dVertex* vertices, Vector2 position, Vector4 color, f32 scale) {
+inline void updateLeaf(Vertex2D* vertices, Vector2 position, Vector4 color, f32 scale) {
     f32 radius = scale * leafRadius;
     Vector2 bottomLeft = Vector2(-radius, -radius) + position;
     Vector2 bottomRight = Vector2(radius, -radius) + position;
@@ -31,7 +31,7 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
     numVertices = ld.numLeaves * verticesPerLeaf;
 
     updateData = new LeafParticleUpdateData[numLeaves];
-    vertices = new Renderer2dVertex[numVertices];
+    vertices = new Vertex2D[numVertices];
 
     for (i32 leafIdx = 0; leafIdx < numLeaves; leafIdx++) {
         i32 randomBranch = randomIntBetween(0, lr->numBranches);
@@ -50,17 +50,17 @@ void LeafParticleRender::load(Renderer2d *renderer, TreeShapeLoadResult* lr) {
 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Renderer2dVertex), &vertices[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(Vertex2D), &vertices[0], GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(renderer->attributes.position);
-    glVertexAttribPointer(renderer->attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)0);
+    glVertexAttribPointer(renderer->attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)0);
 
     glEnableVertexAttribArray(renderer->attributes.color);
-    glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)offsetof(Renderer2dVertex, color));
+    glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)offsetof(Vertex2D, color));
 
 	for (i32 idx = 0; idx < 4; idx++) {
 		glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
-		glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Renderer2dVertex), (GLvoid *)(offsetof(Renderer2dVertex, vMatrix) + (idx * 16)));
+		glVertexAttribPointer(renderer->attributes.vMatrix + idx, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)(offsetof(Vertex2D, vMatrix) + (idx * 16)));
 	}
 	
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -150,7 +150,7 @@ void LeafParticleRender::render(Renderer2d *renderer) {
     setShaderMat4(renderer->uniforms.model, model);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * sizeof(Renderer2dVertex), &vertices[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * sizeof(Vertex2D), &vertices[0]);
 
     glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
