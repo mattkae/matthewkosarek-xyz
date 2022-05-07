@@ -14,4 +14,4 @@ build:
 	@mkdir -p dist
 
 clean:
-	rm -rf dist
+	rm -rf dist && rm *.o

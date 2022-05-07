@@ -37,6 +37,9 @@ struct WinterTheme {
 };
 
 struct SpringTheme {
+	bool canRenderBunny = false;
+	Mesh3d bunnyMesh;
+
 	void load(Renderer3D* renderer);
 	void update(f32 dtSeconds);
 	void render(Renderer3D* renderer);
@@ -227,17 +230,21 @@ void WinterTheme::unload()  {
 
 // -- Spring theme
 void onBunnySuccess(emscripten_fetch_t *fetch) {
-  printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
-  // The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
-  emscripten_fetch_close(fetch); // Free data associated with the fetch.
+	springTheme.canRenderBunny = true;
+	printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
+	const i32 len = fetch->numBytes;
+	springTheme.bunnyMesh = Mesh3d_fromObj(&renderer3d, fetch->data, len);
+	// The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
+	emscripten_fetch_close(fetch); // Free data associated with the fetch.
 }
 
 void onBunnyFail(emscripten_fetch_t *fetch) {
-  printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
-  emscripten_fetch_close(fetch); // Also free data on failure.
+	printf("Downloading %s failed, HTTP failure status code: %d.\n", fetch->url, fetch->status);
+	emscripten_fetch_close(fetch); // Also free data on failure.
 }
 
 void SpringTheme::load(Renderer3D* renderer) {
+	canRenderBunny = false;
     renderer->clearColor = Vector4(160, 231, 160, 255.f).toNormalizedColor();
 
 	emscripten_fetch_attr_t attr;
@@ -253,7 +260,12 @@ void SpringTheme::update(f32 dtSeconds) {
 }
 
 void SpringTheme::render(Renderer3D* renderer) {
+	renderer->render();
+	if (canRenderBunny) {
+		bunnyMesh.render(renderer);
+	}
 }
 
 void SpringTheme::unload()  {
+	bunnyMesh.unload();
 }

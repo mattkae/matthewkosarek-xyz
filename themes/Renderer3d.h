@@ -5,6 +5,8 @@
 #include "types.h"
 #include <string>
 
+struct Renderer3D;
+
 struct Vertex3d {
     Vector4 position;
     Vector4 color;
@@ -17,12 +19,17 @@ struct Mesh3d {
     matte::List<Vertex3d> vertices;
     matte::List<u32> indices;
     Mat4x4 model;
+
+    void load(Renderer3D* renderer);
+    void render(Renderer3D* renderer);
+    void unload();
 };
 
 struct WebglContext;
 struct Renderer3D {
     WebglContext* context = NULL;
 	Mat4x4 projection;
+    Mat4x4 view;
 	u32 shader;
     Vector4 clearColor;
 
@@ -33,6 +40,7 @@ struct Renderer3D {
 
 	struct {
 		i32 projection;
+        i32 view;
 		i32 model;
 	} uniforms;
 
@@ -41,6 +49,6 @@ struct Renderer3D {
 	void unload();
 };
 
-Mesh3d Mesh3d_fromObj(std::string content);
+Mesh3d Mesh3d_fromObj(Renderer3D* renderer, const char* content, const i32 len);
 
 #endif

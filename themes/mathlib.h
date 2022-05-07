@@ -150,6 +150,7 @@ struct Mat4x4 {
     Mat4x4 getOrthographicMatrix(float left, float right, float bottom, float top);
     Mat4x4 inverse();
 	Mat4x4 getPerspectiveProjection(float near, float far, float fieldOfViewRadians, float aspectRatio);
+    Mat4x4 getLookAt(Vector3 eye,Vector3 pointToLookAt, Vector3 up);
 	void print();
 };
 

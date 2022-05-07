@@ -572,6 +572,20 @@ void Mat4x4::print() {
     printf(" ]\n");
 }
 
+// See https://stackoverflow.com/questions/349050/calculating-a-lookat-matrix for why the dot product is in the bottom
+Mat4x4 Mat4x4::getLookAt(Vector3 eye,Vector3 pointToLookAt, Vector3 up) {
+    Vector3 zAxis = (pointToLookAt - eye).normalize();
+    Vector3 xAxis = zAxis.cross(up).normalize();
+    Vector3 yAxis = xAxis.cross(zAxis).normalize();
+
+    return {
+        { xAxis.x, yAxis.x, -zAxis.x, 0,
+            xAxis.y, yAxis.y, -zAxis.y, 0,
+            xAxis.z, yAxis.z, -zAxis.z, 0,
+            -xAxis.dot(eye), -yAxis.dot(eye), zAxis.dot(eye), 1 }
+    };
+}
+
 // ***************************************
 // Quaternion
 Quaternion::Quaternion() { };
