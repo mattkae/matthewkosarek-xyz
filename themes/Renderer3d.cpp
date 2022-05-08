@@ -51,7 +51,7 @@ void Renderer3D::load(WebglContext* inContext) {
 	uniforms.view = getShaderUniform(shader, "view");
 	uniforms.model = getShaderUniform(shader, "model");
 	projection = Mat4x4().getPerspectiveProjection(0.1, 1000.f, 0.872f, static_cast<f32>(context->width) / static_cast<f32>(context->height));
-	view = Mat4x4().getLookAt({ 0, 25, 25 }, { 0, 0, 0 }, { 0, 1, 0 });
+	view = Mat4x4().getLookAt({ 0, 25, 100 }, { 0, 15, 0 }, { 0, 1, 0 });
 
 	logger_info("Renderer2d shader compiled.\n");
 
