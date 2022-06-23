@@ -1,7 +1,7 @@
 body {
     width: 60vw;
     height: 100vh;
-    font-family: Arial, Helvetica, sans-serif; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     font-size: 16px;
     background-color: transparent;
     color: black;
@@ -250,8 +250,8 @@ input:focus {
 }
 
 /* Phone screen adjustments */
-@media only screen and (device-width: 1280px),
-only screen and (max-width:1280px) {
+@media only screen and (device-width: 1440px),
+only screen and (max-width:1440px) {
     header > h1 {
         font-size: 1.5rem;
     }
@@ -259,12 +259,20 @@ only screen and (max-width:1280px) {
     body {
         width: 90vw !important;
     }
-    
+}
+
+@media only screen and (device-width: 960px),
+only screen and (max-width:960px) {
     #theme_selector  {
         padding-bottom: 2rem !important;
     }
 
     .carousel_image_expanded_container > .carousel_image {
-        width: 100vw;
+        width: 80vw;
+    }
+
+    #carousel > button {
+        font-size: 6rem;
+        top: calc(50% - 3rem);
     }
 }
