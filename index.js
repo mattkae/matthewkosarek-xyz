@@ -90,4 +90,4 @@ function runCarousel() {
     imageContainer.style.opacity = '1';
 }
 
-window.onload = main;
+main();
