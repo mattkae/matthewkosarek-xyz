@@ -3,169 +3,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta charset="UTF-8" />
+      <script src="https://twemoji.maxcdn.com/2/twemoji.min.js?11.2"></script>
+      <script>window.onload = function () { twemoji.parse(document.body);}</script>
     <style>
-        body {
-           font-family: Arial, Helvetica, sans-serif; 
-            font-size: 14px;
-            padding: 2rem;
-        }
+      html {
+          overflow-y: overlay;
+      }
 
-        header {
-            padding-bottom: 1rem;
-        }
+      body {
+          font-size: 16px !important;
+          padding-top: 72px;
+          padding-left: 48px;
+          padding-right: 48px;
+      }
 
-        #actions_container {
-            padding-bottom: 1rem;
-            
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-        }
+      header {
+          padding-bottom: 1rem;
+      }
 
-        #resume {
-            position: relative;
-            text-align: left;
-            background-color: white;
-            color: black;
-            font-family: Arial,Helvetica Neue,Helvetica,sans-serif !important; 
-            line-height: 1.2rem;
-            padding-bottom: 1rem;
-        }
+      #actions_container {
+          padding-bottom: 1rem;
+          
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+      }
 
-        #resume_button_container {
-            position: absolute;
-            top: 0;
-            right: 1rem;
-            text-align: right;
-            
-        }
+      #resume {
+          position: relative;
+          text-align: left;
+          background-color: white;
+          color: black;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+          line-height: 1.2rem;
+          padding-bottom: 1rem;
+      }
 
-        #resume_button_container > button {
-            border: none;
-            background-color: transparent;
-        }
+      #resume_header {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+      }
 
-        #resume_button_container > button:hover {
-            cursor: pointer;
-            opacity: 0.8;
-        }
+      #resume_header > h1 {
+        font-size: 24px;
+        padding: 0;
+        margin: 0;
+        font-weight: 500;
+      }
 
-        #resume.resume_fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding: 2rem;
-            width: calc(100vw - 4rem);
-            height: calc(100vh - 4rem);
-            overflow: auto;
-        }
+      #resume_header_contact {
+        font-size: 14px;
+      }
+
+      #resume_header_contact span {
+          margin-right: 0.5rem;
+          margin-left: 0.5rem;
+      }
+
+      img.emoji {
+        height: 1em;
+        width: 1em;
+        margin: 0 .05em 0 .1em;
+        vertical-align: -0.1em;
+      }
+
+      #resume_header_contact i {
+        margin-right: 0.25rem;
+        font-style: normal;
+      }
+
+      .resume_section {
+          width: 100%;
+          text-align: left;
+      }
+
+      .resume_section > h2 {
+        font-size: 18px !important;
+        font-variant: small-caps;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+        padding: 10px;
+        background-color: #2E4C6D;
+        color: white;
+      }
+
+      .resume_section_content {
+        padding: 0.5rem;
+      }
+
+      .skill-section {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+      }
+
+      .skill-section > div {
+          width: 75%;
+      }
+
+      .experience-header > div {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+      }
+
+      .experience-item li {
+          width: 100%;
+      }
 
 
-        #resume > div {
-            text-align: left;
-        }
+      /** Web-only **/
+      #resume_button_container {
+          width: 100%;
+          text-align: right;
+          margin-right: 1rem;
+          margin-bottom: 1rem;
+          
+      }
 
-        #resume > header {
-            width: 100%;
-            text-align: center;
-        }
+      #resume_button_container > button {
+          border: none;
+          background-color: transparent;
+          font-size: 20px;
+      }
 
-        #resume > header > h1 {
-            font-size: 1.7rem;
-            padding: 0;
-            margin: 0;
-          font-weight: 500;
-        }
+      #resume_button_container > button:hover {
+          cursor: pointer;
+          opacity: 0.8;
+      }
 
-        #resume > header > div {
-            padding-top: 0.8rem;
-        }
-
-        #resume > header > div > span {
-            padding-right: 0.5rem;
-            padding-left: 0.5rem;
-        }
-
-        #resume > header > div > span > i {
-            padding-right: 0.25rem;
-        }
-
-        .resume_section {
-            width: 100%;
-        }
-
-        .resume_section > h2 {
-            font-size: 1.25rem !important;
-            font-variant: small-caps;
-            font-weight: bold;
-            padding: 0;
-            margin: 0;
-          padding: 0.5rem;
-            background-color: #2E4C6D;
-          color: white;
-        }
-
-        .resume_section > div {
-          padding-top: 0.5rem;
-          padding-bottom: 0.5rem;
-          padding-left: 0.5rem;
-          padding-right: 0.5rem;
-        }
-
-        .skill-section {
-            width: 100%;
-            display: flex;
-            flex-direction: row;
-        }
-
-        .skill-section > b {
-            width: 25%;
-            font-weight: bold;
-            margin: 0;
-            padding: 0;
-        }
-
-        .skill-section > div {
-            width: 75%;
-        }
-
-        .experience-header > div {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
-
-        .experience-item li {
-            width: 100%;
-        }
+      #resume.resume_fullscreen {
+          position: fixed;
+          top: 0;
+          left: 0;
+          padding: 2rem;
+          width: calc(100vw - 4rem);
+          height: calc(100vh - 4rem);
+          overflow: auto;
+      }
     </style>
   </head>
   <body>
     <section id='resume'>
-      <header>
+      <header id="resume_header">
         <h1>Matthew Kosarek</h1>
-        <div>
-          <span><i>&#128422;</i>Computer Programmer</span>
-          <span><i>&#128222;</i> +1-201-400-2699</span>
+        
+        <div id="resume_header_contact">
+          <span><i>&#128422;</i> Computer Programmer</span>
+          <span><i>☎️</i> +1-201-400-2699</span>
           <span><i>&#128231;</i> mkosare1@gmail.com</span>
+          <span><i>🇺🇸</i> United States Citizen</span>
         </div>
       </header>
 
       <section class='resume_section'>
         <h2>Skills</h2>
-        <div>
+        <div class="resume_section_content">
           <div class="skill-section">
-            <b>Languages & Tech</b><div>C/C++, C#, TypeScript/JavaScript, HTML & CSS, Java, OpenGL, ASP.NET, ReactJS, WebGL, SQL</div>
+            <b>Languages & Tech</b><div>C/C++, C#, TypeScript/JavaScript, ReactJS, HTML & CSS, Java, OpenGL, ASP.NET, Linux</div>
           </div>
           <div class="skill-section">
-            <b>Tools</b><div>Git, Visual Studio Professional, Unity, npm, Webpack, TeamCity, NuGet, AWS</div>
+            <b>Tools</b><div>git, npm, Webpack Visual Studio Professional, Visual Studio Code, Unity, TeamCity, NuGet, Emacs</div>
           </div>
         </div>
 	    </section>
 
       <section class='resume_section'>
         <h2>Experience</h2>
-        <div>
+        <div class="resume_section_content">
           <div class="experience-item">
             <div class="experience-header">
               <div>
@@ -179,19 +189,19 @@
             </div>
             <ul>
               <li>
-                Led the MachineApps team in the development of a robust infrastructure for industrial software applications
+                Led a small team in developing a robust infrastructure for customer-facing industrial software applications
               </li>
               <li>
-              Developed and shipped a number of time-sensitive client projects 
+				        Developed and shipped a number of time-sensitive client projects, including palletizing and path-following software applications
               </li>
               <li>
-              Interacted extensively with other teams to align on specific business goals and meet client deadlines
+				        Interacted extensively with other teams to align on specific business goals and meet expectations
               </li>
               <li>
-                Implemented new features and fixed bugs in both the engine and frontend of a code-free programming language
+                Planned and organized project tasks for the team via Github tickets 
               </li>
               <li>
-                Developed a CNC application that accepts G-Code files as input and provides a realtime rendering of the path during execution
+                Implemented new features in both the engine and frontend of MachineLogic, which is the company's code-free programming language
               </li>
             </ul>
           </div>
@@ -223,7 +233,7 @@
                 Met weekly with various disciplines to discuss ways to improve the UX of the company's tools
               </li>
               <li>
-                Initiated company-wide React and TypeScript code sharing via a private NPM repository
+                Initiated company-wide React and TypeScript code sharing via a private npm repository
               </li>
               <li>
                 Worked within the Agile framework, in which I planned sprint work, attended daily stand-ups, and participated in retrospectives
@@ -289,7 +299,7 @@
       
       <section class='resume_section'>
         <h2>Education</h2>
-        <div>
+        <div class="resume_section_content">
           <div class="experience-item">
             <div class="experience-header">
               <div>

@@ -10,6 +10,7 @@ struct Renderer3D;
 struct Vertex3d {
     Vector4 position;
     Vector4 color;
+	Vector4 normal;
 };
 
 struct Mesh3d {
@@ -36,6 +37,7 @@ struct Renderer3D {
     struct {
 		i32 position;
 		i32 color;
+		i32 normal;
 	} attributes;
 
 	struct {

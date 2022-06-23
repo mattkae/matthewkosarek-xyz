@@ -11,6 +11,7 @@
 const char* vertexShader = 
 "attribute vec4 position; \n"
 "attribute vec4 color; \n"
+"attribute vec4 normal \n"
 "uniform mat4 projection; \n"
 "uniform mat4 view; \n"
 "uniform mat4 model; \n"
@@ -47,6 +48,7 @@ void Renderer3D::load(WebglContext* inContext) {
 	useShader(shader);
 	attributes.position = getShaderAttribute(shader, "position");
 	attributes.color = getShaderAttribute(shader, "color");
+	attributes.normal = getShaderAttribute(shader, "normal");
 	uniforms.projection = getShaderUniform(shader, "projection");
 	uniforms.view = getShaderUniform(shader, "view");
 	uniforms.model = getShaderUniform(shader, "model");
@@ -177,9 +179,19 @@ Mesh3d Mesh3d_fromObj(Renderer3D* renderer, const char* content, const i32 len) 
 					lt.v.indices[lt.idx] = atoi(buffer);
 					lt.idx++;
 				}
-				result.indices.add(lt.v.indices[0] - 1);
-				result.indices.add(lt.v.indices[1] - 1);
-				result.indices.add(lt.v.indices[2] - 1);
+				
+				auto v1idx = lt.v.indices[0] - 1;
+				auto v2idx = lt.v.indices[1] - 1;
+				auto v3idx = lt.v.indices[2] - 1;
+
+				result.indices.add(v1idx);
+				result.indices.add(v2idx);
+				result.indices.add(v3idx);
+
+				auto v1 = result.vertices[v1idx];
+				auto v2 = result.vertices[v2idx];
+				auto v3 = result.vertices[v3idx];
+				auto normal = (v1 - v2).cross(v1 - v3);
 				break;
 			case LineType_Comment:
 				i = readPastLine(i, content);

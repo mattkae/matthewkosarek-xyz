@@ -1,1 +1,1 @@
-wkhtmltopdf resume_dl.html cv.pdf
+wkhtmltopdf --encoding 'UTF-8' resume_dl.html cv.pdf 
