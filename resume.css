@@ -103,6 +103,20 @@ header {
     width: 100%;
 }
 
+.experience-tech {
+    font-size: 14px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    column-gap: 8px;
+}
+
+.experience-tech > svg {
+    width: 20px;
+    height: 20px;
+}
+
 
 /** Web-only **/
 #resume_button_container {
