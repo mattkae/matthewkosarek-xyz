@@ -80,7 +80,6 @@ section a:hover {
 	flex: 0 1 auto;
 	width: 100%;
 	overflow: auto;
-	justify-content: center;
 }
 
 #image_container .image_item {
@@ -167,14 +166,15 @@ input:focus {
 }
 
 /* Theme Selector */
-#theme_selector {
-	width: 50%;
+#theme_selector {;
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	bottom: 1rem;
     pointer-events: all;
     opacity: 1;
     transition: opacity 150ms linear;
+	gap: 2rem;
 }
 
 #theme_selector.hidden {
@@ -191,8 +191,6 @@ input:focus {
 	background-color: white;
 	cursor: pointer;
 	transition: opacity 100ms linear;
-    margin-right: 1rem;
-    margin-left: 1rem;
 }
 
 #theme_selector > button:hover {
