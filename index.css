@@ -23,10 +23,9 @@ header > h1 {
 }
 
 header > nav {	
-    padding-top: 0.5rem;
-    padding-bottom: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
     padding-left: 0.25rem;
-    border-bottom: 1px solid lightgray;
 }
 
 header > nav > ul {
@@ -50,6 +49,7 @@ header > nav > ul a {
 
 header > nav > ul a:hover {
 	opacity: 0.7;
+	text-decoration: underline;
 }
 
 h2 {
@@ -61,7 +61,7 @@ section {
 }
 
 p {
-    text-align: center;
+    text-align: left;
 }
 
 section a {
@@ -72,78 +72,42 @@ section a:hover {
     opacity: 0.7;
 }
 
-/* Carousel styling */
-#carousel {
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-}
-
-#carousel > button {
-    position: absolute;
-    top: calc(50% - 8rem);
-    font-size: 12rem;
-    border: none;
-    background-color: transparent;
-}
-
-#carousel > button:hover {
-    opacity: 0.5;
-    cursor: pointer;
-}
-
-#carousel_left {
-    visibility: hidden;
-    left: 0;
-}
-
-#carousel_right {
-    visibility: hidden;
-    right: 0;
-}
-
+/* Image styling */
 #image_container {
-    padding-left: calc(50% - 120px);
     display: flex;
     flex-direction: row;
-    height: 100%;
-    transition: all 100ms linear;
-    opacity: 0;
+    transition: transform 100ms ease-in-out;
+	flex: 0 1 auto;
+	width: 100%;
+	overflow: auto;
 }
 
-#image_container .carousel_image {
+#image_container .image_item {
     width: 240px;
-    transition: opacity 100ms linear;
+    transition: opacity 100ms ease-in-out;
     padding: 0;
     margin: 0;
     padding-right: 12px;
     cursor: pointer;
     position: relative;
-    opacity: 0;
 }
 
-#image_container .carousel_image:hover::after {
-    position: absolute;
-    top: calc(50% - 6rem);
-    left: calc(50% - 3rem);
-    font-size: 6rem;
-    color: white;
-    content: "\26F6";
+#image_container .image_item:hover > img {
+	border: 2px solid rgba(0, 0, 0, 0.7);
 }
 
-.carousel_image > figcaption {
+.image_item > figcaption {
     font-size: 10px;
     font-style: italic;
 }
 
-.carousel_image > img {
+.image_item > img {
     width: inherit;
-    border-radius: 2px;
+    border-radius: 3px;
+	border: 2px solid rgba(0, 0, 0, 0.3);
 }
 
-.carousel_image_expanded_container {
+.image_item_expanded_container {
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -155,7 +119,7 @@ section a:hover {
     z-index: 1000;
 }
 
-.carousel_image_expanded_container > .carousel_image {
+.image_item_expanded_container > .image_item {
     width: 35vw;
     opacity: 1.0 !important;
 }
@@ -202,14 +166,15 @@ input:focus {
 }
 
 /* Theme Selector */
-#theme_selector {
-	width: 50%;
+#theme_selector {;
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	bottom: 1rem;
     pointer-events: all;
     opacity: 1;
     transition: opacity 150ms linear;
+	gap: 2rem;
 }
 
 #theme_selector.hidden {
@@ -226,8 +191,6 @@ input:focus {
 	background-color: white;
 	cursor: pointer;
 	transition: opacity 100ms linear;
-    margin-right: 1rem;
-    margin-left: 1rem;
 }
 
 #theme_selector > button:hover {
@@ -267,7 +230,7 @@ only screen and (max-width:960px) {
         padding-bottom: 2rem !important;
     }
 
-    .carousel_image_expanded_container > .carousel_image {
+    .image_item_expanded_container > .image_item {
         width: 80vw;
     }
 

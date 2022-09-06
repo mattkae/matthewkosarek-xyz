@@ -24,37 +24,32 @@
           </ul>
         </nav>
     </header>
-    <section id='landing_page'>
+    <section id='image_container'>
+      <figure class='image_item'>
+        <img src='images/portrait-min.jpg' />
+        <figcaption>
+          Me in front of my desktop, circa August 2021.
+        </figcaption>
+      </figure>
+      <figure class='image_item'>
+        <img src='images/dog_and_me-min.jpg' />
+        <figcaption>
+          Hanging with my dog named Rizzy, circa May 2020.
+        </figcaption>
+      </figure>
+      <figure class='image_item'>
+        <img src='images/friends-min.jpg' />
+        <figcaption>
+          Hanging with my friends, circa July 2019.
+        </figcaption>
+      </figure>
+	  
 
+    </section>
+	<section>
+	  <h2>About Me</h2>
       <p>
-        <div id='carousel'>
-          <div id='image_container'>
-            <figure class='carousel_image'>
-              <img src='images/portrait-min.jpg' />
-              <figcaption>
-                Me in front of my desktop, circa August 2021.
-              </figcaption>
-            </figure>
-            <figure class='carousel_image'>
-              <img src='images/dog_and_me-min.jpg' />
-              <figcaption>
-                Hanging with my dog named Rizzy, circa May 2020.
-              </figcaption>
-            </figure>
-            <figure class='carousel_image'>
-              <img src='images/friends-min.jpg' />
-              <figcaption>
-                Hanging with my friends, circa July 2019.
-              </figcaption>
-            </figure>
-          </div>
-          <button id='carousel_left'>&#8592;</button>
-          <button id='carousel_right'>&#8594;</button>
-        </div>
-      </p>
-      
-      <p style='padding-left: 2rem; padding-right: 2rem;'>
-        Hello! My name is Matthew Kosarek.
+        My name is Matthew Kosarek.
 		I am a computer programmer from northern New Jersey and I currently live and work in Montreal, Quebec.
 		I keep my CV up to date on this website, and I also provide some links to some extracurriculars that I am up to.
 		In my spare time, I build some graphics scenes in C++/OpenGL, compile them via <code>emcc</code> and post them here as "themes".
@@ -69,13 +64,15 @@
       </ul>
     </section>
 
-    <h2>Theme</h2>
-    <div id="theme_selector" class="hidden">
-      <button id="theme_button_default">Default</button>
-      <button id="theme_button_autumn">Autumn</button>
+	<section>
+      <h2>Theme</h2>
+      <div id="theme_selector" class="hidden">
+		<button id="theme_button_default">Default</button>
+		<button id="theme_button_autumn">Autumn</button>
 	    <button id="theme_button_winter">Winter</button>
-      <button id="theme_button_spring">Spring</button>
-    </div>
+		<button id="theme_button_spring">Spring</button>
+      </div>
+	</section>
   </body>
 
   <script src='/index.js'></script>
