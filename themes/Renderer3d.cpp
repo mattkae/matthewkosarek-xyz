@@ -9,24 +9,28 @@
 // Note: In the 'transform' attribute, the transform.x is the scale,
 // transform.y is the rotation, and transform.zw is the translatiob.
 const char* vertexShader = 
-"attribute vec4 position; \n"
-"attribute vec4 color; \n"
-"attribute vec4 normal \n"
-"uniform mat4 projection; \n"
-"uniform mat4 view; \n"
-"uniform mat4 model; \n"
-"varying lowp vec4 VertexColor; \n"
-"void main() { \n"
-"    vec4 fragmentPosition = projection * view * model * position; \n"
-"    gl_Position = fragmentPosition; \n"
-"    VertexColor = color; \n"
-"}";
+	"attribute vec4 position; \n"
+	"attribute vec4 color; \n"
+	"attribute vec4 normal; \n"
+	"uniform mat4 projection; \n"
+	"uniform mat4 view; \n"
+	"uniform mat4 model; \n"
+	"varying lowp vec4 VertexColor; \n"
+	"varying lowp vec4 VertexNormal; \n"
+	"void main() { \n"
+	"    vec4 fragmentPosition = projection * view * model * position; \n"
+	"    gl_Position = fragmentPosition; \n"
+	"    VertexColor = color; \n"
+	"    VertexNormal = normal; \n"
+	"}";
 
 const char* fragmentShader = 
-"varying lowp vec4 VertexColor; \n"
-"void main() { \n"
-"    gl_FragColor = VertexColor; \n"
-"}";
+	"varying lowp vec4 VertexColor; \n"
+	"varying lowp vec4 VertexNormal; \n"
+	"void main() { \n"
+	"    const lowp vec3 lightDirection = vec3(0.0, 1.0, 0.0);\n"
+	"    gl_FragColor = vec4(VertexColor.xyz * dot(VertexNormal.xyz, lightDirection), 1); \n"
+	"}";
 
 EM_BOOL onScreenSizeChanged_3D(int eventType, const EmscriptenUiEvent *uiEvent, void *userData) {
     Renderer3D* renderer = (Renderer3D*)userData;
@@ -53,7 +57,7 @@ void Renderer3D::load(WebglContext* inContext) {
 	uniforms.view = getShaderUniform(shader, "view");
 	uniforms.model = getShaderUniform(shader, "model");
 	projection = Mat4x4().getPerspectiveProjection(0.1, 1000.f, 0.872f, static_cast<f32>(context->width) / static_cast<f32>(context->height));
-	view = Mat4x4().getLookAt({ 0, 25, 100 }, { 0, 15, 0 }, { 0, 1, 0 });
+	view = Mat4x4().getLookAt({ 0, 25, 75 }, { 0, 15, 0 }, { 0, 1, 0 });
 
 	logger_info("Renderer2d shader compiled.\n");
 
@@ -162,18 +166,21 @@ Mesh3d Mesh3d_fromObj(Renderer3D* renderer, const char* content, const i32 len) 
 			case LineType_mtl:
 				i = readToken(i, content, buffer);
 				break;
-			case LineType_v:
+			case LineType_v: {
 				while (content[i] != '\n' && content[i] != '\0') {
 					i = readToken(i, content, buffer);
 					lt.v.vertices[lt.idx] = atof(buffer);
 					lt.idx++;
 				}
+
+				float fColor = randomFloatBetween(0.8, 1);
 				result.vertices.add({
 					Vector4(lt.v.vertices[0], lt.v.vertices[1], lt.v.vertices[2], 1.f),
-					Vector4(randomFloatBetween(0, 1), randomFloatBetween(0, 1), randomFloatBetween(0, 1), 1)
+					Vector4(fColor, fColor, fColor, 1)
 				});
 				break;
-			case LineType_f:
+			}
+			case LineType_f: {
 				while (content[i] != '\n' && content[i] != '\0') {
 					i = readToken(i, content, buffer);
 					lt.v.indices[lt.idx] = atoi(buffer);
@@ -188,18 +195,17 @@ Mesh3d Mesh3d_fromObj(Renderer3D* renderer, const char* content, const i32 len) 
 				result.indices.add(v2idx);
 				result.indices.add(v3idx);
 
-				auto v1 = result.vertices[v1idx];
-				auto v2 = result.vertices[v2idx];
-				auto v3 = result.vertices[v3idx];
-				auto normal = (v1 - v2).cross(v1 - v3);
+				auto& v1 = result.vertices[v1idx];
+				auto& v2 = result.vertices[v2idx];
+				auto& v3 = result.vertices[v3idx];
+			    Vector3 normal = (v1.position - v2.position).cross(v1.position - v3.position).toVector3().normalize();
+				v1.normal = normal;
+				v2.normal = normal;
+				v3.normal = normal;
 				break;
-			case LineType_Comment:
-				i = readPastLine(i, content);
-				break;
-			case LineType_Unsupported:
-				i = readPastLine(i, content);
-				break;
+			}
 			default:
+				i = readPastLine(i, content);
 				break;
 			}
 
@@ -229,10 +235,14 @@ void Mesh3d::load(Renderer3D* renderer) {
     glEnableVertexAttribArray(renderer->attributes.position);
     glVertexAttribPointer(renderer->attributes.position, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex3d), (GLvoid *)0);
 
-    // Normal
+    // Color
     glEnableVertexAttribArray(renderer->attributes.color);
     glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex3d), (GLvoid *)offsetof(Vertex3d, color));
 
+	// Normal
+    glEnableVertexAttribArray(renderer->attributes.normal);
+    glVertexAttribPointer(renderer->attributes.normal, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex3d), (GLvoid *)offsetof(Vertex3d, normal));
+	
     glBindVertexArray(0);
 }
 

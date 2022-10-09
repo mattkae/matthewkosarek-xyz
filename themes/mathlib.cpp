@@ -271,6 +271,11 @@ Vector4 Vector4::toNormalizedColor() {
     return fromColor(x, y, z, w);
 }
 
+
+Vector3 Vector4::toVector3() {
+	return { x, y, z };
+}
+
 float Vector4::length() {
     return sqrtf(x * x + y * y + z * z + w * w);
 }

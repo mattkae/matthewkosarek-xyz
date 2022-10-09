@@ -102,6 +102,7 @@ struct Vector4 {
 	Vector4 toNormalizedColor();
 	Vector4(Vector2& v);
 	Vector4(Vector3& v);
+	Vector3 toVector3();
 
     float length();
     Vector4 normalize();
