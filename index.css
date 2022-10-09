@@ -183,7 +183,7 @@ input:focus {
 }
 
 #theme_selector > button {
-	width: 5rem;
+	width: 6rem;
 	height: 2rem;
 	border-radius: 3px;
 	border: 1px solid black;
@@ -210,6 +210,10 @@ input:focus {
 
 #theme_selector > #theme_button_spring {
 	background-color: #00FF7F;
+}
+
+#theme_selector > #theme_button_summer {
+  background-color: yellow;
 }
 
 /* Phone screen adjustments */

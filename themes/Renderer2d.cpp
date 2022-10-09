@@ -5,7 +5,7 @@
 #include <cstdio>
 
 // Note: In the 'transform' attribute, the transform.x is the scale,
-// transform.y is the rotation, and transform.zw is the translatiob.
+// transform.y is the rotation, and transform.zw is the translation.
 const char* Vertex2DShader = 
 "attribute vec2 position; \n"
 "attribute vec4 color; \n"
@@ -64,6 +64,7 @@ void Renderer2d::unload() {
 
 
 void Mesh2D::load(Vertex2D* inVertices, u32 inNumVertices, Renderer2d* renderer) {
+	ebo = 0;
 	numVertices = inNumVertices;
 	useShader(renderer->shader);
 
@@ -89,15 +90,40 @@ void Mesh2D::load(Vertex2D* inVertices, u32 inNumVertices, Renderer2d* renderer)
 	glBindVertexArray(0);
 }
 
+
+void Mesh2D::load(Vertex2D* vertices,
+		  u32 numVertices,
+		  u32* indices,
+		  u32 inNumIndices,
+		  Renderer2d* renderer) {
+	load(vertices, numVertices, renderer);
+	glBindVertexArray(vao);
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, inNumIndices * sizeof(u32), &indices[0], GL_STATIC_DRAW);
+	numIndices = inNumIndices;
+	glBindVertexArray(0);
+}
+
 void Mesh2D::render(Renderer2d* renderer, GLenum drawType) {
 	setShaderMat4(renderer->uniforms.model, model);
 
-	glBindVertexArray(vao);
-	glDrawArrays(drawType, 0, numVertices);
-	glBindVertexArray(0);
+	if (ebo == 0) {
+		glBindVertexArray(vao);
+		glDrawArrays(drawType, 0, numVertices);
+		glBindVertexArray(0);
+	}
+	else {
+		glBindVertexArray(vao);
+		glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+	}
 }
 
 void Mesh2D::unload() {
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &vbo);
+	if (ebo) {
+		glDeleteBuffers(1, &ebo);
+	}
 }

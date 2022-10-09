@@ -5,6 +5,7 @@
 #include "mathlib.h"
 #include "types.h"
 #include "TreeShape.h"
+#include "SummerTheme.h"
 #include "LeafParticleRender.h"
 #include "Snowflake.h"
 #include <cstdio>
@@ -15,7 +16,8 @@ enum Theme {
 	Default = 0,
     Autumn,
 	Winter,
-	Spring
+	Spring,
+	Summer
 };
 
 struct AutumnTheme {
@@ -74,6 +76,7 @@ EM_BOOL selectNone(int eventType, const EmscriptenMouseEvent* mouseEvent, void* 
 EM_BOOL selectAutumn(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 EM_BOOL selectWinter(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 EM_BOOL selectSpring(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
+EM_BOOL selectSummer(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 
 WebglContext context;
 Renderer2d renderer2d;
@@ -83,6 +86,7 @@ Theme activeTheme = Theme::Default;
 AutumnTheme autumnTheme;
 WinterTheme winterTheme;
 SpringTheme springTheme;
+SummerTheme summerTheme;
 
 int main() {
 	context.init("#theme_canvas");
@@ -90,6 +94,7 @@ int main() {
 	emscripten_set_click_callback("#theme_button_autumn", NULL, false, selectAutumn);
 	emscripten_set_click_callback("#theme_button_winter", NULL, false, selectWinter);
 	emscripten_set_click_callback("#theme_button_spring", NULL, false, selectSpring);
+	emscripten_set_click_callback("#theme_button_summer", NULL, false, selectSummer);
 	
 	return 0;
 }
@@ -119,6 +124,10 @@ void load(Theme theme) {
 		renderer3d.load(&context);
 		springTheme.load(&renderer3d);
 		break;
+	case Theme::Summer:
+		renderer2d.load(&context);
+		summerTheme.load(&renderer2d);
+		break;
 	default:
 		break;
 	}
@@ -135,6 +144,9 @@ void update(f32 dtSeconds, void* userData) {
 		break;
 	case Theme::Spring:
 		springTheme.update(dtSeconds);
+		break;
+	case Theme::Summer:
+		summerTheme.update(dtSeconds);
 		break;
 	default:
 		break;
@@ -154,6 +166,10 @@ void update(f32 dtSeconds, void* userData) {
 		renderer3d.render();
 		springTheme.render(&renderer3d);
 		break;
+	case Theme::Summer:
+		renderer2d.render();
+	    summerTheme.render(&renderer2d);
+		break;
 	default:
 		break;
 	}
@@ -169,6 +185,9 @@ void unload() {
 		break;
 	case Theme::Spring:
 		springTheme.unload();
+		break;
+	case Theme::Summer:
+		summerTheme.unload();
 		break;
 	default:
 		break;
@@ -204,6 +223,12 @@ EM_BOOL selectWinter(int eventType, const EmscriptenMouseEvent* mouseEvent, void
 EM_BOOL selectSpring(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
 	printf("Spring theme selected\n");
 	load(Theme::Spring);
+	return true;
+}
+
+EM_BOOL selectSummer(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
+	printf("Summer theme selected\n");
+	load(Theme::Summer);
 	return true;
 }
 
