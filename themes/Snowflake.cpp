@@ -179,6 +179,8 @@ void SnowflakeParticleRenderer::render(Renderer2d* renderer) {
 void SnowflakeParticleRenderer::unload() {
 	glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
+	vao = 0;
+	vbo = 0;
 	vertices.deallocate();
 	delete [] updateData;
 }

@@ -123,7 +123,10 @@ void Mesh2D::render(Renderer2d* renderer, GLenum drawType) {
 void Mesh2D::unload() {
 	glDeleteVertexArrays(1, &vao);
 	glDeleteBuffers(1, &vbo);
-	if (ebo) {
+	if (ebo != 0) {
 		glDeleteBuffers(1, &ebo);
+		ebo = 0;
 	}
+	vao = 0;
+	vbo = 0;
 }

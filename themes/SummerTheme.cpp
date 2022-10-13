@@ -23,7 +23,6 @@ void SummerTheme::unload() {
 	sun.unload();
 }
 
-
 void Sun::load(Renderer2d* renderer) {
 	matte::List<Vertex2D> vertices;
 	matte::List<u32> indices;
@@ -49,6 +48,7 @@ void Sun::load(Renderer2d* renderer) {
 	mesh.load(&vertices.data[0], vertices.numElements, &indices.data[0], indices.numElements, renderer);
 	mesh.model = Mat4x4().translateByVec2(Vector2(renderer->context->width / 2.f, renderer->context->height / 2.f));
 	vertices.deallocate();
+	indices.deallocate();
 }
 
 void Sun::update(f32 dtSeconds) {
