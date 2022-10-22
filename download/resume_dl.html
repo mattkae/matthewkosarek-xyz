@@ -1,169 +1,174 @@
 <html>
-  <head>
+  
+ <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta charset="UTF-8" />
       <script src="https://twemoji.maxcdn.com/2/twemoji.min.js?11.2"></script>
       <script>window.onload = function () { twemoji.parse(document.body);}</script>
-    <style>
-      html {
-          overflow-y: overlay;
-      }
+<style>
+html {
+  overflow-y: overlay;
+}
 
-      body {
-          font-size: 14px !important;
-          padding-top: 72px;
-          padding-left: 48px;
-          padding-right: 48px;
-          font-family: Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif; 
-      }
+body {
+  font-size: 14px !important;
+  padding-top: 72px;
+  padding-left: 48px;
+  padding-right: 48px;
+  font-family: Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif; 
+}
 
-      header {
-          padding-bottom: 1rem;
-      }
+header {
+  padding-bottom: 1rem;
+}
 
-      #actions_container {
-          padding-bottom: 1rem;
-          
-          display: flex;
-          flex-direction: row;
-          justify-content: flex-end;
-      }
+#actions_container {
+  padding-bottom: 1rem;
+  
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
 
-      #resume {
-          position: relative;
-          text-align: left;
-          background-color: white;
-          color: black;
-          line-height: 1.2rem;
-          padding-bottom: 1rem;
-      }
+#resume {
+  position: relative;
+  text-align: left;
+  background-color: white;
+  color: black;
+  line-height: 1.2rem;
+  padding-bottom: 1rem;
+}
 
-      #resume_header {
-          width: 100%;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: space-between;
-      }
+#resume_header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
 
-      #resume_header > h1 {
-        font-size: 24px;
-        padding: 0;
-        margin: 0;
-        font-weight: 500;
-      }
+#resume_header > h1 {
+  font-size: 24px;
+  padding: 0;
+  margin: 0;
+  font-weight: 500;
+}
 
-      #resume_header_contact {
-        font-size: 12px;
-      }
+#resume_header_contact {
+  font-size: 12px;
+}
 
-      #resume_header_contact span {
-          margin-right: 0.5rem;
-          margin-left: 0.5rem;
-      }
+#resume_header_contact span {
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
 
-      img.emoji {
-        height: 1em;
-        width: 1em;
-        margin: 0 .05em 0 .1em;
-        vertical-align: -0.1em;
-      }
+img.emoji {
+  height: 1em;
+  width: 1em;
+  margin: 0 .05em 0 .1em;
+  vertical-align: -0.1em;
+}
 
-      #resume_header_contact i {
-        margin-right: 0.25rem;
-        font-style: normal;
-      }
+#resume_header_contact i {
+  margin-right: 0.25rem;
+  font-style: normal;
+}
 
-      .resume_section {
-          width: 100%;
-          text-align: left;
-      }
+.resume_section {
+  width: 100%;
+  text-align: left;
+}
 
-      .resume_section > h2 {
-        font-size: 18px !important;
-        font-variant: small-caps;
-        font-weight: bold;
-        padding: 0;
-        margin: 0;
-        padding: 10px;
-        background-color: #2E4C6D;
-        color: white;
-      }
+.resume_section > h2 {
+  font-size: 18px !important;
+  font-variant: small-caps;
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+  padding: 10px;
+  background-color: #2E4C6D;
+  color: white;
+}
 
-      .resume_section_content {
-        padding: 0.5rem;
-      }
+.resume_section_content {
+  padding: 0.5rem;
+}
 
-      .skill-section {
-          width: 100%;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-      }
+.skill-section {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
-      .skill-section > div {
-          width: 75%;
-      }
+.skill-section > div {
+  width: 75%;
+}
 
-      .experience-header > div {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-      }
+.experience-header > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
-      .experience-item li {
-          width: 100%;
-      }
+.experience-item li {
+  width: 100%;
+}
 
-      .experience-tech {
-          font-size: 14px;
-          width: 100%;
-          display: flex;
-          flex-direction: row;
-          justify-content: flex-start;
-      }
+.experience-tech {
+  font-size: 14px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
 
-      .experience-tech > svg {
-        margin-right: 8px;
-          width: 20px;
-          height: 20px;
-      }
+.experience-tech > svg {
+  margin-right: 8px;
+  width: 20px;
+  height: 20px;
+}
 
 
-      /** Web-only **/
-      #resume_button_container {
-          width: 100%;
-          text-align: right;
-          margin-right: 1rem;
-          margin-bottom: 1rem;
-          
-      }
+/** Web-only **/
+#resume_button_container {
+  width: 100%;
+  text-align: right;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  
+}
 
-      #resume_button_container > button {
-          border: none;
-          background-color: transparent;
-          font-size: 20px;
-      }
+#resume_button_container > button {
+  border: none;
+  background-color: transparent;
+  font-size: 20px;
+}
 
-      #resume_button_container > button:hover {
-          cursor: pointer;
-          opacity: 0.8;
-      }
+#resume_button_container > button:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
 
-      #resume.resume_fullscreen {
-          position: fixed;
-          top: 0;
-          left: 0;
-          padding: 2rem;
-          width: calc(100vw - 4rem);
-          height: calc(100vh - 4rem);
-          overflow: auto;
-      }
-    </style>
-  </head>
+#resume.resume_fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 2rem;
+  width: calc(100vw - 4rem);
+  height: calc(100vh - 4rem);
+  overflow: auto;
+}
+
+</style>
+</head>
+
   <body>
+    
     <section id='resume'>
+      
       <header id="resume_header">
         <h1>Matthew Kosarek</h1>
         
@@ -171,7 +176,7 @@
           <span><i>🖥️</i> Computer Programmer</span>
           <span><i>☎️</i> +1-201-400-2699</span>
           <span><i>📧</i> mkosare1@gmail.com</span>
-          <span><i>🇺🇸</i> US Citizen</span>
+          <span><i>🇺🇸</i> United States Citizen</span>
         </div>
       </header>
 
@@ -179,13 +184,13 @@
         <h2>Skills</h2>
         <div class="resume_section_content">
           <div class="skill-section">
-            <b>Languages & Frameworks</b><div>C/C++, C#, TypeScript/JavaScript, React, HTML & CSS, Java, OpenGL, ASP.NET, Linux, LaTeX</div>
+            <b>Languages & Frameworks</b><div>C, C++, C#, ASP.NET, JavaScript, TypeScript, React, HTML, CSS, Java, OpenGL</div>
           </div>
           <div class="skill-section">
-            <b>Tools</b><div>git, npm, Webpack, Visual Studio Professional/Code, Unity, AWS, Emacs, LaTeX</div>
+            <b>Tools</b><div>git, Linux, npm, Webpack, Unity, AWS, Emacs, Visual Studio Professional</div>
           </div>
         </div>
-	    </section>
+	    </section> 
 
       <section class='resume_section'>
         <h2>Experience</h2>
@@ -211,22 +216,22 @@
             </div>
             <ul>
               <li>
-                Led a team in the development of client-facing industrial software applications including cobot palletizers, cartesian palletizers, and CNC machines
+                Led a team in the development of industrial software applications including robot palletizers, cartesian palletizers, and CNC machines
               </li>
               <li>
-				        Developed and shipped a number of time-sensitive client projects
+				        Developed and shipped a number of client projects which are now being used everyday in factories
               </li>
               <li>
-                Architected and implemented the core infrastructure required for the development of client-facing applications
+                Architected and developed a framework for all future client projects
               </li>
               <li>
-				        Interacted extensively with other teams to align on business goals and meet deadlines
+				        Interacted with other teams on a daily basis to align on business goals and meet deadlines
               </li>
               <li>
-                Planned and organized projects and tasks for the team including long-term vision and day-to-day goals 
+                Planned, scoped, and organized daily tasks and long-term projects 
               </li>
               <li>
-                Individually contributed across many facets of the company, from firmware to the engine of a code-free programming languge to the application-level
+                Individually contributed across many levels of the codebase, from firmware to the application layer
               </li>
             </ul>
           </div>
@@ -262,12 +267,6 @@
               </li>
               <li>
                 Implemented game features on all parts of the stack, including tools, Unity client, and game servers
-              </li>
-              <li>
-                Met weekly with various disciplines to discuss ways to improve the UX of the company's tools
-              </li>
-              <li>
-                Initiated company-wide React and TypeScript code sharing via a private npm repository
               </li>
             </ul>
           </div>
@@ -333,7 +332,7 @@
             </div>
             <ul>
               <li>
-                Developed a framework for profiling the game systems in <i>Dropzone</i>
+                Developed a profiling framework for the game systems in <i>Dropzone</i>
               </li>
             </ul>
           </div>
@@ -346,7 +345,7 @@
           <div class="experience-item">
             <div class="experience-header">
               <div>
-                <span><b>Johns Hopkins University</b></span>
+                <span><b>BSc Computer Engineering at Johns Hopkins University</b></span>
                 <span>Baltimore, MD</span>
               </div>
               <div>
@@ -355,10 +354,7 @@
             </div>
             <ul>
               <li>
-                B.S. in Computer Engineering (Magna Cum Laude)
-              </li>
-              <li>
-                3.53 GPA
+                3.53 GPA (Magna Cum Laude)
               </li>
               <li>
                 <i>Relevant Coursework</i>: Computer Graphics, Object Oriented Software Engineering, Linear Algebra, Video Game Engines and Design, Operating Systems, Data Structures, Introduction to Renewable Energy Engineering
