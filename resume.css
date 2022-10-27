@@ -28,6 +28,10 @@ header {
     padding-bottom: 1rem;
 }
 
+#resume a {
+  color: #343231;
+}
+
 #resume_header {
     width: 100%;
     display: flex;
