@@ -18,9 +18,22 @@ const posts = [
   }
 ];
 
+function createTagFile(tag) {
+  const dir = path.resolve(path.join(__dirname, '..', 'posts'));
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+
+
+  const tagFileName = `tag_${tag.id}.html`
+  createPostPage(path.join(__dirname, '..', 'posts', tagFileName), tag.id)
+  return `/posts/${tagFileName}`;
+}
+
 function createTag(tag) {
   return `
-    <button id="${tag.id}">${tag.title}</button>
+    <a href="${createTagFile(tag)}"><button id="${tag.id}">${tag.title}</button></a>
   `;
 }
 
@@ -77,7 +90,8 @@ function createPostLink(post) {
   `;
 }
 
-const output = `
+function createPostPage(outputFile, postFilter) {
+  const output = `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -101,21 +115,25 @@ const output = `
       </nav>
 	  </header>
 
-    <section>
+    ${postFilter ? '' : `<section>
     <h2>Tags</h2>
+
     <div id='tag_list'>
         ${tags.map(createTag)}
     </div>
-    </section
+  </section`}
 
     <section>
     <h2>Posts</h2>
     <ul id='post_list'>
-        ${posts.map(createPostLink)}
+        ${posts.filter(post => !postFilter || post.tags.includes(postFilter)).map(createPostLink)}
     </ul>
     </section>
   </body>
 </html>
 `
 
-fs.writeFileSync(path.join(__dirname, '..', 'posts.html'), output);
+  fs.writeFileSync(outputFile, output);
+}
+
+createPostPage(path.join(__dirname, '..', 'posts.html'));
