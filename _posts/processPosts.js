@@ -47,7 +47,7 @@ function createPostServableFile(post) {
   const baseFilePath = path.join(__dirname, '..', post.url);
   const stats = fs.statSync(baseFilePath);
   const content = fs.readFileSync(baseFilePath);
-  const fileName = post.url.substring(post.url.lastIndexOf('/'));
+  const fileName = post.url.substring(post.url.lastIndexOf('/') + 1);
   const filePath = path.join(dir, fileName);
   fs.writeFileSync(filePath,`
 <!DOCTYPE html>
