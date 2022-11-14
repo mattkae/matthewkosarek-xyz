@@ -1,7 +1,7 @@
 body {
   width: 60vw;
   height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+  font-family: "Noto Sans", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
   font-size: 16px;
   background-color: transparent;
   color: black;
@@ -102,7 +102,7 @@ section a:hover {
 
 .image_item > img {
   width: inherit;
-    border-radius: 3px;
+  border-radius: 3px;
 	border: 2px solid rgba(0, 0, 0, 0.3);
 }
 
