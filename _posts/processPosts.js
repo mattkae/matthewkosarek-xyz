@@ -7,6 +7,18 @@ const tags = [
   {
     id: 'personal',
     title: 'Personal 👨'
+  },
+  {
+    id: 'programming',
+    title: 'Programming 💻'
+  },
+  {
+    id: 'books',
+    title: 'Books 📖'
+  },
+  {
+    id: 'food',
+    title: 'Food 🍲'
   }
 ]
 
@@ -119,7 +131,7 @@ function createPostPage(outputFile, postFilter) {
     <h2>Tags</h2>
 
     <div id='tag_list'>
-        ${tags.map(createTag)}
+        ${tags.map(createTag).join('\n')}
     </div>
   </section`}
 
