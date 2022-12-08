@@ -7,7 +7,6 @@ struct Vertex2D;
 
 struct SnowflakeLoadParameters {
 	i32 maxSnowflakes = 1000;
-	i32 initialSnowflakeCount = 100;
 	f32 rateOfSnowfall = 0.1f;
     Vector2 flakeV0 = { 0, 1 };
 	f32 flakeSize = 5.f;
@@ -34,8 +33,6 @@ struct SnowflakeParticleRenderer {
 	f32 yMax = 0;
 	f32 spawnIntervalSeconds = 0.3;
 	f32 windIntervalSeconds = 1.5;
-	i32 startIndex = 0;
-	i32 endIndex = 0;
 	i32 numSnowflakes = 0;
     Vector2 windSpeed;
 	SnowflakeUpdateData* updateData;

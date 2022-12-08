@@ -36,6 +36,7 @@ inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* 
 	ud->vtxIdx = renderer->vertices.numElements;
 	generateSnowflakeShape(&renderer->vertices, randomIntBetween(4, 16), randomFloatBetween(8.f, 16.f), randomFloatBetween(2.f, 6.f));
 	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
+    ud->isAlive = false;
 }
 
 inline void spawnFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
@@ -45,20 +46,16 @@ inline void spawnFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData*
 }
 
 inline void findAndSpawnNextFlake(SnowflakeParticleRenderer* renderer) {
-    do {
-	    renderer->endIndex++;
-
-		if (renderer->endIndex >= renderer->numSnowflakes)
-			renderer->endIndex = 0;
-	} while (renderer->updateData[renderer->endIndex].isAlive);
-
-	spawnFlake(renderer, &renderer->updateData[renderer->endIndex]);
+    for (i32 i = 0; i < renderer->numSnowflakes; i++) {
+        if (!renderer->updateData[i].isAlive) {
+            spawnFlake(renderer, &renderer->updateData[i]);
+            break;
+        }
+    }
 }
 
 void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d* renderer) {
-	startIndex = 0;
 	spawnIntervalSeconds = params.spawnIntervalSeconds;
-	endIndex = params.initialSnowflakeCount;
 	numSnowflakes = params.maxSnowflakes;
 
 	updateData = new SnowflakeUpdateData[params.maxSnowflakes];
@@ -70,10 +67,6 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 	for (i32 s = 0; s < numSnowflakes; s++) {
 		auto ud = &updateData[s];
 	    initFlake(this, ud);
-
-		if (s < endIndex) {
-			spawnFlake(this, ud);
-		}
 	}
 
 	useShader(renderer->shader);
@@ -108,18 +101,16 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 }
 
 inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds, bool addWind) {
-	// Once the snowflake has been set to die in this interval, we try and increment the
-	// startIndex
-	if (!ud->isAlive && renderer->startIndex == s) {
-		renderer->startIndex = (renderer->startIndex + 1) % renderer->numSnowflakes;
+	if (!ud->isAlive) {
 		return;
 	}
 
 	if (addWind) ud->velocity += renderer->windSpeed;		
 	ud->position += ud->velocity * dtSeconds;
 
-	if (ud->position.y < 0)
+	if (ud->position.y < 0) {
 		ud->isAlive = false;
+    }
 
 	Mat4x4 m = Mat4x4().translateByVec2(ud->position);
 	for (i32 v = ud->vtxIdx; v < (ud->vtxIdx + ud->numVertices); v++) {
@@ -142,37 +133,20 @@ void SnowflakeParticleRenderer::update(f32 dtSeconds) {
 		addWind = true;
 	}
 
-	if (startIndex < endIndex) {
-		for (i32 s = startIndex; s < endIndex; s++) {
-			SnowflakeUpdateData* ud = &updateData[s];
-			updateFlake(this, ud, s, dtSeconds, addWind);
-		}
-	}
-	else {
-		i32 endRange = startIndex - numSnowflakes;
-		for (i32 s = endIndex - 1; s >= endRange; s--) {
-			SnowflakeUpdateData* ud;
-			if (s < 0)
-				ud = &updateData[numSnowflakes + s];
-			else
-				ud = &updateData[s];
-			
-			updateFlake(this, ud, s, dtSeconds, addWind);
-		}
-	}
+    for (i32 s = 0; s < numSnowflakes; s++) {
+        SnowflakeUpdateData* ud = &updateData[s];
+        updateFlake(this, ud, s, dtSeconds, addWind);
+    }
 }
 
 void SnowflakeParticleRenderer::render(Renderer2d* renderer) {
-	auto startVertex = &updateData[startIndex];
-	auto endVertex = &updateData[endIndex];
-	i32 numVertices = (endVertex->vtxIdx + endVertex->numVertices) - startVertex->vtxIdx;
 	setShaderMat4(renderer->uniforms.model, model);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * sizeof(Vertex2D), &vertices.data[startVertex->vtxIdx]);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.numElements * sizeof(Vertex2D), &vertices.data[0]);
 
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, numVertices);
+    glDrawArrays(GL_TRIANGLES, 0, vertices.numElements);
     glBindVertexArray(0);
 }
 
