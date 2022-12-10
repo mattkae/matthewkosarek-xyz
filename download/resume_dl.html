@@ -6,6 +6,7 @@
     <meta charset="UTF-8" />
       <script src="https://twemoji.maxcdn.com/2/twemoji.min.js?11.2"></script>
       <script>window.onload = function () { twemoji.parse(document.body);}</script>
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css">
 <style>
 html {
     overflow-y: overlay;
@@ -47,8 +48,8 @@ header {
 }
 
 #resume_sidebar {
-    width: auto;
-    margin-right: 1rem;
+    width: 204px;
+    margin-right: 24px;
 }
 
 #resume_header {
@@ -79,12 +80,15 @@ header {
 }
 
 #resume_header_contact span {
-    margin-top: 5px;
+    margin-bottom: 8px;
     font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 #resume_header_contact i {
-    margin-right: 0.25rem;
+    margin-right: 8px;
     font-style: normal;
 }
 
@@ -145,8 +149,8 @@ header {
 
 .skills_section_bar {
     position: relative;
-    width: 204px;
-    height: 24px;
+    width: 100%;
+    height: 16px;
     background-color: white;
     border-radius: 3px;
     border: 1px solid lightgray;
@@ -160,6 +164,7 @@ header {
     width: 100%;
     background-image: linear-gradient(to right,#007acc, #00E091);
     border-radius: 3px;
+    background-size: 204px 100%;
 }
 
 .skills_section_bar_fill.one {
@@ -228,7 +233,6 @@ body {
   padding-top: 72px;
   padding-left: 48px;
   padding-right: 48px;
-  font-family: Segoe UI,Frutiger,Frutiger Linotype,Dejavu Sans,Helvetica Neue,Arial,sans-serif; 
 }
 
 img.emoji {
@@ -236,6 +240,10 @@ img.emoji {
   width: 1em;
   margin: 0 .05em 0 .1em;
   vertical-align: -0.1em;
+}
+
+#resume {
+  font-family: "Open Sans", sans-serif !important;
 }
 </style>
 </head>
@@ -254,6 +262,10 @@ img.emoji {
             <div id="resume_header_contact">
               <span><i>🖥️</i> Software Developer</span>
               <span><i>🔗</i> <a href="https://matthewkosarek.xyz">matthewkosarek.xyz</a></span>
+              <span>
+                <i><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></i>
+                <a href="https://github.com/mattkae">github.com/mattkae</a></span>
+              </span>
               <span><i>📧</i> mkosare1@gmail.com</span>
               <span><i>🇺🇸</i> United States Citizen</span>
             </div>
@@ -312,7 +324,7 @@ img.emoji {
               <span class="skills_section_bar">
                 <span class="skills_section_bar_fill five"></span>
               </span>
-              <span class="skills_section_label">npm</span>
+              <span class="skills_section_label">Node.js</span>
             </div>
   
             <div class="skills_section_item">
@@ -320,6 +332,13 @@ img.emoji {
                 <span class="skills_section_bar_fill four"></span>
               </span>
               <span class="skills_section_label">Webpack</span>
+            </div>
+
+            <div class="skills_section_item">
+              <span class="skills_section_bar">
+                <span class="skills_section_bar_fill four"></span>
+              </span>
+              <span class="skills_section_label">OpenGL</span>
             </div>
   
             <div class="skills_section_item">
@@ -415,13 +434,13 @@ img.emoji {
                 </div>
                 <ul>
                   <li>
-                    Led a team in the development of industrial software applications including robot palletizers, cartesian palletizers, and CNC machines
+                    Led a team in the development of industrial software applications including cobot palletizers, cartesian palletizers, and CNC machines
                   </li>
                   <li>
-                    Developed and shipped a number of client projects which are now being used everyday in factories
+                    Developed and shipped software applications to clients who now use the applications everyday at their factories
                   </li>
                   <li>
-                    Architected and developed a framework for all future client projects
+                    Architected and developed the application framework upon which all future client applications will be developed
                   </li>
                   <li>
                     Interacted with other teams on a daily basis to align on business goals and meet deadlines
@@ -430,7 +449,7 @@ img.emoji {
                     Planned, scoped, and organized daily tasks and long-term projects 
                   </li>
                   <li>
-                    Individually contributed across many aspects of the codebase, from firmware to the application layer
+                    Individually contributed across many aspects of the codebase, from the firmware to the application layer
                   </li>
                 </ul>
               </div>
@@ -531,7 +550,7 @@ img.emoji {
                 </div>
                 <ul>
                   <li>
-                    Developed a profiling framework for the game systems in <i>Dropzone</i>
+                    Developed a profiling framework for the game systems of <i>Dropzone</i>
                   </li>
                 </ul>
               </div>
@@ -566,10 +585,10 @@ img.emoji {
           <section class="resume_section">
             <h2>Projects</h2>
             <ul>
-              <li>My <b>self-hosted personal website</b> where I do small projects in WebAssembly and OpenGL: <a href="https://matthewkosarek.xyz">https://matthewkosarek.xyz</a>
-                <li>A <b>game engine</b> that I built from scrach in C++ and OpenGL: <a href="https://github.com/mattkae/MatteEngine"">https://github.com/mattkae/MatteEngine</a></li>
-                <li>My <b>self-installing emacs configuration</b>: <a href="https://git.matthewkosarek.xyz/emacs_config/">https://git.matthewkosarek.xyz/emacs_config/</a> </li>
-                <li>Unfinished website about <b>realtime physics in video games</b>: <a href="https://physicsforgames.com/">https://physicsforgames.com/</a> </li>
+              <li>My <b>self-hosted personal website</b> where I do small projects in WebAssembly and OpenGL: <a href="https://matthewkosarek.xyz">matthewkosarek.xyz</a>
+                <li>A <b>game engine</b> that I built from scrach in C++ and OpenGL: <a href="https://github.com/mattkae/MatteEngine"">github.com/mattkae/MatteEngine</a></li>
+                <li>My <b>self-installing emacs configuration</b>: <a href="https://git.matthewkosarek.xyz/emacs_config/">git.matthewkosarek.xyz/emacs_config/</a> </li>
+                <li>Unfinished website about <b>realtime physics in video games</b>: <a href="https://physicsforgames.com/">physicsforgames.com/</a> </li>
             </ul>
           </section>
         </main>

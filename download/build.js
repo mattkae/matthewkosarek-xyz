@@ -20,6 +20,7 @@ const newHeader = `
     <meta charset="UTF-8" />
       <script src="https://twemoji.maxcdn.com/2/twemoji.min.js?11.2"></script>
       <script>window.onload = function () { twemoji.parse(document.body);}</script>
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css">
 <style>
 ${resumeCss}
 ${resumeDlCss}

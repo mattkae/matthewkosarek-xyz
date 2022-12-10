@@ -38,8 +38,8 @@ header {
 }
 
 #resume_sidebar {
-    width: auto;
-    margin-right: 1rem;
+    width: 204px;
+    margin-right: 24px;
 }
 
 #resume_header {
@@ -70,12 +70,15 @@ header {
 }
 
 #resume_header_contact span {
-    margin-top: 5px;
+    margin-bottom: 8px;
     font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 #resume_header_contact i {
-    margin-right: 0.25rem;
+    margin-right: 8px;
     font-style: normal;
 }
 
@@ -136,8 +139,8 @@ header {
 
 .skills_section_bar {
     position: relative;
-    width: 204px;
-    height: 24px;
+    width: 100%;
+    height: 16px;
     background-color: white;
     border-radius: 3px;
     border: 1px solid lightgray;
@@ -151,6 +154,7 @@ header {
     width: 100%;
     background-image: linear-gradient(to right,#007acc, #00E091);
     border-radius: 3px;
+    background-size: 204px 100%;
 }
 
 .skills_section_bar_fill.one {
