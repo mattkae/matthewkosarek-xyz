@@ -4,7 +4,8 @@ const fs = require('fs');
 const childProcess = require('child_process');
 
 const resumeHtml = fs.readFileSync('../resume.html').toString();
-const resumeCss = fs.readFileSync('./resume_dl.css').toString();
+const resumeCss = fs.readFileSync('../resume.css').toString();
+const resumeDlCss = fs.readFileSync('./resume_dl.css').toString();
 
 function getRidofTagsBetween(start, end, html) {
   let si = newHtml.indexOf(start);
@@ -21,6 +22,7 @@ const newHeader = `
       <script>window.onload = function () { twemoji.parse(document.body);}</script>
 <style>
 ${resumeCss}
+${resumeDlCss}
 </style>
 </head>
 `
