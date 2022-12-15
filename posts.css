@@ -1,9 +1,16 @@
 #tag_list {
-  width: 100%;
+  width: 65%;
   display: grid;
+  margin: auto;
   grid-template-columns: repeat(3, 1fr);
   column-gap: 8px;
   row-gap: 8px
+}
+
+@media (max-width: 767.98px) {
+  #tag_list {
+    width: 100%;
+  }
 }
 
 #tag_list  button {
