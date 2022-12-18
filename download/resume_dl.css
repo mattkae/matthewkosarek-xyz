@@ -1,10 +1,10 @@
 html {
   overflow-y: overlay;
+  font-size: 15px;
 }
 
 body {
-  font-size: 14px !important;
-  padding-top: 72px;
+  margin-top: 64px;
   padding-left: 48px;
   padding-right: 48px;
 }
