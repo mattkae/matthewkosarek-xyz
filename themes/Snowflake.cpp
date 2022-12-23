@@ -2,6 +2,7 @@
 #include "Renderer2d.h"
 #include "mathlib.h"
 #include "list.h"
+#include <cstdio>
 
 const Vector4 snowColor = Vector4(1.0, 0.98, 0.98, 1);
 
@@ -36,22 +37,8 @@ inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* 
 	ud->vtxIdx = renderer->vertices.numElements;
 	generateSnowflakeShape(&renderer->vertices, randomIntBetween(4, 16), randomFloatBetween(8.f, 16.f), randomFloatBetween(2.f, 6.f));
 	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
-    ud->isAlive = false;
-}
-
-inline void spawnFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
 	ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
 	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, renderer->yMax + 256));
-	ud->isAlive = true;
-}
-
-inline void findAndSpawnNextFlake(SnowflakeParticleRenderer* renderer) {
-    for (i32 i = 0; i < renderer->numSnowflakes; i++) {
-        if (!renderer->updateData[i].isAlive) {
-            spawnFlake(renderer, &renderer->updateData[i]);
-            break;
-        }
-    }
 }
 
 void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d* renderer) {
@@ -63,6 +50,9 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 	xMax = static_cast<f32>(renderer->context->width);
     yMax = static_cast<f32>(renderer->context->height);
 
+    vertices.deallocate();
+    vertices.growDynamically = true;
+    
 	// Initialize each snow flake with its shape
 	for (i32 s = 0; s < numSnowflakes; s++) {
 		auto ud = &updateData[s];
@@ -101,16 +91,8 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 }
 
 inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds, bool addWind) {
-	if (!ud->isAlive) {
-		return;
-	}
-
 	if (addWind) ud->velocity += renderer->windSpeed;		
 	ud->position += ud->velocity * dtSeconds;
-
-	if (ud->position.y < 0) {
-		ud->isAlive = false;
-    }
 
 	Mat4x4 m = Mat4x4().translateByVec2(ud->position);
 	for (i32 v = ud->vtxIdx; v < (ud->vtxIdx + ud->numVertices); v++) {
@@ -122,7 +104,6 @@ void SnowflakeParticleRenderer::update(f32 dtSeconds) {
 	timeUntilNextSpawnSeconds -= dtSeconds;
 	if (timeUntilNextSpawnSeconds < 0) {
 		timeUntilNextSpawnSeconds = spawnIntervalSeconds;
-		findAndSpawnNextFlake(this);
 	}
 
 	bool addWind = false;

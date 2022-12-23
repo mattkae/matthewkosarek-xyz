@@ -73,10 +73,12 @@ namespace matte {
 	template <typename T>
 	bool List<T>::grow(size_t newSize) {
 		if (!growDynamically) {
+            logger_error("Cannot grow list: growDynamically is disabled");
 			return false;
 		}
 
 		if (newSize == 0) {
+            logger_error("Cannot grow list: newSize is zero!");
 			return false;
 		}
 

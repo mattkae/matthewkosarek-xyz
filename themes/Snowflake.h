@@ -21,7 +21,6 @@ struct SnowflakeUpdateData {
 	Vector2 velocity;
 	Vector2 position;
 	f32 rotation;
-	bool isAlive = false;
 	bool onGround = false;
 
 	i32 vtxIdx = 0;
