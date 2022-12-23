@@ -38,7 +38,7 @@ inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* 
 	generateSnowflakeShape(&renderer->vertices, randomIntBetween(4, 16), randomFloatBetween(8.f, 16.f), randomFloatBetween(2.f, 6.f));
 	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
 	ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
-	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, -renderer->yMax));
+	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, 3 * renderer->yMax));
 }
 
 void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d* renderer) {
@@ -89,6 +89,11 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
     glBindVertexArray(0);
 }
 
+inline void resetFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
+    ud->position.y = 2 * renderer->yMax;
+    ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
+}
+
 inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds, bool addWind) {
 	if (addWind) ud->velocity += renderer->windSpeed;		
 	ud->position += ud->velocity * dtSeconds;
@@ -97,6 +102,10 @@ inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData
 	for (i32 v = ud->vtxIdx; v < (ud->vtxIdx + ud->numVertices); v++) {
 		renderer->vertices.data[v].vMatrix = m;
 	}
+
+    if (ud->position.y <= -256) {
+        resetFlake(renderer, ud);
+    }
 }
 
 void SnowflakeParticleRenderer::update(f32 dtSeconds) {
