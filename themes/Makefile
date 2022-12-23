@@ -1,17 +1,44 @@
-CXX = emcc
-EXE = dist/output.js
-SRCS = $(wildcard *.cpp)
-OBJS = $(patsubst %.cpp,%.o,$(SRCS))
+TARGET_EXEC ?= output.js
+
+BUILD_DIR ?= ./dist
+SRC_DIRS ?= ./src
+
+CC   := emcc
+CXX	 := emcc
+SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+DEPS := $(OBJS:.o=.d)
+
+INC_DIRS := $(shell find $(SRC_DIRS) -type d)
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 LDFLAGS = -s ALLOW_MEMORY_GROWTH=1 -s USE_WEBGL2=1 -s FULL_ES3=1 -s WASM=1 -s NO_EXIT_RUNTIME=1 -s FETCH
 
-all: build $(EXE)
+CPPFLAGS ?= $(INC_FLAGS) -MMD -MP
 
-$(EXE): $(OBJS)
-	echo $(OBJS)
-	$(CXX) -o $(EXE) $(OBJS) $(LDFLAGS)
+$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
 
-build:
-	@mkdir -p dist
+# assembly
+$(BUILD_DIR)/%.s.o: %.s
+	$(MKDIR_P) $(dir $@)
+	$(AS) $(ASFLAGS) -c $< -o $@
+
+# c source
+$(BUILD_DIR)/%.c.o: %.c
+	$(MKDIR_P) $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+# c++ source
+$(BUILD_DIR)/%.cpp.o: %.cpp
+	$(MKDIR_P) $(dir $@)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+
+.PHONY: clean
 
 clean:
-	rm -rf dist && rm *.o
+	$(RM) -r $(BUILD_DIR)
+
+-include $(DEPS)
+
+MKDIR_P ?= mkdir -p

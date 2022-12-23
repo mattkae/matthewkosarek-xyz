@@ -258,7 +258,6 @@ void AutumnTheme::unload()  {
 void WinterTheme::load(Renderer2d* renderer) {
     renderer->clearColor = Vector4(200, 229, 239, 255).toNormalizedColor();
 	SnowflakeLoadParameters lp;
-	lp.spawnIntervalSeconds = 0.05;
 	spr.load(lp, renderer);
 }
 

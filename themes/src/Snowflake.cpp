@@ -38,14 +38,13 @@ inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* 
 	generateSnowflakeShape(&renderer->vertices, randomIntBetween(4, 16), randomFloatBetween(8.f, 16.f), randomFloatBetween(2.f, 6.f));
 	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
 	ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
-	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, renderer->yMax + 256));
+	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, -renderer->yMax));
 }
 
 void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d* renderer) {
-	spawnIntervalSeconds = params.spawnIntervalSeconds;
-	numSnowflakes = params.maxSnowflakes;
+	numSnowflakes = params.numSnowflakes;
 
-	updateData = new SnowflakeUpdateData[params.maxSnowflakes];
+	updateData = new SnowflakeUpdateData[params.numSnowflakes];
 
 	xMax = static_cast<f32>(renderer->context->width);
     yMax = static_cast<f32>(renderer->context->height);
@@ -101,11 +100,6 @@ inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData
 }
 
 void SnowflakeParticleRenderer::update(f32 dtSeconds) {
-	timeUntilNextSpawnSeconds -= dtSeconds;
-	if (timeUntilNextSpawnSeconds < 0) {
-		timeUntilNextSpawnSeconds = spawnIntervalSeconds;
-	}
-
 	bool addWind = false;
 	timeUntilNextWindSeconds -= dtSeconds;
 	if (timeUntilNextWindSeconds < 0) {

@@ -6,13 +6,12 @@ struct Renderer2d;
 struct Vertex2D;
 
 struct SnowflakeLoadParameters {
-	i32 maxSnowflakes = 1000;
+	i32 numSnowflakes = 1000;
 	f32 rateOfSnowfall = 0.1f;
     Vector2 flakeV0 = { 0, 1 };
 	f32 flakeSize = 5.f;
 	f32 flakeSizeDeviation = 1.f;
 	Vector4 snowColor = { 0.8, 0.8, 0.8, 1.0 };
-	f32 spawnIntervalSeconds = 0.3;
 	f32 windIntervalSeconds = 1.5;
 };
 
@@ -30,12 +29,10 @@ struct SnowflakeUpdateData {
 struct SnowflakeParticleRenderer {
 	f32 xMax = 0;
 	f32 yMax = 0;
-	f32 spawnIntervalSeconds = 0.3;
 	f32 windIntervalSeconds = 1.5;
 	i32 numSnowflakes = 0;
     Vector2 windSpeed;
 	SnowflakeUpdateData* updateData;
-	f32 timeUntilNextSpawnSeconds = 0;
 	f32 timeUntilNextWindSeconds = 0;
 
 	u32 vao;
