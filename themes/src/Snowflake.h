@@ -6,11 +6,9 @@ struct Renderer2d;
 struct Vertex2D;
 
 struct SnowflakeLoadParameters {
-	i32 numSnowflakes = 1000;
+	i32 numSnowflakes = 500;
 	f32 rateOfSnowfall = 0.1f;
     Vector2 flakeV0 = { 0, 1 };
-	f32 flakeSize = 5.f;
-	f32 flakeSizeDeviation = 1.f;
 	Vector4 snowColor = { 0.8, 0.8, 0.8, 1.0 };
 	f32 windIntervalSeconds = 1.5;
 };
@@ -19,8 +17,8 @@ struct SnowflakeUpdateData {
 	Vector2 v0;
 	Vector2 velocity;
 	Vector2 position;
-	f32 rotation;
-	bool onGround = false;
+    f32 rotateVelocity = 0.f;
+	f32 rotation = 0;
 
 	i32 vtxIdx = 0;
 	i32 numVertices = 0;

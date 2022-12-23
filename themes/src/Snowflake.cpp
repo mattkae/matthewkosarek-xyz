@@ -6,7 +6,8 @@
 
 const Vector4 snowColor = Vector4(1.0, 0.98, 0.98, 1);
 
-inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms, f32 radius, f32 innerRadius) {
+inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms, f32 outerRadius, f32 innerRadius) {
+    outerRadius = outerRadius + innerRadius;
 	f32 dx = ((2 * PI) / numArms) / 3.0;
 	for (i32 centerIdx = 0; centerIdx < (3 * numArms); centerIdx+=3) {
 	    f32 degreeStart = dx * centerIdx;
@@ -18,8 +19,8 @@ inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms,
 		f32 sinStart = sinf(degreeStart);
 		f32 sinEnd = sinf(degreeEnd);
 
-		Vector2 leftEnd = Vector2(radius * cosStart, radius * sinStart);
-		Vector2 rightEnd = Vector2(radius * cosEnd, radius * sinEnd);
+		Vector2 leftEnd = Vector2(outerRadius * cosStart, outerRadius * sinStart);
+		Vector2 rightEnd = Vector2(outerRadius * cosEnd, outerRadius * sinEnd);
 		Vector2 diff = (rightEnd - leftEnd) / 2.0;
 		Vector2 leftStart = Vector2(-diff.x, -diff.y) + Vector2(innerRadius * cosStart, innerRadius * sinStart);
 		Vector2 rightStart = diff + Vector2(innerRadius * cosEnd, innerRadius * sinEnd);
@@ -35,10 +36,15 @@ inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms,
 
 inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
 	ud->vtxIdx = renderer->vertices.numElements;
-	generateSnowflakeShape(&renderer->vertices, randomIntBetween(4, 16), randomFloatBetween(8.f, 16.f), randomFloatBetween(2.f, 6.f));
+	generateSnowflakeShape(&renderer->vertices,
+                           randomIntBetween(4, 12),
+                           randomFloatBetween(4.f, 12.f),
+                           randomFloatBetween(4.f, 12.f));
+    
 	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
 	ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
 	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, 3 * renderer->yMax));
+    ud->rotateVelocity = randomFloatBetween(-PI / 8.f, PI / 8.f);
 }
 
 void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d* renderer) {
@@ -82,7 +88,6 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 							  GL_FALSE,
 							  sizeof(Vertex2D),
 							  (GLvoid *)(offsetof(Vertex2D, vMatrix) + offset));
-		//glVertexAttribDivisor(renderer->attributes.vMatrix + idx, 1);
 	}
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -97,8 +102,9 @@ inline void resetFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData*
 inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds, bool addWind) {
 	if (addWind) ud->velocity += renderer->windSpeed;		
 	ud->position += ud->velocity * dtSeconds;
+    ud->rotation += ud->rotateVelocity * dtSeconds;
 
-	Mat4x4 m = Mat4x4().translateByVec2(ud->position);
+	Mat4x4 m = Mat4x4().translateByVec2(ud->position).rotate2D(ud->rotation);
 	for (i32 v = ud->vtxIdx; v < (ud->vtxIdx + ud->numVertices); v++) {
 		renderer->vertices.data[v].vMatrix = m;
 	}
