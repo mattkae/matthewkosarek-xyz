@@ -27,6 +27,11 @@ const posts = [
     url: "_posts/hello_world.html",
     title: "Hello, World!",
     tags: [ "personal" ]
+  },
+  {
+    url: "_posts/plato_1.html",
+    title: "Euthyphro: the pious and the god-loved",
+    tags: [ "books" ]
   }
 ];
 
@@ -138,7 +143,7 @@ function createPostPage(outputFile, postFilter) {
     <section>
     <h2>Posts</h2>
     <ul id='post_list'>
-        ${posts.filter(post => !postFilter || post.tags.includes(postFilter)).map(createPostLink)}
+        ${posts.filter(post => !postFilter || post.tags.includes(postFilter)).map(createPostLink).join('')}
     </ul>
     </section>
   </body>
