@@ -6,44 +6,48 @@
 
 const Vector4 snowColor = Vector4(1.0, 0.98, 0.98, 1);
 
-inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms, f32 outerRadius, f32 innerRadius) {
-    outerRadius = outerRadius + innerRadius;
-	f32 dx = ((2 * PI) / numArms) / 3.0;
-	for (i32 centerIdx = 0; centerIdx < (3 * numArms); centerIdx+=3) {
-	    f32 degreeStart = dx * centerIdx;
-		f32 degreeEnd = dx * (centerIdx + 1);
+/**
+   Fills in the vertices array vertices that represent a snowflake shape. The snowflake shape consists
+   of numArms jutting out of the center radially. The center of the flake is connected. The radius is
+   used to determine the length of the arms. The first third of each arm is barren, after which branches
+   extends on either side of the arm at an angle of about 60 degrees. Each branch can itself have tiny
+   sub branches jutting out of it, but these should be not nearly as large as the regular branches.
 
-		f32 cosStart = cosf(degreeStart);
-		f32 cosEnd = cosf(degreeEnd);
+   With all of this in mind, we should be able to build a convincing snowflake.
 
-		f32 sinStart = sinf(degreeStart);
-		f32 sinEnd = sinf(degreeEnd);
-
-		Vector2 leftEnd = Vector2(outerRadius * cosStart, outerRadius * sinStart);
-		Vector2 rightEnd = Vector2(outerRadius * cosEnd, outerRadius * sinEnd);
-		Vector2 diff = (rightEnd - leftEnd) / 2.0;
-		Vector2 leftStart = Vector2(-diff.x, -diff.y) + Vector2(innerRadius * cosStart, innerRadius * sinStart);
-		Vector2 rightStart = diff + Vector2(innerRadius * cosEnd, innerRadius * sinEnd);
-
+   :param vertices List of vertices to be filled in
+   :param numArms Number of arms radially sticking out of the snowflake
+   :param radius Length of the snowflake arms
+ */
+inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms, f32 radius, f32 armWidthRatio = 0.08f) {
+    f32 innerRadius = 0;
+    f32 outerRadius = 2 * radius;
+	f32 dx = ((2 * PI) / numArms);
+    for (i32 armIndex = 0; armIndex < numArms; armIndex++) {
+        f32 armAngle = dx * armIndex;
+        Vector2 leftStart = Vector2(-armWidthRatio * radius, 0).rotate(armAngle);
+        Vector2 leftEnd = Vector2(-armWidthRatio * radius, radius).rotate(armAngle);
+        Vector2 rightStart = Vector2(armWidthRatio * radius, 0).rotate(armAngle);
+        Vector2 rightEnd = Vector2(armWidthRatio * radius, radius).rotate(armAngle);
+        
 		vertices->add({ leftStart, snowColor, Mat4x4() });
 		vertices->add({ leftEnd, snowColor, Mat4x4() });
 		vertices->add({ rightEnd, snowColor, Mat4x4() });
+		vertices->add({ leftStart, snowColor, Mat4x4() });
 		vertices->add({ rightEnd, snowColor, Mat4x4() });
 		vertices->add({ rightStart, snowColor, Mat4x4() });
-		vertices->add({ leftStart, snowColor, Mat4x4() });
-	}
+    }
 }
 
 inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
 	ud->vtxIdx = renderer->vertices.numElements;
 	generateSnowflakeShape(&renderer->vertices,
-                           randomIntBetween(4, 12),
-                           randomFloatBetween(4.f, 12.f),
-                           randomFloatBetween(4.f, 12.f));
+                           6,
+                           randomFloatBetween(8.f, 16.f));
     
 	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
 	ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
-	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, 3 * renderer->yMax));
+	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, 4 * renderer->yMax));
     ud->rotateVelocity = randomFloatBetween(-PI / 8.f, PI / 8.f);
 }
 
