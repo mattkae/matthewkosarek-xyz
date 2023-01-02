@@ -1,3 +1,6 @@
+#ifndef SNOWFLAKE_H
+#define SNOWFLAKE_H
+
 #include "types.h"
 #include "mathlib.h"
 #include "list.h"
@@ -6,15 +9,11 @@ struct Renderer2d;
 struct Vertex2D;
 
 struct SnowflakeLoadParameters {
-	i32 numSnowflakes = 500;
-	f32 rateOfSnowfall = 0.1f;
-    Vector2 flakeV0 = { 0, 1 };
-	Vector4 snowColor = { 0.8, 0.8, 0.8, 1.0 };
-	f32 windIntervalSeconds = 1.5;
+	i32 numSnowflakes = 480;
+	f32 windIntervalSeconds = 1.5f;
 };
 
 struct SnowflakeUpdateData {
-	Vector2 v0;
 	Vector2 velocity;
 	Vector2 position;
     f32 rotateVelocity = 0.f;
@@ -30,8 +29,8 @@ struct SnowflakeParticleRenderer {
 	f32 windIntervalSeconds = 1.5;
 	i32 numSnowflakes = 0;
     Vector2 windSpeed;
-	SnowflakeUpdateData* updateData;
 	f32 timeUntilNextWindSeconds = 0;
+	SnowflakeUpdateData* updateData;
 
 	u32 vao;
 	u32 vbo;
@@ -43,3 +42,5 @@ struct SnowflakeParticleRenderer {
 	void render(Renderer2d* renderer);
 	void unload();
 };
+
+#endif

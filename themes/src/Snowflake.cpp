@@ -5,6 +5,29 @@
 #include <cstdio>
 
 const Vector4 snowColor = Vector4(1.0, 0.98, 0.98, 1);
+const Vector2 NUM_ARMS_RANGE = Vector2(6.f, 8.f);
+const Vector2 RADIUS_RANGE = Vector2(8.f, 32.f);
+const Vector2 VELOCITY_RANGE_X = Vector2(-10.f, 10.f);
+const Vector2 VELOCITY_RANGE_Y = Vector2(-100.f, -85.f);
+const Vector2 ROTATION_VELOCITY_RANGE = Vector2(-PI / 8.f, PI / 8.f);
+const Vector2 WIND_VELOCITY_RANGE_X = Vector2(-3.f, 3.f);
+const Vector2 WIND_VELOCITY_RANGE_Y = Vector2(3.f, 10.f);
+const f32 GRAVITY = 5.f;
+
+inline void generateSnowflakeArm(f32 width, f32 height, f32 angle, matte::List<Vertex2D>* vertices, Mat4x4 transform = Mat4x4()) {
+    f32 halfWidth = width / 2.f;
+    Vector2 leftStart = transform * Vector2(-halfWidth, 0).rotate(angle);
+    Vector2 leftEnd = transform * Vector2(-halfWidth, height).rotate(angle);
+    Vector2 rightStart = transform * Vector2(halfWidth, 0).rotate(angle);
+    Vector2 rightEnd = transform * Vector2(halfWidth, height).rotate(angle);
+
+    vertices->add({ leftStart, snowColor, Mat4x4() });
+    vertices->add({ leftEnd, snowColor, Mat4x4() });
+    vertices->add({ rightEnd, snowColor, Mat4x4() });
+    vertices->add({ leftStart, snowColor, Mat4x4() });
+    vertices->add({ rightEnd, snowColor, Mat4x4() });
+    vertices->add({ rightStart, snowColor, Mat4x4() });
+}
 
 /**
    Fills in the vertices array vertices that represent a snowflake shape. The snowflake shape consists
@@ -25,30 +48,32 @@ inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms,
 	f32 dx = ((2 * PI) / numArms);
     for (i32 armIndex = 0; armIndex < numArms; armIndex++) {
         f32 armAngle = dx * armIndex;
-        Vector2 leftStart = Vector2(-armWidthRatio * radius, 0).rotate(armAngle);
-        Vector2 leftEnd = Vector2(-armWidthRatio * radius, radius).rotate(armAngle);
-        Vector2 rightStart = Vector2(armWidthRatio * radius, 0).rotate(armAngle);
-        Vector2 rightEnd = Vector2(armWidthRatio * radius, radius).rotate(armAngle);
-        
-		vertices->add({ leftStart, snowColor, Mat4x4() });
-		vertices->add({ leftEnd, snowColor, Mat4x4() });
-		vertices->add({ rightEnd, snowColor, Mat4x4() });
-		vertices->add({ leftStart, snowColor, Mat4x4() });
-		vertices->add({ rightEnd, snowColor, Mat4x4() });
-		vertices->add({ rightStart, snowColor, Mat4x4() });
+        generateSnowflakeArm(armWidthRatio * radius, radius, armAngle, vertices);
+        f32 armLeftAngle = DEG_TO_RAD(60.f);
+        f32 armRightAngle = DEG_TO_RAD(-60.f);
+
+        const i32 NUM_SUB_ARMS = 4;
+        for (i32 subArmIndex = 0; subArmIndex < NUM_SUB_ARMS; subArmIndex++) {
+            f32 height = (radius / static_cast<f32>(subArmIndex));
+            f32 width = (armWidthRatio / (subArmIndex + 1)) * height;
+            f32 transY = (radius / (NUM_SUB_ARMS + 1)) * (subArmIndex + 1);
+            Vector2 translation = Vector2(0, transY).rotate(armAngle);
+            generateSnowflakeArm(width, height, armAngle, vertices, Mat4x4().translateByVec2(translation).rotate2D(armLeftAngle));
+            generateSnowflakeArm(width, height, armAngle, vertices, Mat4x4().translateByVec2(translation).rotate2D(armRightAngle));
+        }
     }
 }
 
 inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
 	ud->vtxIdx = renderer->vertices.numElements;
 	generateSnowflakeShape(&renderer->vertices,
-                           6,
-                           randomFloatBetween(8.f, 16.f));
+                           randomFloatBetween(NUM_ARMS_RANGE.x, NUM_ARMS_RANGE.y),
+                           randomFloatBetween(RADIUS_RANGE.x, RADIUS_RANGE.y));
     
 	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
-	ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
+	ud->velocity = Vector2(randomFloatBetween(VELOCITY_RANGE_X.x, VELOCITY_RANGE_X.y), randomFloatBetween(VELOCITY_RANGE_Y.x, VELOCITY_RANGE_Y.y));
 	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, 4 * renderer->yMax));
-    ud->rotateVelocity = randomFloatBetween(-PI / 8.f, PI / 8.f);
+    ud->rotateVelocity = randomFloatBetween(ROTATION_VELOCITY_RANGE.x, ROTATION_VELOCITY_RANGE.y);
 }
 
 void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d* renderer) {
@@ -104,7 +129,8 @@ inline void resetFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData*
 }
 
 inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds, bool addWind) {
-	if (addWind) ud->velocity += renderer->windSpeed;		
+    ud->velocity = ud->velocity + Vector2(0, -(GRAVITY * dtSeconds));
+	if (addWind) ud->velocity += renderer->windSpeed;	
 	ud->position += ud->velocity * dtSeconds;
     ud->rotation += ud->rotateVelocity * dtSeconds;
 
@@ -123,7 +149,8 @@ void SnowflakeParticleRenderer::update(f32 dtSeconds) {
 	timeUntilNextWindSeconds -= dtSeconds;
 	if (timeUntilNextWindSeconds < 0) {
 		timeUntilNextWindSeconds = windIntervalSeconds;
-		windSpeed = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-10, 0));
+		windSpeed = Vector2(randomFloatBetween(WIND_VELOCITY_RANGE_X.x, WIND_VELOCITY_RANGE_X.y),
+                            randomFloatBetween(WIND_VELOCITY_RANGE_Y.x, WIND_VELOCITY_RANGE_Y.y));
 		addWind = true;
 	}
 
