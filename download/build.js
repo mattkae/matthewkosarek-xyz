@@ -18,8 +18,17 @@ const newHeader = `
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta charset="UTF-8" />
-      <script src="https://twemoji.maxcdn.com/2/twemoji.min.js?11.2"></script>
-      <script>window.onload = function () { twemoji.parse(document.body);}</script>
+      <style>
+img.emoji {
+   height: 1em;
+   width: 1em;
+   margin: 0 .05em 0 .1em;
+   vertical-align: -0.1em;
+}
+</style>
+<script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+
+<script>window.onload = function () { twemoji.parse(document.body);}</script>
       <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,300" rel="stylesheet" type="text/css">
 <style>
 ${resumeCss}

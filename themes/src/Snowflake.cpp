@@ -4,6 +4,16 @@
 #include "list.h"
 #include <cstdio>
 
+/*
+
+  What else to do?
+
+  - Windstream that blows a certain selection of snowflakes in a loop-dee-loop pattern
+  - Snowflakes that land on the ground and melt
+  - Snowflakes that spin along the Y-axis for a three dimensional effect
+  
+ */
+
 const Vector4 snowColor = Vector4(1.0, 0.98, 0.98, 1);
 const Vector2 NUM_ARMS_RANGE = Vector2(6.f, 8.f);
 const Vector2 RADIUS_RANGE = Vector2(8.f, 32.f);
@@ -65,10 +75,11 @@ inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms,
 }
 
 inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
+    ud->radius = randomFloatBetween(RADIUS_RANGE.x, RADIUS_RANGE.y);
 	ud->vtxIdx = renderer->vertices.numElements;
 	generateSnowflakeShape(&renderer->vertices,
                            randomFloatBetween(NUM_ARMS_RANGE.x, NUM_ARMS_RANGE.y),
-                           randomFloatBetween(RADIUS_RANGE.x, RADIUS_RANGE.y));
+                           ud->radius);
     
 	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
 	ud->velocity = Vector2(randomFloatBetween(VELOCITY_RANGE_X.x, VELOCITY_RANGE_X.y), randomFloatBetween(VELOCITY_RANGE_Y.x, VELOCITY_RANGE_Y.y));
@@ -126,9 +137,10 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 inline void resetFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
     ud->position.y = 2 * renderer->yMax;
     ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
+    ud->rotation = 0;
 }
 
-inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds, bool addWind) {
+inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds) {
     ud->velocity = ud->velocity + Vector2(0, -(GRAVITY * dtSeconds));
 	if (addWind) ud->velocity += renderer->windSpeed;	
 	ud->position += ud->velocity * dtSeconds;
@@ -139,24 +151,20 @@ inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData
 		renderer->vertices.data[v].vMatrix = m;
 	}
 
-    if (ud->position.y <= -256) {
+    if (ud->position.y <= -ud->radius) {
         resetFlake(renderer, ud);
     }
 }
 
 void SnowflakeParticleRenderer::update(f32 dtSeconds) {
-	bool addWind = false;
 	timeUntilNextWindSeconds -= dtSeconds;
 	if (timeUntilNextWindSeconds < 0) {
-		timeUntilNextWindSeconds = windIntervalSeconds;
-		windSpeed = Vector2(randomFloatBetween(WIND_VELOCITY_RANGE_X.x, WIND_VELOCITY_RANGE_X.y),
-                            randomFloatBetween(WIND_VELOCITY_RANGE_Y.x, WIND_VELOCITY_RANGE_Y.y));
-		addWind = true;
+		timeUntilNextWindSeconds = randomFloatBetween(2.5f, 10.f);
 	}
 
     for (i32 s = 0; s < numSnowflakes; s++) {
         SnowflakeUpdateData* ud = &updateData[s];
-        updateFlake(this, ud, s, dtSeconds, addWind);
+        updateFlake(this, ud, s, dtSeconds);
     }
 }
 

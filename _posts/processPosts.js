@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const posts = require('./postList');
 
 const tags = [
   {
@@ -21,19 +22,6 @@ const tags = [
     title: 'Food 🍲'
   }
 ]
-
-const posts = [
-  {
-    url: "_posts/hello_world.html",
-    title: "Hello, World!",
-    tags: [ "personal" ]
-  },
-  {
-    url: "_posts/plato_1.html",
-    title: "Euthyphro: the pious and the god-loved",
-    tags: [ "books" ]
-  }
-];
 
 function createTagFile(tag) {
   const dir = path.resolve(path.join(__dirname, '..', 'posts'));

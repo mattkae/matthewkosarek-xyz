@@ -4,6 +4,7 @@
 #include "types.h"
 #include "mathlib.h"
 #include "list.h"
+#include "Windfield.hpp"
 
 struct Renderer2d;
 struct Vertex2D;
@@ -18,6 +19,7 @@ struct SnowflakeUpdateData {
 	Vector2 position;
     f32 rotateVelocity = 0.f;
 	f32 rotation = 0;
+    f32 radius;
 
 	i32 vtxIdx = 0;
 	i32 numVertices = 0;
@@ -28,8 +30,8 @@ struct SnowflakeParticleRenderer {
 	f32 yMax = 0;
 	f32 windIntervalSeconds = 1.5;
 	i32 numSnowflakes = 0;
-    Vector2 windSpeed;
 	f32 timeUntilNextWindSeconds = 0;
+    WindField wind;
 	SnowflakeUpdateData* updateData;
 
 	u32 vao;

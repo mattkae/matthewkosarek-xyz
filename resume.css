@@ -106,6 +106,10 @@ header {
   justify-content: space-between;
 }
 
+.experience-item ul {
+    margin-top: 0.5rem;
+}
+
 .experience-item li {
   width: 100%;
 }
