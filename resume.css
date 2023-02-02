@@ -22,7 +22,6 @@ header {
     color: black;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
     line-height: 1.325rem;
-    padding-bottom: 1rem;
 }
 
 #resume_container {
@@ -35,7 +34,7 @@ header {
 }
 
 #resume_sidebar {
-    width: 12rem;
+    width: 15rem;
     margin-right: 1.5rem;
 }
 
