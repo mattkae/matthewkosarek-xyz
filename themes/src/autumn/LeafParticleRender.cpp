@@ -1,8 +1,8 @@
 #include "LeafParticleRender.h"
-#include "Renderer2d.h"
-#include "mathlib.h"
+#include "../Renderer2d.h"
+#include "../mathlib.h"
 #include "TreeShape.h"
-#include "types.h"
+#include "../types.h"
 #include <math.h>
 
 const i32 verticesPerLeaf = 6; 

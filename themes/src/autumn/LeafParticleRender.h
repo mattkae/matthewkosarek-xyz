@@ -1,6 +1,6 @@
-#include "Renderer2d.h"
-#include "mathlib.h"
-#include "types.h"
+#include "../Renderer2d.h"
+#include "../mathlib.h"
+#include "../types.h"
 
 struct TreeShapeLoadResult;
 

@@ -1,6 +1,6 @@
 #pragma once
-#include "types.h"
-#include "Renderer2d.h"
+#include "../types.h"
+#include "../Renderer2d.h"
 #include <vector>
 
 struct Sun {

@@ -1,7 +1,7 @@
 #include "Snowflake.h"
-#include "Renderer2d.h"
-#include "mathlib.h"
-#include "list.h"
+#include "../Renderer2d.h"
+#include "../mathlib.h"
+#include "../list.h"
 #include <cstdio>
 
 /*
@@ -142,7 +142,7 @@ inline void resetFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData*
 
 inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds) {
     ud->velocity = ud->velocity + Vector2(0, -(GRAVITY * dtSeconds));
-	if (addWind) ud->velocity += renderer->windSpeed;	
+	//if (addWind) ud->velocity += renderer->windSpeed;	
 	ud->position += ud->velocity * dtSeconds;
     ud->rotation += ud->rotateVelocity * dtSeconds;
 

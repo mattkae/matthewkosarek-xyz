@@ -8,32 +8,8 @@
 
 // Note: In the 'transform' attribute, the transform.x is the scale,
 // transform.y is the rotation, and transform.zw is the translatiob.
-const char* vertexShader = 
-	"attribute vec4 position; \n"
-	"attribute vec4 color; \n"
-	"attribute vec4 normal; \n"
-	"uniform mat4 projection; \n"
-	"uniform mat4 view; \n"
-	"uniform mat4 model; \n"
-	"varying lowp vec4 VertexColor; \n"
-	"varying lowp vec4 VertexNormal; \n"
-	"void main() { \n"
-	"    vec4 fragmentPosition = projection * view * model * position; \n"
-	"    gl_Position = fragmentPosition; \n"
-	"    VertexColor = color; \n"
-	"    VertexNormal = normal; \n"
-	"}";
-
-const char* fragmentShader = 
-	"varying lowp vec4 VertexColor; \n"
-	"varying lowp vec4 VertexNormal; \n"
-	"void main() { \n"
-	"    const lowp vec3 lightDirection = vec3(0.0, 1.0, 0.0);\n"
-	"    gl_FragColor = vec4(VertexColor.xyz * dot(VertexNormal.xyz, lightDirection), 1); \n"
-	"}";
-
 EM_BOOL onScreenSizeChanged_3D(int eventType, const EmscriptenUiEvent *uiEvent, void *userData) {
-    Renderer3D* renderer = (Renderer3D*)userData;
+    Renderer3d* renderer = (Renderer3d*)userData;
     
 	EMSCRIPTEN_RESULT result = emscripten_set_canvas_element_size( renderer->context->query, uiEvent->documentBodyClientWidth, uiEvent->documentBodyClientHeight);
 	if (result != EMSCRIPTEN_RESULT_SUCCESS) {
@@ -44,9 +20,9 @@ EM_BOOL onScreenSizeChanged_3D(int eventType, const EmscriptenUiEvent *uiEvent, 
     return true;
 }
 
-void Renderer3D::load(WebglContext* inContext) {
+void Renderer3d::load(WebglContext* inContext, const char* vertexShader, const char* fragmentShader) {
 	context = inContext;
-	printf("Compiling Renderer2d shader...\n");
+	printf("Compiling Renderer3d shader...\n");
 	shader = loadShader(vertexShader, fragmentShader);
 
 	useShader(shader);
@@ -59,12 +35,12 @@ void Renderer3D::load(WebglContext* inContext) {
 	projection = Mat4x4().getPerspectiveProjection(0.1, 1000.f, 0.872f, static_cast<f32>(context->width) / static_cast<f32>(context->height));
 	view = Mat4x4().getLookAt({ 0, 25, 75 }, { 0, 15, 0 }, { 0, 1, 0 });
 
-	logger_info("Renderer2d shader compiled.\n");
+	logger_info("Renderer3d shader compiled.\n");
 
 	emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, this, false, onScreenSizeChanged_3D);
 }
 	
-void Renderer3D::render() {
+void Renderer3d::render() {
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
@@ -78,7 +54,7 @@ void Renderer3D::render() {
 	setShaderMat4(uniforms.view, view);
 }
 
-void Renderer3D::unload() {
+void Renderer3d::unload() {
 	glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT);
 	glDeleteProgram(shader);
@@ -126,7 +102,7 @@ inline i32 readToken(i32 i, const char* content, char* output) {
 	return i;
 }
 
-Mesh3d Mesh3d_fromObj(Renderer3D* renderer, const char* content, const i32 len) {
+Mesh3d Mesh3d_fromObj(Renderer3d* renderer, const char* content, const i32 len) {
 	Mesh3d result;
 	result.vertices.allocate(2048);
 	result.indices.allocate(2048);
@@ -218,7 +194,7 @@ Mesh3d Mesh3d_fromObj(Renderer3D* renderer, const char* content, const i32 len) 
 	return result;
 }
 
-void Mesh3d::load(Renderer3D* renderer) {
+void Mesh3d::load(Renderer3d* renderer) {
 	glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ebo);
@@ -254,7 +230,7 @@ void Mesh3d::unload() {
 	indices.deallocate();
 }
 
-void Mesh3d::render(Renderer3D* renderer) {
+void Mesh3d::render(Renderer3d* renderer) {
 	setShaderMat4(renderer->uniforms.model, model);
 
 	glBindVertexArray(vao);

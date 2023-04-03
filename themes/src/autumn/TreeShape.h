@@ -1,6 +1,6 @@
-#include "Renderer2d.h"
-#include "types.h"
-#include "mathlib.h"
+#include "../Renderer2d.h"
+#include "../types.h"
+#include "../mathlib.h"
 
 struct TreeLoadData {
 	f32 trunkHeight        = 96.f; // Height of the trunk start

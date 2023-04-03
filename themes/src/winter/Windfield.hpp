@@ -1,13 +1,14 @@
 #ifndef WIND_FIELD_HPP
 #define WIND_FIELD_HPP
-#include "types.h"
-#include "mathlib.h"
+#include "../types.h"
+#include "../mathlib.h"
 
 /**
    A Windfield represents a field of vectors in a rectangular region.
    The Width and Height are given in units of CellDimenions. The CellDimension
    is given in pixels.
  */
+template <i32 Width, i32 Height, i32 CellDimension>
 struct WindField {
     f32 ttl = 0.f;
     Vector2 origin;

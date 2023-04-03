@@ -1,7 +1,7 @@
 #include "SummerTheme.h"
-#include "Renderer2d.h"
-#include "list.h"
-#include "mathlib.h"
+#include "../Renderer2d.h"
+#include "../list.h"
+#include "../mathlib.h"
 #include <vector>
 
 void SummerTheme::load(Renderer2d* renderer) {

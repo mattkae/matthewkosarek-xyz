@@ -2,7 +2,7 @@
 
     
 template <i32 Width, i32 Height, i32 CellDimension>
-void WindField<Width, Height, CellDimension>::load(f32 ttl, Vector2 origin) {
+void WindField<Width, Height, CellDimension>::load(f32 cellSizePixels, i32 fieldWithCells, i32 fieldHeightCells, f32 ttl, Vector2 origin) {
     this->ttl = ttl;
     this->origin = origin;
     this->end = this->origin + Vector2(Width * CellDimension, Height * CellDimension);
@@ -21,7 +21,7 @@ Vector2 WindField<Width, Height, CellDimension>::getWindFactor(Vector2& v) {
         Vector2 positionInField = v - this->origin;
         i32 cellX = static_cast<i32>(Width / positionInField.x);
         i32 cellY = static_cast<i32>(Height / positionInField.y);
-        return field[cellX, cellY];
+        return field[cellX][cellY];
     }
     
     return Vector2();

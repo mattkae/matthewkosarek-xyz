@@ -5,7 +5,7 @@
 #include "types.h"
 #include <string>
 
-struct Renderer3D;
+struct Renderer3d;
 
 struct Vertex3d {
     Vector4 position;
@@ -21,13 +21,13 @@ struct Mesh3d {
     matte::List<u32> indices;
     Mat4x4 model;
 
-    void load(Renderer3D* renderer);
-    void render(Renderer3D* renderer);
+    void load(Renderer3d* renderer);
+    void render(Renderer3d* renderer);
     void unload();
 };
 
 struct WebglContext;
-struct Renderer3D {
+struct Renderer3d {
     WebglContext* context = NULL;
 	Mat4x4 projection;
     Mat4x4 view;
@@ -46,11 +46,11 @@ struct Renderer3D {
 		i32 model;
 	} uniforms;
 
-    void load(WebglContext* context);
+    void load(WebglContext* context, const char* vertexShader, const char* fragmentShader);
 	void render();
 	void unload();
 };
 
-Mesh3d Mesh3d_fromObj(Renderer3D* renderer, const char* content, const i32 len);
+Mesh3d Mesh3d_fromObj(Renderer3d* renderer, const char* content, const i32 len);
 
 #endif

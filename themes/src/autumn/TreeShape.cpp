@@ -1,5 +1,5 @@
 #include "TreeShape.h"
-#include "mathlib.h"
+#include "../mathlib.h"
 #include <cstdio>
 #include <cstdlib>
 #include <cfloat>

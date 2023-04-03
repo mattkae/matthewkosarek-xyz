@@ -1,9 +1,9 @@
 #ifndef SNOWFLAKE_H
 #define SNOWFLAKE_H
 
-#include "types.h"
-#include "mathlib.h"
-#include "list.h"
+#include "../types.h"
+#include "../mathlib.h"
+#include "../list.h"
 #include "Windfield.hpp"
 
 struct Renderer2d;
@@ -31,7 +31,7 @@ struct SnowflakeParticleRenderer {
 	f32 windIntervalSeconds = 1.5;
 	i32 numSnowflakes = 0;
 	f32 timeUntilNextWindSeconds = 0;
-    WindField wind;
+    WindField<100, 100, 10> wind;
 	SnowflakeUpdateData* updateData;
 
 	u32 vao;
