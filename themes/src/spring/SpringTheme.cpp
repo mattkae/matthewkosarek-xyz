@@ -10,7 +10,6 @@ void onBunnySuccess(emscripten_fetch_t *fetch) {
 	printf("Finished downloading %llu bytes from URL %s.\n", fetch->numBytes, fetch->url);
 	const i32 len = fetch->numBytes;
 	springTheme->bunnyMesh = Mesh3d_fromObj(&springTheme->renderer, fetch->data, len);
-	// The data is now available at fetch->data[0] through fetch->data[fetch->numBytes-1];
 	emscripten_fetch_close(fetch); // Free data associated with the fetch.
 }
 
