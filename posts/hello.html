@@ -28,9 +28,9 @@
 
 
 
-<div id="outline-container-orgac38a6d" class="outline-2">
-<h2 id="orgac38a6d">TLDR</h2>
-<div class="outline-text-2" id="text-orgac38a6d">
+<div id="outline-container-org3e6eeb2" class="outline-2">
+<h2 id="org3e6eeb2">TLDR</h2>
+<div class="outline-text-2" id="text-org3e6eeb2">
 <ul class="org-ul">
 <li>Create a new folder</li>
 <li>Put <a href="https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/index.css">index.css</a>, <a href="https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/publish.el">publish.el</a>, and <a href="https://github.com/mattkae/matthewkosarek-xyz/blob/master/publish.sh">publish.sh</a> in the folder</li>
@@ -45,20 +45,20 @@
 </div>
 </div>
 
-<div id="outline-container-orgf16191c" class="outline-2">
-<h2 id="orgf16191c">Introduction</h2>
-<div class="outline-text-2" id="text-orgf16191c">
+<div id="outline-container-org6ad5101" class="outline-2">
+<h2 id="org6ad5101">Introduction</h2>
+<div class="outline-text-2" id="text-org6ad5101">
 <p>
 I've recently fallen in love with <code>org-mode</code>, specifically when I use it with <a href="https://www.orgroam.com/">org-roam</a>. I find the whole workflow of creating, tagging, and - later on - searching for information on my computer to be very elegant. On top of that, now that I have the time, I want to begin writing blog posts to better work out my thoughts. With both of these things in mind, I am again turning to the universal tool for human prospering: <code>org-mode</code>. This time, I want to see how it can help me turn a simple org file into a blog post on my website. My requirements are:
 </p>
 
 <ol class="org-ol">
 <li>Org files must get published to HTML files in a particular format with a preset stylesheet</li>
-<li>Code blocks with code highlighting</li>
+<li>Code blocks must include code highlighting</li>
 <li>Images must be supported</li>
 <li>Posts must be timestamped with the creation date next to the title</li>
-<li>Generate a high-level "directory" page with all of the posts by order of creation</li>
-<li>Posts should be able to have tags that will be used to filter content</li>
+<li>A high-level "directory" page should be generated containing a list of the posts ordered chronologically with the newest at the top</li>
+<li>Posts should have tags that can be used for filtering and search.</li>
 </ol>
 
 <p>
@@ -71,9 +71,9 @@ And that's pretty much it for now. Without further ado, let's jump into getting 
 </div>
 </div>
 
-<div id="outline-container-org5eda980" class="outline-2">
-<h2 id="org5eda980">Basic HTML File</h2>
-<div class="outline-text-2" id="text-org5eda980">
+<div id="outline-container-org29c17b2" class="outline-2">
+<h2 id="org29c17b2">Basic HTML File</h2>
+<div class="outline-text-2" id="text-org29c17b2">
 <p>
 As a pilot, we are going to use this org file that I am currently writing (<code>hello.org</code>) as our guinea pig. The goal is to have this org file be our very first blog post.
 </p>
@@ -114,9 +114,9 @@ We then do a <code>chmod +x publish.sh</code> to make it an executable and run i
 </div>
 </div>
 
-<div id="outline-container-orgf147dc3" class="outline-2">
-<h2 id="orgf147dc3">Disabling features that we don't want</h2>
-<div class="outline-text-2" id="text-orgf147dc3">
+<div id="outline-container-orgd0c4ad6" class="outline-2">
+<h2 id="orgd0c4ad6">Disabling features that we don't want</h2>
+<div class="outline-text-2" id="text-orgd0c4ad6">
 <p>
 The next thing will be to remove some of the generated items that I didn't ask for, namely the table of contents, author, section numbers, creation time stamp, and the validation link.
 </p>
@@ -134,7 +134,8 @@ The next thing will be to remove some of the generated items that I didn't ask f
              <span class="org-builtin">:with-toc</span> nil        <span class="org-comment-delimiter">; </span><span class="org-comment">Disable table of contents</span>
              <span class="org-builtin">:with-author</span> nil     <span class="org-comment-delimiter">; </span><span class="org-comment">Disable author</span>
              <span class="org-builtin">:section-numbers</span> nil <span class="org-comment-delimiter">; </span><span class="org-comment">Disable section numbers</span>
-             <span class="org-builtin">:time-stamp-file</span>)))  <span class="org-comment-delimiter">; </span><span class="org-comment">Disable timestamp</span>
+             <span class="org-builtin">:time-stamp-file</span> nil <span class="org-comment-delimiter">; </span><span class="org-comment">Disable timestamp</span>
+             <span class="org-builtin">:with-date</span> nil)))    <span class="org-comment-delimiter">; </span><span class="org-comment">Disable date</span>
 
 (<span class="org-keyword">setq</span> org-html-validation-link nil) <span class="org-comment-delimiter">; </span><span class="org-comment">Disable the validation link at the bottom</span>
 
@@ -145,9 +146,9 @@ The next thing will be to remove some of the generated items that I didn't ask f
 </div>
 </div>
 
-<div id="outline-container-org03a743e" class="outline-2">
-<h2 id="org03a743e">Styling &amp; Code Highlighting</h2>
-<div class="outline-text-2" id="text-org03a743e">
+<div id="outline-container-orge031e7b" class="outline-2">
+<h2 id="orge031e7b">Styling &amp; Code Highlighting</h2>
+<div class="outline-text-2" id="text-orge031e7b">
 <p>
 Next thing on our list is custom styling. This can be achieved by first installing the <code>htmlize</code> package from <code>melpa</code> / <code>elpa</code>.  The EmacsWiki describes this as "a package for exporting the contents of an Emacs buffer to HTML while respecting display properties such as colors, fonts, underlining, invisibility, etc" (<a href="https://www.emacswiki.org/emacs/Htmlize">reference</a>). If used "out-of-the-box", the buffer will be exported to HTML with all of the styles inlined (e.g. if you underline something in your org file, you will generate a <code>&lt;span style="text-decoration: underline"&gt;...&lt;/span&gt;</code>).  However, we are more interested in styling everything by ourselves: we don't want <code>htmlize</code> making assumptions about what underlining means to us! Luckily, <code>htmlize</code> gives us the option to export with class names instead of inline styles so that we can specify each style for ourselves.
 </p>
@@ -318,9 +319,9 @@ If we run the publish again, we can see that we have full styling on our code sn
 </div>
 </div>
 
-<div id="outline-container-orgc8db25f" class="outline-2">
-<h2 id="orgc8db25f">Images</h2>
-<div class="outline-text-2" id="text-orgc8db25f">
+<div id="outline-container-org6538ce3" class="outline-2">
+<h2 id="org6538ce3">Images</h2>
+<div class="outline-text-2" id="text-org6538ce3">
 <p>
 Our first two criteria have been met! Next on the list is solving images. As an example, let's use this <a href="file:///_posts/assets/squirrel.jpg">squirrel image</a> that I found online with an open source license. The ideal situation would be:
 </p>
@@ -365,7 +366,7 @@ So what's the fix here? Well, we have two options, but I am going to go with the
 That's all there is to it! There are simpler ways as well, but that should do it:
 </p>
 
-<div id="orgfcaaaca" class="figure">
+<div id="org619f6a0" class="figure">
 <p><img src="/_posts/assets/squirrel.jpg" alt="squirrel.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 1: </span>A Cute Squirrel</p>
@@ -374,9 +375,9 @@ That's all there is to it! There are simpler ways as well, but that should do it
 </div>
 
 
-<div id="outline-container-org3a8d460" class="outline-2">
-<h2 id="org3a8d460">Creation Date</h2>
-<div class="outline-text-2" id="text-org3a8d460">
+<div id="outline-container-orgf70ee07" class="outline-2">
+<h2 id="orgf70ee07">Creation Date</h2>
+<div class="outline-text-2" id="text-orgf70ee07">
 <p>
 Let's add the creation date below the title next. To start, we will modify the publish command to remove the title (<code>:with-title nil</code>) and, in its place, show a preamble bit of HTML that contains a formatted <code>div</code> with the title and the "last modified" span.z
 </p>
@@ -436,9 +437,9 @@ Note that the downside of this is that the created date will change whenever you
 </div>
 </div>
 
-<div id="outline-container-orgf178cba" class="outline-2">
-<h2 id="orgf178cba">Generating the Directory</h2>
-<div class="outline-text-2" id="text-orgf178cba">
+<div id="outline-container-org2497474" class="outline-2">
+<h2 id="org2497474">Generating the Directory</h2>
+<div class="outline-text-2" id="text-org2497474">
 <p>
 For every org file in my <code>_posts</code> folder, I would like to create a link to the generated HTML file at the <code>/posts.html</code> page of my website. You can think of this as the "directory" of all posts. My criteria is:
 </p>
@@ -499,9 +500,9 @@ From here, you may customize it however you like.  The following are my customiz
 </p>
 </div>
 
-<div id="outline-container-org3f454b3" class="outline-3">
-<h3 id="org3f454b3">Sitemap Title</h3>
-<div class="outline-text-3" id="text-org3f454b3">
+<div id="outline-container-orge5d511f" class="outline-3">
+<h3 id="orge5d511f">Sitemap Title</h3>
+<div class="outline-text-3" id="text-orge5d511f">
 <p>
 I changed the title to "Matthew's Blog Posts".
 </p>
@@ -525,9 +526,9 @@ I changed the title to "Matthew's Blog Posts".
 </div>
 
 
-<div id="outline-container-org5ac2f68" class="outline-3">
-<h3 id="org5ac2f68">Format blog entries in the list</h3>
-<div class="outline-text-3" id="text-org5ac2f68">
+<div id="outline-container-orgd00f9b0" class="outline-3">
+<h3 id="orgd00f9b0">Format blog entries in the list</h3>
+<div class="outline-text-3" id="text-orgd00f9b0">
 <p>
 I like to include the creation date on the blog posts. To do this, we can use <code>org-publish-find-property</code> to find the date property of the org file. Afterward, we can format a string that  includes our formatted timestamp and the <code>org-publish-sitemap-default-entry</code>, which is just a link with the title of the post.
 </p>
@@ -549,9 +550,9 @@ I like to include the creation date on the blog posts. To do this, we can use <c
 </div>
 </div>
 
-<div id="outline-container-org4267ca0" class="outline-2">
-<h2 id="org4267ca0">Tags &amp; Filtering</h2>
-<div class="outline-text-2" id="text-org4267ca0">
+<div id="outline-container-org06e66bd" class="outline-2">
+<h2 id="org06e66bd">Tags &amp; Filtering</h2>
+<div class="outline-text-2" id="text-org06e66bd">
 <p>
 I use <a href="https://www.orgroam.com/">Org-roam</a> for all of my note-taking and, in the next blog post, I plan to demonstrate how I will hook up my Org-roam note-taking workflow to my blogging. In the meantime, just know that we can add tags to the top of our org files like this:
 </p>
@@ -772,9 +773,9 @@ Finally, let's append the following to <code>posts/posts.css</code> so that our 
 </div>
 </div>
 
-<div id="outline-container-org529c129" class="outline-2">
-<h2 id="org529c129">Conclusion</h2>
-<div class="outline-text-2" id="text-org529c129">
+<div id="outline-container-orgcd56cd6" class="outline-2">
+<h2 id="orgcd56cd6">Conclusion</h2>
+<div class="outline-text-2" id="text-orgcd56cd6">
 <p>
 There are many more customizations that I plan to do on this system in the future, but I plan to leave this for now so that I can actually get to some blogging. I will proofread and fix my mistakes as time goes on, but this should be a good jumping off point for anyone interested in using org for their own blogging system.
 </p>
