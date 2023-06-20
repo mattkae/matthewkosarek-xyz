@@ -22,11 +22,11 @@
 I've recently fallen in love with ~org-mode~, specifically when I use it with [[https://www.orgroam.com/][org-roam]]. I find the whole workflow of creating, tagging, and - later on - searching for information on my computer to be very elegant. On top of that, now that I have the time, I want to begin writing blog posts to better work out my thoughts. With both of these things in mind, I am again turning to the universal tool for human prospering: ~org-mode~. This time, I want to see how it can help me turn a simple org file into a blog post on my website. My requirements are:
 
 1. Org files must get published to HTML files in a particular format with a preset stylesheet
-2. Code blocks with code highlighting
+2. Code blocks must include code highlighting
 3. Images must be supported
 4. Posts must be timestamped with the creation date next to the title
-5. Generate a high-level "directory" page with all of the posts by order of creation
-6. Posts should be able to have tags that will be used to filter content
+5. A high-level "directory" page should be generated containing a list of the posts ordered chronologically with the newest at the top
+6. Posts should have tags that can be used for filtering and search.
 
 And that's pretty much it for now. Without further ado, let's jump into getting this up and running.
 
@@ -65,24 +65,25 @@ emacs -Q --script publish.el
 The next thing will be to remove some of the generated items that I didn't ask for, namely the table of contents, author, section numbers, creation time stamp, and the validation link.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'ox-publish)
+    (require 'ox-publish)
 
-  (setq org-publish-project-alist
-        (list
-         (list "matthewkosarek.xyz"
-               :recursive t
-               :base-directory "./_posts"
-               :publishing-directory "./posts"
-               :publishing-function: 'org-html-publish-to-html
-               :with-toc nil        ; Disable table of contents
-               :with-author nil     ; Disable author
-               :section-numbers nil ; Disable section numbers
-               :time-stamp-file)))  ; Disable timestamp
+    (setq org-publish-project-alist
+          (list
+           (list "matthewkosarek.xyz"
+                 :recursive t
+                 :base-directory "./_posts"
+                 :publishing-directory "./posts"
+                 :publishing-function: 'org-html-publish-to-html
+                 :with-toc nil        ; Disable table of contents
+                 :with-author nil     ; Disable author
+                 :section-numbers nil ; Disable section numbers
+                 :time-stamp-file nil ; Disable timestamp
+                 :with-date nil)))    ; Disable date
 
-  (setq org-html-validation-link nil) ; Disable the validation link at the bottom
+    (setq org-html-validation-link nil) ; Disable the validation link at the bottom
 
-  (org-publish-all t)
-  (message "Build Complete")
+    (org-publish-all t)
+    (message "Build Complete")
 #+END_SRC
 
 * Styling & Code Highlighting
