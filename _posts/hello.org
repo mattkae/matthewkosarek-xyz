@@ -2,13 +2,21 @@
 :ID:       73d663b6-1aea-4d82-a0f6-b88b302e49cb
 :END:
 #+TITLE: Hello, Org
-#+DATE: <2023-06-15 Thu>
+#+DATE: <2023-06-20 Tue 11:45>
 #+filetags: :technology:home:
 
 
 
 * TLDR
-
+- Create a new folder
+- Put [[https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/index.css][index.css]], [[https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/publish.el][publish.el]], and [[https://github.com/mattkae/matthewkosarek-xyz/blob/master/publish.sh][publish.sh]] in the folder
+- Create a folder called ~_posts~ (this is where blog posts are written)
+- Create an org file in ~_posts~, ideally with a ~#+DATE~ and ~#+TITLE~ attribute
+- Create a folder called ~posts~ (this is where blog posts are published to)
+- Put [[https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/posts/post.js][post.js]] and [[https://github.com/mattkae/matthewkosarek-xyz/blob/master/posts/post.css][post.css]] inside of the ~posts~ directory
+- Run ~./publish.sh~ to generate the blog post files
+- Run ~./python -m http.server 8080~ from the root folder
+- Navigate to ~localhost:8080/posts/sitemap.html~ to see your posts
 
 * Introduction
 I've recently fallen in love with ~org-mode~, specifically when I use it with [[https://www.orgroam.com/][org-roam]]. I find the whole workflow of creating, tagging, and - later on - searching for information on my computer to be very elegant. On top of that, now that I have the time, I want to begin writing blog posts to better work out my thoughts. With both of these things in mind, I am again turning to the universal tool for human prospering: ~org-mode~. This time, I want to see how it can help me turn a simple org file into a blog post on my website. My requirements are:
@@ -574,3 +582,6 @@ Finally, let's append the following to ~posts/posts.css~ so that our tag list is
     opacity: 0.8;
 }
 #+END_SRC
+
+* Conclusion
+There are many more customizations that I plan to do on this system in the future, but I plan to leave this for now so that I can actually get to some blogging. I will proofread and fix my mistakes as time goes on, but this should be a good jumping off point for anyone interested in using org for their own blogging system.
