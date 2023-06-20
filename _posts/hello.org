@@ -1,0 +1,576 @@
+:PROPERTIES:
+:ID:       73d663b6-1aea-4d82-a0f6-b88b302e49cb
+:END:
+#+TITLE: Hello, Org
+#+DATE: <2023-06-15 Thu>
+#+filetags: :technology:home:
+
+
+
+* TLDR
+
+
+* Introduction
+I've recently fallen in love with ~org-mode~, specifically when I use it with [[https://www.orgroam.com/][org-roam]]. I find the whole workflow of creating, tagging, and - later on - searching for information on my computer to be very elegant. On top of that, now that I have the time, I want to begin writing blog posts to better work out my thoughts. With both of these things in mind, I am again turning to the universal tool for human prospering: ~org-mode~. This time, I want to see how it can help me turn a simple org file into a blog post on my website. My requirements are:
+
+1. Org files must get published to HTML files in a particular format with a preset stylesheet
+2. Code blocks with code highlighting
+3. Images must be supported
+4. Posts must be timestamped with the creation date next to the title
+5. Generate a high-level "directory" page with all of the posts by order of creation
+6. Posts should be able to have tags that will be used to filter content
+
+And that's pretty much it for now. Without further ado, let's jump into getting this up and running.
+
+(Note: I will be heavily inspired by [[https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/#creating-the-build-script][this post from System Crafters]]. I highly recommend that you read his post first before you follow my post, as he provides more details about the ~org-publish-project-alist~ command than I am willing to go into in this post.)
+
+* Basic HTML File
+As a pilot, we are going to use this org file that I am currently writing (~hello.org~) as our guinea pig. The goal is to have this org file be our very first blog post.
+
+Emacs ships with org export goodies out of the box via the ~ox-publish.el~ package (which you can find [[https://github.com/emacs-mirror/emacs/blob/master/lisp/org/ox-publish.el][here]]). In our case, we will want to use this package to write a script that exports all the ~./_posts/*.org~ files and outputs them to a corresponding ~./posts/*.html~.  Leaning heavily on the System Crafters information, we can create a file called ~publish.el~ and write the following inside of it:
+
+#+BEGIN_SRC emacs-lisp
+  (require 'ox-publish)
+
+  (setq org-publish-project-alist
+        (list
+         (list "matthewkosarek.xyz"
+               :recursive t
+               :base-directory "./_posts"
+               :publishing-directory "./posts"
+               :publishing-function: 'org-html-publish-to-html)))
+
+  (org-publish-all t)
+  (message "Build Complete")
+#+END_SRC
+
+ Next, in the same way that System Crafters made a shell script to execute this lisp, snippet, we can create a file called ~publish.sh~ and write the following inside of it:
+
+ #+BEGIN_SRC sh
+#!/bin/sh
+emacs -Q --script publish.el
+ #+END_SRC
+
+ We then do a ~chmod +x publish.sh~ to make it an executable and run it with ~./publish.sh~. If everything went according to plan, we should see a new file at ~posts/hello.html~.
+ 
+* Disabling features that we don't want
+The next thing will be to remove some of the generated items that I didn't ask for, namely the table of contents, author, section numbers, creation time stamp, and the validation link.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'ox-publish)
+
+  (setq org-publish-project-alist
+        (list
+         (list "matthewkosarek.xyz"
+               :recursive t
+               :base-directory "./_posts"
+               :publishing-directory "./posts"
+               :publishing-function: 'org-html-publish-to-html
+               :with-toc nil        ; Disable table of contents
+               :with-author nil     ; Disable author
+               :section-numbers nil ; Disable section numbers
+               :time-stamp-file)))  ; Disable timestamp
+
+  (setq org-html-validation-link nil) ; Disable the validation link at the bottom
+
+  (org-publish-all t)
+  (message "Build Complete")
+#+END_SRC
+
+* Styling & Code Highlighting
+Next thing on our list is custom styling. This can be achieved by first installing the ~htmlize~ package from ~melpa~ / ~elpa~.  The EmacsWiki describes this as "a package for exporting the contents of an Emacs buffer to HTML while respecting display properties such as colors, fonts, underlining, invisibility, etc" ([[https://www.emacswiki.org/emacs/Htmlize][reference]]). If used "out-of-the-box", the buffer will be exported to HTML with all of the styles inlined (e.g. if you underline something in your org file, you will generate a ~<span style="text-decoration: underline">...</span>~).  However, we are more interested in styling everything by ourselves: we don't want ~htmlize~ making assumptions about what underlining means to us! Luckily, ~htmlize~ gives us the option to export with class names instead of inline styles so that we can specify each style for ourselves.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'ox-publish)
+
+  ;; First, we need to setup our publish.el file to hook up to melpa/elpa so that we can ensure
+  ;; htmlize is installed before we begin publishing.
+  (require 'package)
+  (setq package-user-dir (expand-file-name "./.packages"))
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
+
+  ;; Initialize the package system
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;; Install dependencies
+  (package-install 'htmlize)
+
+  (setq org-publish-project-alist
+        (list
+         (list "matthewkosarek.xyz"
+               :recursive t
+               :base-directory "./_posts"
+               :publishing-directory "./posts"
+               :publishing-function: 'org-html-publish-to-html
+               :with-toc nil
+               :with-author nil
+               :section-numbers nil
+               :time-stamp-file nil)))
+
+  (setq org-html-htmlize-output-type 'css)       ;; Output classnames in the HTML instead of inline CSS
+  (setq org-html-htmlize-font-prefix "org-")     ;; Prefix all class names with "org-"
+
+  (setq org-html-validation-link nil
+        org-html-head-include-scripts nil        ;; Removes any scripts that were included by default
+        org-html-head-include-default-style nil) ;; Removes any styles that were included by default
+
+  (org-publish-all t)
+
+  (message "Build Complete")
+
+#+END_SRC
+
+If you run ~publish.sh~ and open the HTML page now, you will see that _zero_ styling has been applied to the page. However, if you inspect an element in your browser that you /suspect/ should have styling (like our underlined element from before), you will see that it has a class name instead of inline styles.
+
+Now that our generated elements have class names, we can define the style for each relevant class name. In my case, I want to include both the ~index.css~ file that my entire website defines (you can find that [[https://matthewkosarek.xyz/index.css][here]]) so that there are some standard styles across the site. These standard styles include the font that should be used, the spacing around the ~body~ tag, the link styles, and other generic goodies. On top of that, we will want a custom stylesheet specifically for "post" files. In my case, I have defined the following in ~posts/post.css~:
+
+#+BEGIN_SRC css
+pre {
+    background-color: #FEFEFE;
+    border: 1px solid #D5D5D5;
+    border-radius: 2px;
+    padding: 1rem;
+}
+
+code {
+    font-family: "Consolas" sans-serif;
+    color: #D0372D;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+/* Taken from: https://emacs.stackexchange.com/questions/7629/the-syntax-highlight-and-indentation-of-source-code-block-in-exported-html-file */
+pre span.org-builtin                     {color:#006FE0;font-weight:bold;}
+pre span.org-string                      {color:#008000;}
+pre span.org-keyword                     {color:#0000FF;}
+pre span.org-variable-name               {color:#BA36A5;}
+pre span.org-function-name               {color:#006699;}
+pre span.org-type                        {color:#6434A3;}
+pre span.org-preprocessor                {color:#808080;font-weight:bold;}
+pre span.org-constant                    {color:#D0372D;}
+pre span.org-comment-delimiter           {color:#8D8D84;}
+pre span.org-comment                     {color:#8D8D84;font-style:italic}
+1pre span.org-outshine-level-1           {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-2            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-3            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-4            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-5            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-6            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-7            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-8            {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-9            {color:#8D8D84;font-style:italic}
+pre span.org-rainbow-delimiters-depth-1  {color:#707183;}
+pre span.org-rainbow-delimiters-depth-2  {color:#7388d6;}
+pre span.org-rainbow-delimiters-depth-3  {color:#909183;}
+pre span.org-rainbow-delimiters-depth-4  {color:#709870;}
+pre span.org-rainbow-delimiters-depth-5  {color:#907373;}
+pre span.org-rainbow-delimiters-depth-6  {color:#6276ba;}
+pre span.org-rainbow-delimiters-depth-7  {color:#858580;}
+pre span.org-rainbow-delimiters-depth-8  {color:#80a880;}
+pre span.org-rainbow-delimiters-depth-9  {color:#887070;}
+pre span.org-sh-quoted-exec              {color:#FF1493;}
+pre span.org-css-selector                {color:#0000FF;}
+pre span.org-css-property                {color:#00AA00;}
+#+END_SRC
+
+That CSS file should get you going with some decent code highlighting and styles, but I don't pretend that it is complete.
+
+Finally, we need to tell org mode to include our two CSS files when the page is loaded. To do this, we can use the HTML ~<link>~ entity. We will set the ~org-html-head~ variable to insert two link entities at the top of the page. 
+
+#+BEGIN_SRC emacs-lisp
+  (require 'ox-publish)
+
+  (require 'package)
+  (setq package-user-dir (expand-file-name "./.packages"))
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                           ("elpa" . "https://elpa.gnu.org/packages/")))
+
+  ;; Initialize the package system
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;; Install dependencies
+  (package-install 'htmlize)
+
+  (setq org-publish-project-alist
+        (list
+         (list "matthewkosarek.xyz"
+               :recursive t
+               :base-directory "./_posts"
+               :publishing-directory "./posts"
+               :publishing-function: 'org-html-publish-to-html
+               :with-toc nil
+               :with-author nil
+               :section-numbers nil
+               :time-stamp-file nil)))
+
+  (setq org-html-htmlize-output-type 'css)
+  (setq org-html-htmlize-font-prefix "org-")
+
+  (setq org-html-validation-link nil
+        org-html-head-include-scripts nil      
+        org-html-head-include-default-style nil
+        org-html-head "
+    <link rel=\"stylesheet\" href=\"/index.css\" />
+    <link rel=\"stylesheet\" href=\"/posts/post.css\" />
+    <link rel=\"shortcut icon\" href=\"/favicon/favicon.ico\" type=\"image/x-icon\">
+    ")                                                   ;; Include index.css and posts/post.css when the page loads
+                                                         ;; Note that I also set the "favicon" too, but this is optional
+
+  (org-publish-all t)
+
+  (message "Build Complete")
+
+#+END_SRC
+
+If we run the publish again, we can see that we have full styling on our code snippets and everything else on our website.
+
+* Images
+Our first two criteria have been met! Next on the list is solving images. As an example, let's use this [[/_posts/assets/squirrel.jpg][squirrel image]] that I found online with an open source license. The ideal situation would be:
+
+1. The squirrel image lives closely to this org document (~hello.org~)
+2. We can reference the image file in our org file, and see it in our HTML page as an image
+
+Unfortunately, it doesn't look to be that easy. Let's examine the ideal situation. Let's say we provide a relative path to an image in our org file like so:
+#+BEGIN_SRC txt
+  [[./assets/squirrel.jpg]]
+#+END_SRC
+
+If we click this link in our org buffer, the relative path will work right away. However, when we export the org file to HTML, the following tag will be generated:
+
+#+BEGIN_SRC  html
+<img src="./assets/squirrel.jpg" alt="squirrel.jpg">
+  #+END_SRC
+
+The browser cannot resolve this absolute path, which results in the alternate "squirrel.jpg" text being shown next to a broken image.
+
+So what's the fix here? Well, we have two options, but I am going to go with the easiest. For more information, check out [[https://stackoverflow.com/questions/14684263/how-to-org-mode-image-absolute-path-of-export-html][this stackoverflow post]]. The route I chose puts the onus of making a proper link on the writer of the blog post. The fix simply modifies the ~src~ attribute of the generated HTML to have an absolute path to the image, while also allowing the org file to retain a link to the image that it understands.
+
+#+BEGIN_SRC TXT
+#+ATTR_HTML: :src /_posts/assets/squirrel.jpg
+[[./assets/squirrel.jpg]]
+#+END_SRC
+
+That's all there is to it! There are simpler ways as well, but that should do it:
+#+CAPTION: A Cute Squirrel
+#+ATTR_HTML: :src /_posts/assets/squirrel.jpg :width 300
+[[./assets/squirrel.jpg]]
+
+
+* Creation Date
+Let's add the creation date below the title next. To start, we will modify the publish command to remove the title (~:with-title nil~) and, in its place, show a preamble bit of HTML that contains a formatted ~div~ with the title and the "last modified" span.z
+
+#+BEGIN_SRC emacs-lisp
+(setq org-publish-project-alist
+      (list
+       (list "matthewkosarek.xyz"
+             :recursive t
+             :base-directory "./_posts"
+             :publishing-directory "./posts"
+             :publishing-function: 'org-html-publish-to-html
+             :with-toc nil
+             :with-author nil
+             :section-numbers nil
+             :time-stamp-file nil
+             :with-title nil
+             :html-preamble-format '(("en" "
+  <div class=\"org-article-title\">
+    <h1>%t</h1>
+    <span>Last modified: %d</span>
+  </div>
+"))
+#+END_SRC
+
+The ~html-preamble-format~ variable takes an association list (alist) as a parameter. Each entry in the alist should have the export language (in this case english or "en") as the first value and the format for that language as the second value.
+
+The "%t" in the HTML string will be filled in with the title of your post. This is set by the ~#+TITLE: MY_TITLE~ attribute of your org file. In this case, that is "Hello, Org".  The "%d" is used to insert the date of your post. This is set by the ~#+DATE: <ORG_TIMESTAMP>~ in your org file.  You can insert a timestamp into the buffer by writing ~M-x org-time-stamp~, or by typing one out yourself.  (Hint: You can do an ~M-x describe-variable~ and type "org-html-preamble-format" to get more info on what "%X" values you can include in this format).
+
+On top of this, we can modify our ~posts/post.css~ file to make the title a bit more pleasing to the eyes.
+
+#+BEGIN_SRC css
+.org-article-title > h1 {
+    margin-bottom: 0;
+}
+
+.org-article-title > span {
+    color: #707183;
+}
+#+END_SRC
+
+If you want to see the full list of which values can be included in the ~html-preamble-format~, you can do an ~M-x describe-variable~ on the ~org-html-preamble-format~ variable.
+
+Note that the downside of this is that the created date will change whenever you next save the buffer. This isn't a huge deal for my purposes, but you may need to come up with a more sophisticated mechanism for the exact "creation" date for your use case.
+
+* Generating the Directory
+For every org file in my ~_posts~ folder, I would like to create a link to the generated HTML file at the ~/posts.html~ page of my website. You can think of this as the "directory" of all posts. My criteria is:
+1. Posts should appear in order from newest to oldest
+2. Posts should be searchable by tags (covered in the next section)
+3. Posts should be searchable by title
+
+The "out-of-the-box" mechanism for accomplishing this is the *sitemap*. You can think of a sitemap as a directory of sorts. While sitemaps can grow to be infinitely deep (i.e. sitemaps referencing other sitemaps), we will keep our sitemap as a flat list containing the available posts in chronological order.
+
+To start, we can enable source maps for our publish like so:
+
+#+BEGIN_SRC  emacs-lisp
+  (setq org-publish-project-alist
+        (list
+         (list "matthewkosarek.xyz"
+               :recursive t
+               :base-directory "./_posts"
+               :publishing-directory "./posts"
+               :publishing-function: 'org-html-publish-to-html
+               :with-toc nil
+               :with-author nil
+               :section-numbers nil
+               :time-stamp-file nil
+               :with-title nil
+               :html-preamble-format '(("en" "
+    <div class=\"org-article-title\">
+      <h1>%t</h1>
+      <span>Last modified: %d</span>
+    </div>
+  "))
+               :auto-sitemap t                           ; Enable the sitemap
+               :sitemap-sort-files "chronologically"     ; Sort files chronologically
+               :sitemap-format-entry (lambda (entry style project) (get-org-file-title entry style project))
+               )))
+#+END_SRC
+
+If we generate again, we will find two files generated:
+1. ~_posts/sitemap.org~: The org file containing the generated sitemap
+2. ~posts/sitemap.html~: The HTML file that was generated based on the previous ~sitemap.org~ file
+
+If you open the ~sitemap.html~ file in your browser, you will see a bulleted listed containing a link to "Hello, Org". Clicking on it will bring you to this blog post.
+
+From here, you may customize it however you like.  The following are my customizations.
+
+** Sitemap Title
+I changed the title to "Matthew's Blog Posts".
+
+#+BEGIN_SRC  emacs-lisp
+  (defun get-org-file-title(entry style project)
+    (setq  timestamp (org-timestamp-format (car (org-publish-find-property entry :date project)) "%B %d, %Y"))
+    (format "%s created on %s" (org-publish-sitemap-default-entry entry style project) timestamp)
+    )
+
+  (setq org-publish-project-alist
+        (list
+         (list "matthewkosarek.xyz"
+               ...
+               :sitemap-title "Matthew's Blog Posts"  ; Change the title
+               )))
+
+ #+END_SRC
+
+ 
+** Format blog entries in the list
+I like to include the creation date on the blog posts. To do this, we can use ~org-publish-find-property~ to find the date property of the org file. Afterward, we can format a string that  includes our formatted timestamp and the ~org-publish-sitemap-default-entry~, which is just a link with the title of the post.
+#+BEGIN_SRC  emacs-lisp
+  (defun get-org-file-title(entry style project)
+    (setq  timestamp (org-timestamp-format (car (org-publish-find-property entry :date project)) "%B %d, %Y"))
+    (format "%s created on %s" (org-publish-sitemap-default-entry entry style project) timestamp)
+    )
+
+  (setq org-publish-project-alist
+        (list
+         (list "matthewkosarek.xyz"
+               ...
+               :sitemap-format-entry (lambda (entry style project) (get-org-file-title entry style project))
+               )))
+#+END_SRC
+
+* Tags & Filtering
+I use [[https://www.orgroam.com/][Org-roam]] for all of my note-taking and, in the next blog post, I plan to demonstrate how I will hook up my Org-roam note-taking workflow to my blogging. In the meantime, just know that we can add tags to the top of our org files like this:
+
+#+BEGIN_SRC org
+#+filetags: :tag_1:tag_2:
+#+END_SRC
+
+This would tag this org buffer with "tag_1" and "tag_2".
+
+Our criteria for the tag filtering system is:
+- A post can contain many tags
+- Users can filter my one or many tags (i.e. "home" /and/ "technology" but /not/ "lifestyle")
+- By default, users see all posts with all tags
+- Searching happens on the client
+- We don't have to manually maintain a list of valid tags. The list of valid tags should be dynamically loaded from the blog posts themselves.
+
+Let's modify the ~get-org-file-title~ function that we wrote in the previous section to parse and include these tags:
+
+#+BEGIN_SRC emacs-lisp
+(defun get-org-file-title(entry style project)
+  (setq timestamp (org-timestamp-format (car (org-publish-find-property entry :date project)) "%B %d, %Y"))
+  (setq tag-list (org-publish-find-property entry :filetags project))
+  (setq tag-list-str (mapconcat 'identity tag-list ","))
+  (setq result (format "%s created on %s\n#+begin_sitemap_tag\n%s\n#+end_sitemap_tag\n" (org-publish-sitemap-default-entry entry style project) timestamp tag-list-str))
+  )
+#+END_SRC
+
+We extract the "filetags" from the org file, concatenate them into a comma-delimited string, and format them into the title string. We place the contents inside of a ~begin_sitemap_tag~ and ~end_sitemap_tag~ block. In HTML, this creates an enclosing ~div~ element with the class name "sitemap_tag". That means we can target the ~.sitemap_tag~ element in CSS. In our case, we want to hide all of that data entirely so we can put the following in ~posts/post.css~:
+
+#+BEGIN_SRC css
+.sitemap_tag {
+    display: none;
+}
+#+END_SRC
+
+If you rerun the ~publish.sh~ script now, you will see the tags only if you inspect the element, but they will not appear visually.
+
+Next thing is to write a small snippet of JavaScript that our page will load. This snippet is responsible for:
+1. Creating a list of the used tags
+2. Creating enable/disable buttons for each tag
+3. Hiding/showing a post depending on the state of its tags
+
+We create a new file called ~posts/post.js~ and put the following inside:
+
+#+BEGIN_SRC js
+function main() {
+
+  // Gather the used set oof tags
+  const tagSet = new Set();
+  const postList = [];
+  const tagContainers = document.getElementsByClassName('sitemap_tag');
+  for (let index = 0; index < tagContainers.length; index++) {
+    const container = tagContainers[index];
+    const pContainer = container.children[0];
+    if (!pContainer) {
+      continue;
+    }
+
+    const tagList = pContainer.textContent.split(',');
+    tagList.forEach(tag => tagSet.add(tag));
+    postList.push({
+      container: container.parentElement,
+      tagList: tagList,
+      enabled: tagList.length
+    });
+  }
+
+  // Create the tag container
+  const contentContainer = document.getElementById('content');
+  const tagContainer = document.createElement('div');
+  tagContainer.id = 'tag-filter-container';
+  contentContainer.before(tagContainer);
+
+  let numEnabled = tagSet.size;
+  for (const tag of tagSet) {
+    const tagElement = document.createElement('div');
+    tagElement.className = "tag-filter-item";
+    const tagElementLabel = document.createElement('span');
+    tagElementLabel.innerHTML = tag;
+    const tagElementButton = document.createElement('button');
+    tagElement.append(tagElementLabel, tagElementButton);
+    tagContainer.append(tagElement);
+
+
+    // Whenever a tag is clicked, execute the filtering behavior
+    tagElementButton.onclick = function() {
+      // Handle enable/disable
+      tagElement.remove();
+
+      if (tagElement.classList.contains('disabled')) {
+        tagElement.classList.remove('disabled');
+        if (numEnabled === 0) {
+          tagContainer.prepend(tagElement);
+        }
+        else {
+          tagContainer.children[numEnabled - 1].after(tagElement);
+        }
+        numEnabled++;
+
+        // Filter
+        postList.forEach(post => {
+          if (post.tagList.includes(tag)) {
+            post.enabled++;
+
+            if (post.enabled) {
+              post.container.style.display = 'list-item';
+            }
+          }
+        });
+      }
+      else {
+        tagElement.classList.add('disabled');
+        tagContainer.append(tagElement);
+        numEnabled--;
+
+        // Filter
+        postList.forEach(post => {
+          if (post.tagList.includes(tag)) {
+            post.enabled--;
+            if (!post.enabled) {
+              post.container.style.display = 'none';
+            }
+          }
+        });
+      }
+    };
+  }
+}
+
+window.onload = main;
+#+END_SRC
+
+Next, we modify the ~org-html-head~ to include ~<script src='/posts/post.js'></script>~ so that this script is loaded on every blog post page.
+
+Finally, let's append the following to ~posts/posts.css~ so that our tag list is pretty:
+
+#+BEGIN_SRC css
+#tag-filter-container {
+    display: flex;
+    flex-direction: row;
+    column-gap: 8px;
+    margin-top: 1rem;
+}
+
+.tag-filter-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid black;
+    border-radius: 3px;
+    justify-content: center;
+    column-gap: 1rem;
+    background-color: #fffed8;
+}
+
+.tag-filter-item button {
+    background: none;
+    border: none;
+    outline: none;
+    margin: 0;
+    padding: 0;
+    color: red;
+    font-size: 1.5rem;
+}
+
+.tag-filter-item button:before {
+    content: '\00d7';
+}
+
+.tag-filter-item.disabled button:before {
+    content: '+';
+}
+
+.tag-filter-item.disabled {
+    background-color: #f2f2f2;
+    color: gray;
+    border-color: gray;
+}
+
+.tag-filter-item.disabled button {
+    color: green;
+}
+
+.tag-filter-item button:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+#+END_SRC

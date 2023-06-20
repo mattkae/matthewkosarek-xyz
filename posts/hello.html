@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hello, Org</title>
+<meta name="generator" content="Org Mode" />
+
+<link rel="stylesheet" href="/index.css" />
+<link rel="stylesheet" href="/posts/post.css" />
+<link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+<script src='/posts/post.js'></script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="/posts/sitemap.html"> UP </a>
+ <a accesskey="H" href="/"> HOME </a>
+</div><div id="preamble" class="status">
+
+  <div class="org-article-title">
+    <h1>Hello, Org</h1>
+    <span>Last modified: 2023-06-15 Thu 00:00</span>
+  </div>
+</div>
+<div id="content" class="content">
+
+
+<div id="outline-container-orgef08f12" class="outline-2">
+<h2 id="orgef08f12">Introduction</h2>
+<div class="outline-text-2" id="text-orgef08f12">
+<p>
+I've recently fallen in love with <code>org-mode</code>, specifically when I use it with <a href="https://www.orgroam.com/">org-roam</a>. I find the whole workflow of creating, tagging, and - later on - searching for information on my computer to be very elegant. On top of that, now that I have the time, I want to begin writing blog posts to better work out my thoughts. With both of these things in mind, I am again turning to the universal tool for human prospering: <code>org-mode</code>. This time, I want to see how it can help me turn a simple org file into a blog post on my website. My requirements are:
+</p>
+
+<ol class="org-ol">
+<li>Org files must get published to HTML files in a particular format with a preset stylesheet</li>
+<li>Code blocks with code highlighting</li>
+<li>Images must be supported</li>
+<li>Posts must be timestamped with the creation date next to the title</li>
+<li>Generate a high-level "directory" page with all of the posts by order of creation</li>
+<li>Posts should be able to have tags that will be used to filter content</li>
+</ol>
+
+<p>
+And that's pretty much it for now. Without further ado, let's jump into getting this up and running.
+</p>
+
+<p>
+(Note: I will be heavily inspired by <a href="https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/#creating-the-build-script">this post from System Crafters</a>. I highly recommend that you read his post first before you follow my post, as he provides more details about the <code>org-publish-project-alist</code> command than I am willing to go into in this post.)
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9f1b46e" class="outline-2">
+<h2 id="org9f1b46e">Basic HTML File</h2>
+<div class="outline-text-2" id="text-org9f1b46e">
+<p>
+As a pilot, we are going to use this org file that I am currently writing (<code>hello.org</code>) as our guinea pig. The goal is to have this org file be our very first blog post.
+</p>
+
+<p>
+Emacs ships with org export goodies out of the box via the <code>ox-publish.el</code> package (which you can find <a href="https://github.com/emacs-mirror/emacs/blob/master/lisp/org/ox-publish.el">here</a>). In our case, we will want to use this package to write a script that exports all the <code>./_posts/*.org</code> files and outputs them to a corresponding <code>./posts/*.html</code>.  Leaning heavily on the System Crafters information, we can create a file called <code>publish.el</code> and write the following inside of it:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">require</span> '<span class="org-constant">ox-publish</span>)
+
+(<span class="org-keyword">setq</span> org-publish-project-alist
+      (list
+       (list <span class="org-string">"matthewkosarek.xyz"</span>
+             <span class="org-builtin">:recursive</span> t
+             <span class="org-builtin">:base-directory</span> <span class="org-string">"./_posts"</span>
+             <span class="org-builtin">:publishing-directory</span> <span class="org-string">"./posts"</span>
+             <span class="org-builtin">:publishing-function:</span> 'org-html-publish-to-html)))
+
+(org-publish-all t)
+(message <span class="org-string">"Build Complete"</span>)
+</pre>
+</div>
+
+<p>
+Next, in the same way that System Crafters made a shell script to execute this lisp, snippet, we can create a file called <code>publish.sh</code> and write the following inside of it:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-sh"><span class="org-comment-delimiter">#</span><span class="org-comment">!/bin/</span><span class="org-keyword">sh</span>
+emacs -Q --script publish.el
+</pre>
+</div>
+
+<p>
+We then do a <code>chmod +x publish.sh</code> to make it an executable and run it with <code>./publish.sh</code>. If everything went according to plan, we should see a new file at <code>posts/hello.html</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org69d49de" class="outline-2">
+<h2 id="org69d49de">Disabling features that we don't want</h2>
+<div class="outline-text-2" id="text-org69d49de">
+<p>
+The next thing will be to remove some of the generated items that I didn't ask for, namely the table of contents, author, section numbers, creation time stamp, and the validation link.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">require</span> '<span class="org-constant">ox-publish</span>)
+
+(<span class="org-keyword">setq</span> org-publish-project-alist
+      (list
+       (list <span class="org-string">"matthewkosarek.xyz"</span>
+             <span class="org-builtin">:recursive</span> t
+             <span class="org-builtin">:base-directory</span> <span class="org-string">"./_posts"</span>
+             <span class="org-builtin">:publishing-directory</span> <span class="org-string">"./posts"</span>
+             <span class="org-builtin">:publishing-function:</span> 'org-html-publish-to-html
+             <span class="org-builtin">:with-toc</span> nil        <span class="org-comment-delimiter">; </span><span class="org-comment">Disable table of contents</span>
+             <span class="org-builtin">:with-author</span> nil     <span class="org-comment-delimiter">; </span><span class="org-comment">Disable author</span>
+             <span class="org-builtin">:section-numbers</span> nil <span class="org-comment-delimiter">; </span><span class="org-comment">Disable section numbers</span>
+             <span class="org-builtin">:time-stamp-file</span>)))  <span class="org-comment-delimiter">; </span><span class="org-comment">Disable timestamp</span>
+
+(<span class="org-keyword">setq</span> org-html-validation-link nil) <span class="org-comment-delimiter">; </span><span class="org-comment">Disable the validation link at the bottom</span>
+
+(org-publish-all t)
+(message <span class="org-string">"Build Complete"</span>)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org45266c1" class="outline-2">
+<h2 id="org45266c1">Styling &amp; Code Highlighting</h2>
+<div class="outline-text-2" id="text-org45266c1">
+<p>
+Next thing on our list is custom styling. This can be achieved by first installing the <code>htmlize</code> package from <code>melpa</code> / <code>elpa</code>.  The EmacsWiki describes this as "a package for exporting the contents of an Emacs buffer to HTML while respecting display properties such as colors, fonts, underlining, invisibility, etc" (<a href="https://www.emacswiki.org/emacs/Htmlize">reference</a>). If used "out-of-the-box", the buffer will be exported to HTML with all of the styles inlined (e.g. if you underline something in your org file, you will generate a <code>&lt;span style="text-decoration: underline"&gt;...&lt;/span&gt;</code>).  However, we are more interested in styling everything by ourselves: we don't want <code>htmlize</code> making assumptions about what underlining means to us! Luckily, <code>htmlize</code> gives us the option to export with class names instead of inline styles so that we can specify each style for ourselves.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">require</span> '<span class="org-constant">ox-publish</span>)
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">First, we need to setup our publish.el file to hook up to melpa/elpa so that we can ensure</span>
+<span class="org-comment-delimiter">;; </span><span class="org-comment">htmlize is installed before we begin publishing.</span>
+(<span class="org-keyword">require</span> '<span class="org-constant">package</span>)
+(<span class="org-keyword">setq</span> package-user-dir (expand-file-name <span class="org-string">"./.packages"</span>))
+(<span class="org-keyword">setq</span> package-archives '((<span class="org-string">"melpa"</span> . <span class="org-string">"https://melpa.org/packages/"</span>)
+                         (<span class="org-string">"elpa"</span> . <span class="org-string">"https://elpa.gnu.org/packages/"</span>)))
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Initialize the package system</span>
+(package-initialize)
+(<span class="org-keyword">unless</span> package-archive-contents
+  (package-refresh-contents))
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Install dependencies</span>
+(package-install 'htmlize)
+
+(<span class="org-keyword">setq</span> org-publish-project-alist
+      (list
+       (list <span class="org-string">"matthewkosarek.xyz"</span>
+             <span class="org-builtin">:recursive</span> t
+             <span class="org-builtin">:base-directory</span> <span class="org-string">"./_posts"</span>
+             <span class="org-builtin">:publishing-directory</span> <span class="org-string">"./posts"</span>
+             <span class="org-builtin">:publishing-function:</span> 'org-html-publish-to-html
+             <span class="org-builtin">:with-toc</span> nil
+             <span class="org-builtin">:with-author</span> nil
+             <span class="org-builtin">:section-numbers</span> nil
+             <span class="org-builtin">:time-stamp-file</span> nil)))
+
+(<span class="org-keyword">setq</span> org-html-htmlize-output-type 'css)       <span class="org-comment-delimiter">;; </span><span class="org-comment">Output classnames in the HTML instead of inline CSS</span>
+(<span class="org-keyword">setq</span> org-html-htmlize-font-prefix <span class="org-string">"org-"</span>)     <span class="org-comment-delimiter">;; </span><span class="org-comment">Prefix all class names with "org-"</span>
+
+(<span class="org-keyword">setq</span> org-html-validation-link nil
+      org-html-head-include-scripts nil        <span class="org-comment-delimiter">;; </span><span class="org-comment">Removes any scripts that were included by default</span>
+      org-html-head-include-default-style nil) <span class="org-comment-delimiter">;; </span><span class="org-comment">Removes any styles that were included by default</span>
+
+(org-publish-all t)
+
+(message <span class="org-string">"Build Complete"</span>)
+
+</pre>
+</div>
+
+<p>
+If you run <code>publish.sh</code> and open the HTML page now, you will see that <span class="underline">zero</span> styling has been applied to the page. However, if you inspect an element in your browser that you <i>suspect</i> should have styling (like our underlined element from before), you will see that it has a class name instead of inline styles.
+</p>
+
+<p>
+Now that our generated elements have class names, we can define the style for each relevant class name. In my case, I want to include both the <code>index.css</code> file that my entire website defines (you can find that <a href="https://matthewkosarek.xyz/index.css">here</a>) so that there are some standard styles across the site. These standard styles include the font that should be used, the spacing around the <code>body</code> tag, the link styles, and other generic goodies. On top of that, we will want a custom stylesheet specifically for "post" files. In my case, I have defined the following in <code>posts/post.css</code>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-css"><span class="org-css-selector">pre </span>{
+    <span class="org-css-property">background-color</span>: <span class="custom-21">#FEFEFE</span>;
+    <span class="org-css-property">border</span>: 1px solid <span class="custom-20">#D5D5D5</span>;
+    <span class="org-css-property">border-radius</span>: 2px;
+    <span class="org-css-property">padding</span>: 1rem;
+}
+
+<span class="org-css-selector">code </span>{
+    <span class="org-css-property">font-family</span>: <span class="org-string">"Consolas"</span> sans-serif;
+    <span class="org-css-property">color</span>: <span class="custom-19">#D0372D</span>;
+}
+
+<span class="org-css-selector">.underline </span>{
+    <span class="org-css-property">text-decoration</span>: underline;
+}
+
+<span class="org-comment-delimiter">/* </span><span class="org-comment">Taken from: https://emacs.stackexchange.com/questions/7629/the-syntax-highlight-and-indentation-of-source-code-block-in-exported-html-file</span><span class="org-comment-delimiter"> */</span>
+<span class="org-css-selector">pre span.org-builtin                     </span>{<span class="org-css-property">color</span>:<span class="custom-18">#006FE0</span>;<span class="org-css-property">font-weight</span>:bold;}
+<span class="org-css-selector">pre span.org-string                      </span>{<span class="org-css-property">color</span>:<span class="custom-17">#008000</span>;}
+<span class="org-css-selector">pre span.org-keyword                     </span>{<span class="org-css-property">color</span>:<span class="custom-16">#0000FF</span>;}
+<span class="org-css-selector">pre span.org-variable-name               </span>{<span class="org-css-property">color</span>:<span class="custom-15">#BA36A5</span>;}
+<span class="org-css-selector">pre span.org-function-name               </span>{<span class="org-css-property">color</span>:<span class="custom-14">#006699</span>;}
+<span class="org-css-selector">pre span.org-type                        </span>{<span class="org-css-property">color</span>:<span class="custom-13">#6434A3</span>;}
+<span class="org-css-selector">pre span.org-preprocessor                </span>{<span class="org-css-property">color</span>:<span class="custom-12">#808080</span>;<span class="org-css-property">font-weight</span>:bold;}
+<span class="org-css-selector">pre span.org-constant                    </span>{<span class="org-css-property">color</span>:<span class="custom-19">#D0372D</span>;}
+<span class="org-css-selector">pre span.org-comment-delimiter           </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;}
+<span class="org-css-selector">pre span.org-comment                     </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">1pre span.org-outshine-level-1           </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-2            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-3            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-4            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-5            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-6            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-7            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-8            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-9            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-1  </span>{<span class="org-css-property">color</span>:<span class="custom-10">#707183</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-2  </span>{<span class="org-css-property">color</span>:<span class="custom-9">#7388d6</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-3  </span>{<span class="org-css-property">color</span>:<span class="custom-8">#909183</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-4  </span>{<span class="org-css-property">color</span>:<span class="custom-7">#709870</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-5  </span>{<span class="org-css-property">color</span>:<span class="custom-6">#907373</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-6  </span>{<span class="org-css-property">color</span>:<span class="custom-5">#6276ba</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-7  </span>{<span class="org-css-property">color</span>:<span class="custom-4">#858580</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-8  </span>{<span class="org-css-property">color</span>:<span class="custom-3">#80a880</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-9  </span>{<span class="org-css-property">color</span>:<span class="custom-2">#887070</span>;}
+<span class="org-css-selector">pre span.org-sh-quoted-exec              </span>{<span class="org-css-property">color</span>:<span class="custom-1">#FF1493</span>;}
+<span class="org-css-selector">pre span.org-css-selector                </span>{<span class="org-css-property">color</span>:<span class="custom-16">#0000FF</span>;}
+<span class="org-css-selector">pre span.org-css-property                </span>{<span class="org-css-property">color</span>:<span class="custom">#00AA00</span>;}
+</pre>
+</div>
+
+<p>
+That CSS file should get you going with some decent code highlighting and styles, but I don't pretend that it is complete.
+</p>
+
+<p>
+Finally, we need to tell org mode to include our two CSS files when the page is loaded. To do this, we can use the HTML <code>&lt;link&gt;</code> entity. We will set the <code>org-html-head</code> variable to insert two link entities at the top of the page. 
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">require</span> '<span class="org-constant">ox-publish</span>)
+
+(<span class="org-keyword">require</span> '<span class="org-constant">package</span>)
+(<span class="org-keyword">setq</span> package-user-dir (expand-file-name <span class="org-string">"./.packages"</span>))
+(<span class="org-keyword">setq</span> package-archives '((<span class="org-string">"melpa"</span> . <span class="org-string">"https://melpa.org/packages/"</span>)
+                         (<span class="org-string">"elpa"</span> . <span class="org-string">"https://elpa.gnu.org/packages/"</span>)))
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Initialize the package system</span>
+(package-initialize)
+(<span class="org-keyword">unless</span> package-archive-contents
+  (package-refresh-contents))
+
+<span class="org-comment-delimiter">;; </span><span class="org-comment">Install dependencies</span>
+(package-install 'htmlize)
+
+(<span class="org-keyword">setq</span> org-publish-project-alist
+      (list
+       (list <span class="org-string">"matthewkosarek.xyz"</span>
+             <span class="org-builtin">:recursive</span> t
+             <span class="org-builtin">:base-directory</span> <span class="org-string">"./_posts"</span>
+             <span class="org-builtin">:publishing-directory</span> <span class="org-string">"./posts"</span>
+             <span class="org-builtin">:publishing-function:</span> 'org-html-publish-to-html
+             <span class="org-builtin">:with-toc</span> nil
+             <span class="org-builtin">:with-author</span> nil
+             <span class="org-builtin">:section-numbers</span> nil
+             <span class="org-builtin">:time-stamp-file</span> nil)))
+
+(<span class="org-keyword">setq</span> org-html-htmlize-output-type 'css)
+(<span class="org-keyword">setq</span> org-html-htmlize-font-prefix <span class="org-string">"org-"</span>)
+
+(<span class="org-keyword">setq</span> org-html-validation-link nil
+      org-html-head-include-scripts nil      
+      org-html-head-include-default-style nil
+      org-html-head <span class="org-string">"</span>
+<span class="org-string">  &lt;link rel=\"stylesheet\" href=\"/index.css\" /&gt;</span>
+<span class="org-string">  &lt;link rel=\"stylesheet\" href=\"/posts/post.css\" /&gt;</span>
+<span class="org-string">  &lt;link rel=\"shortcut icon\" href=\"/favicon/favicon.ico\" type=\"image/x-icon\"&gt;</span>
+<span class="org-string">  "</span>)                                                   <span class="org-comment-delimiter">;; </span><span class="org-comment">Include index.css and posts/post.css when the page loads</span>
+                                                       <span class="org-comment-delimiter">;; </span><span class="org-comment">Note that I also set the "favicon" too, but this is optional</span>
+
+(org-publish-all t)
+
+(message <span class="org-string">"Build Complete"</span>)
+
+</pre>
+</div>
+
+<p>
+If we run the publish again, we can see that we have full styling on our code snippets and everything else on our website.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgbab5975" class="outline-2">
+<h2 id="orgbab5975">Images</h2>
+<div class="outline-text-2" id="text-orgbab5975">
+<p>
+Our first two criteria have been met! Next on the list is solving images. As an example, let's use this <a href="file:///_posts/assets/squirrel.jpg">squirrel image</a> that I found online with an open source license. The ideal situation would be:
+</p>
+
+<ol class="org-ol">
+<li>The squirrel image lives closely to this org document (<code>hello.org</code>)</li>
+<li>We can reference the image file in our org file, and see it in our HTML page as an image</li>
+</ol>
+
+<p>
+Unfortunately, it doesn't look to be that easy. Let's examine the ideal situation. Let's say we provide a relative path to an image in our org file like so:
+</p>
+<div class="org-src-container">
+<pre class="src src-txt">[[./assets/squirrel.jpg]]
+</pre>
+</div>
+
+<p>
+If we click this link in our org buffer, the relative path will work right away. However, when we export the org file to HTML, the following tag will be generated:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-html">&lt;<span class="org-function-name">img</span> <span class="org-variable-name">src</span>=<span class="org-string">"./assets/squirrel.jpg"</span> <span class="org-variable-name">alt</span>=<span class="org-string">"squirrel.jpg"</span>&gt;
+</pre>
+</div>
+
+<p>
+The browser cannot resolve this absolute path, which results in the alternate "squirrel.jpg" text being shown next to a broken image.
+</p>
+
+<p>
+So what's the fix here? Well, we have two options, but I am going to go with the easiest. For more information, check out <a href="https://stackoverflow.com/questions/14684263/how-to-org-mode-image-absolute-path-of-export-html">this stackoverflow post</a>. The route I chose puts the onus of making a proper link on the writer of the blog post. The fix simply modifies the <code>src</code> attribute of the generated HTML to have an absolute path to the image, while also allowing the org file to retain a link to the image that it understands.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-TXT">#+ATTR_HTML: :src /_posts/assets/squirrel.jpg
+[[./assets/squirrel.jpg]]
+</pre>
+</div>
+
+<p>
+That's all there is to it! There are simpler ways as well, but that should do it:
+</p>
+
+<div id="org071f289" class="figure">
+<p><img src="/_posts/assets/squirrel.jpg" alt="squirrel.jpg" width="300" />
+</p>
+<p><span class="figure-number">Figure 1: </span>A Cute Squirrel</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org24cf931" class="outline-2">
+<h2 id="org24cf931">Creation Date</h2>
+<div class="outline-text-2" id="text-org24cf931">
+<p>
+Let's add the creation date below the title next. To start, we will modify the publish command to remove the title (<code>:with-title nil</code>) and, in its place, show a preamble bit of HTML that contains a formatted <code>div</code> with the title and the "last modified" span.z
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> org-publish-project-alist
+      (list
+       (list <span class="org-string">"matthewkosarek.xyz"</span>
+             <span class="org-builtin">:recursive</span> t
+             <span class="org-builtin">:base-directory</span> <span class="org-string">"./_posts"</span>
+             <span class="org-builtin">:publishing-directory</span> <span class="org-string">"./posts"</span>
+             <span class="org-builtin">:publishing-function:</span> 'org-html-publish-to-html
+             <span class="org-builtin">:with-toc</span> nil
+             <span class="org-builtin">:with-author</span> nil
+             <span class="org-builtin">:section-numbers</span> nil
+             <span class="org-builtin">:time-stamp-file</span> nil
+             <span class="org-builtin">:with-title</span> nil
+             <span class="org-builtin">:html-preamble-format</span> '((<span class="org-string">"en"</span> <span class="org-string">"</span>
+<span class="org-string">  &lt;div class=\"org-article-title\"&gt;</span>
+<span class="org-string">    &lt;h1&gt;%t&lt;/h1&gt;</span>
+<span class="org-string">    &lt;span&gt;Last modified: %d&lt;/span&gt;</span>
+<span class="org-string">  &lt;/div&gt;</span>
+<span class="org-string">"</span>))
+</pre>
+</div>
+
+<p>
+The <code>html-preamble-format</code> variable takes an association list (alist) as a parameter. Each entry in the alist should have the export language (in this case english or "en") as the first value and the format for that language as the second value.
+</p>
+
+<p>
+The "%t" in the HTML string will be filled in with the title of your post. This is set by the <code>#+TITLE: MY_TITLE</code> attribute of your org file. In this case, that is "Hello, Org".  The "%d" is used to insert the date of your post. This is set by the <code>#+DATE: &lt;ORG_TIMESTAMP&gt;</code> in your org file.  You can insert a timestamp into the buffer by writing <code>M-x org-time-stamp</code>, or by typing one out yourself.  (Hint: You can do an <code>M-x describe-variable</code> and type "org-html-preamble-format" to get more info on what "%X" values you can include in this format).
+</p>
+
+<p>
+On top of this, we can modify our <code>posts/post.css</code> file to make the title a bit more pleasing to the eyes.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-css"><span class="org-css-selector">.org-article-title &gt; h1 </span>{
+    <span class="org-css-property">margin-bottom</span>: 0;
+}
+
+<span class="org-css-selector">.org-article-title &gt; span </span>{
+    <span class="org-css-property">color</span>: <span class="custom">#707183</span>;
+}
+</pre>
+</div>
+
+<p>
+If you want to see the full list of which values can be included in the <code>html-preamble-format</code>, you can do an <code>M-x describe-variable</code> on the <code>org-html-preamble-format</code> variable.
+</p>
+
+<p>
+Note that the downside of this is that the created date will change whenever you next save the buffer. This isn't a huge deal for my purposes, but you may need to come up with a more sophisticated mechanism for the exact "creation" date for your use case.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org495f7e6" class="outline-2">
+<h2 id="org495f7e6">Generating the Directory</h2>
+<div class="outline-text-2" id="text-org495f7e6">
+<p>
+For every org file in my <code>_posts</code> folder, I would like to create a link to the generated HTML file at the <code>/posts.html</code> page of my website. You can think of this as the "directory" of all posts. My criteria is:
+</p>
+<ol class="org-ol">
+<li>Posts should appear in order from newest to oldest</li>
+<li>Posts should be searchable by tags (covered in the next section)</li>
+<li>Posts should be searchable by title</li>
+</ol>
+
+<p>
+The "out-of-the-box" mechanism for accomplishing this is the <b>sitemap</b>. You can think of a sitemap as a directory of sorts. While sitemaps can grow to be infinitely deep (i.e. sitemaps referencing other sitemaps), we will keep our sitemap as a flat list containing the available posts in chronological order.
+</p>
+
+<p>
+To start, we can enable source maps for our publish like so:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">setq</span> org-publish-project-alist
+      (list
+       (list <span class="org-string">"matthewkosarek.xyz"</span>
+             <span class="org-builtin">:recursive</span> t
+             <span class="org-builtin">:base-directory</span> <span class="org-string">"./_posts"</span>
+             <span class="org-builtin">:publishing-directory</span> <span class="org-string">"./posts"</span>
+             <span class="org-builtin">:publishing-function:</span> 'org-html-publish-to-html
+             <span class="org-builtin">:with-toc</span> nil
+             <span class="org-builtin">:with-author</span> nil
+             <span class="org-builtin">:section-numbers</span> nil
+             <span class="org-builtin">:time-stamp-file</span> nil
+             <span class="org-builtin">:with-title</span> nil
+             <span class="org-builtin">:html-preamble-format</span> '((<span class="org-string">"en"</span> <span class="org-string">"</span>
+<span class="org-string">  &lt;div class=\"org-article-title\"&gt;</span>
+<span class="org-string">    &lt;h1&gt;%t&lt;/h1&gt;</span>
+<span class="org-string">    &lt;span&gt;Last modified: %d&lt;/span&gt;</span>
+<span class="org-string">  &lt;/div&gt;</span>
+<span class="org-string">"</span>))
+             <span class="org-builtin">:auto-sitemap</span> t                           <span class="org-comment-delimiter">; </span><span class="org-comment">Enable the sitemap</span>
+             <span class="org-builtin">:sitemap-sort-files</span> <span class="org-string">"chronologically"</span>     <span class="org-comment-delimiter">; </span><span class="org-comment">Sort files chronologically</span>
+             <span class="org-builtin">:sitemap-format-entry</span> (<span class="org-keyword">lambda</span> (entry style project) (get-org-file-title entry style project))
+             )))
+</pre>
+</div>
+
+<p>
+If we generate again, we will find two files generated:
+</p>
+<ol class="org-ol">
+<li><code>_posts/sitemap.org</code>: The org file containing the generated sitemap</li>
+<li><code>posts/sitemap.html</code>: The HTML file that was generated based on the previous <code>sitemap.org</code> file</li>
+</ol>
+
+<p>
+If you open the <code>sitemap.html</code> file in your browser, you will see a bulleted listed containing a link to "Hello, Org". Clicking on it will bring you to this blog post.
+</p>
+
+<p>
+From here, you may customize it however you like.  The following are my customizations.
+</p>
+</div>
+
+<div id="outline-container-org240fee2" class="outline-3">
+<h3 id="org240fee2">Sitemap Title</h3>
+<div class="outline-text-3" id="text-org240fee2">
+<p>
+I changed the title to "Matthew's Blog Posts".
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">get-org-file-title</span>(entry style project)
+  (<span class="org-keyword">setq</span>  timestamp (org-timestamp-format (car (org-publish-find-property entry <span class="org-builtin">:date</span> project)) <span class="org-string">"%B %d, %Y"</span>))
+  (format <span class="org-string">"%s created on %s"</span> (org-publish-sitemap-default-entry entry style project) timestamp)
+  )
+
+(<span class="org-keyword">setq</span> org-publish-project-alist
+      (list
+       (list <span class="org-string">"matthewkosarek.xyz"</span>
+             ...
+             <span class="org-builtin">:sitemap-title</span> <span class="org-string">"Matthew's Blog Posts"</span>  <span class="org-comment-delimiter">; </span><span class="org-comment">Change the title</span>
+             )))
+
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org95082bc" class="outline-3">
+<h3 id="org95082bc">Format blog entries in the list</h3>
+<div class="outline-text-3" id="text-org95082bc">
+<p>
+I like to include the creation date on the blog posts. To do this, we can use <code>org-publish-find-property</code> to find the date property of the org file. Afterward, we can format a string that  includes our formatted timestamp and the <code>org-publish-sitemap-default-entry</code>, which is just a link with the title of the post.
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">get-org-file-title</span>(entry style project)
+  (<span class="org-keyword">setq</span>  timestamp (org-timestamp-format (car (org-publish-find-property entry <span class="org-builtin">:date</span> project)) <span class="org-string">"%B %d, %Y"</span>))
+  (format <span class="org-string">"%s created on %s"</span> (org-publish-sitemap-default-entry entry style project) timestamp)
+  )
+
+(<span class="org-keyword">setq</span> org-publish-project-alist
+      (list
+       (list <span class="org-string">"matthewkosarek.xyz"</span>
+             ...
+             <span class="org-builtin">:sitemap-format-entry</span> (<span class="org-keyword">lambda</span> (entry style project) (get-org-file-title entry style project))
+             )))
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org6d7bbef" class="outline-2">
+<h2 id="org6d7bbef">Tags &amp; Filtering</h2>
+<div class="outline-text-2" id="text-org6d7bbef">
+<p>
+I use <a href="https://www.orgroam.com/">Org-roam</a> for all of my note-taking and, in the next blog post, I plan to demonstrate how I will hook up my Org-roam note-taking workflow to my blogging. In the meantime, just know that we can add tags to the top of our org files like this:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><span class="org-org-meta-line">#+filetags: :tag_1:tag_2:</span>
+</pre>
+</div>
+
+<p>
+This would tag this org buffer with "tag<sub>1</sub>" and "tag<sub>2</sub>".
+</p>
+
+<p>
+Our criteria for the tag filtering system is:
+</p>
+<ul class="org-ul">
+<li>A post can contain many tags</li>
+<li>Users can filter my one or many tags (i.e. "home" <i>and</i> "technology" but <i>not</i> "lifestyle")</li>
+<li>By default, users see all posts with all tags</li>
+<li>Searching happens on the client</li>
+</ul>
+
+<p>
+Let's modify the <code>get-org-file-title</code> function that we wrote in the previous section to parse and include these tags:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span class="org-keyword">defun</span> <span class="org-function-name">get-org-file-title</span>(entry style project)
+  (<span class="org-keyword">setq</span> timestamp (org-timestamp-format (car (org-publish-find-property entry <span class="org-builtin">:date</span> project)) <span class="org-string">"%B %d, %Y"</span>))
+  (<span class="org-keyword">setq</span> tag-list (org-publish-find-property entry <span class="org-builtin">:filetags</span> project))
+  (<span class="org-keyword">setq</span> tag-list-str (mapconcat 'identity tag-list <span class="org-string">","</span>))
+  (<span class="org-keyword">setq</span> result (format <span class="org-string">"%s created on %s\n#+begin_sitemap_tag\n%s\n#+end_sitemap_tag\n"</span> (org-publish-sitemap-default-entry entry style project) timestamp tag-list-str))
+  )
+</pre>
+</div>
+
+<p>
+We extract the "filetags" from the org file, concatenate them into a comma-delimited string, and format them into the title string. We place the contents inside of a <code>begin_sitemap_tag</code> and <code>end_sitemap_tag</code> block. In HTML, this creates an enclosing <code>div</code> element with the class name "sitemap<sub>tag</sub>". That means we can target the <code>.sitemap_tag</code> element in CSS. In our case, we want to hide all of that data entirely so we can put the following in <code>posts/post.css</code>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-css"><span class="org-css-selector">.sitemap_tag </span>{
+    <span class="org-css-property">display</span>: none;
+}
+</pre>
+</div>
+
+<p>
+If you rerun the <code>publish.sh</code> script now, you will see the tags only if you inspect the element, but they will not appear visually.
+</p>
+
+<p>
+Next thing is to write a small snippet of JavaScript that our page will load. This snippet is responsible for:
+</p>
+<ol class="org-ol">
+<li>Creating a list of the used tags</li>
+<li>Creating enable/disable buttons for each tag</li>
+<li>Hiding/showing a post depending on the state of its tags</li>
+</ol>
+
+<p>
+We create a new file called <code>posts/post.js</code> and put the following inside:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-js"><span class="org-keyword">function</span> <span class="org-function-name">main</span>() {
+
+  <span class="org-comment-delimiter">// </span><span class="org-comment">Gather the used set oof tags</span>
+  <span class="org-keyword">const</span> <span class="org-variable-name">tagSet</span> = <span class="org-keyword">new</span> <span class="org-type">Set</span>();
+  <span class="org-keyword">const</span> <span class="org-variable-name">postList</span> = [];
+  <span class="org-keyword">const</span> <span class="org-variable-name">tagContainers</span> = document.getElementsByClassName(<span class="org-string">'sitemap_tag'</span>);
+  <span class="org-keyword">for</span> (<span class="org-keyword">let</span> <span class="org-variable-name">index</span> = 0; index &lt; tagContainers.length; index++) {
+    <span class="org-keyword">const</span> <span class="org-variable-name">container</span> = tagContainers[index];
+    <span class="org-keyword">const</span> <span class="org-variable-name">pContainer</span> = container.children[0];
+    <span class="org-keyword">if</span> (!pContainer) {
+      <span class="org-keyword">continue</span>;
+    }
+
+    <span class="org-keyword">const</span> <span class="org-variable-name">tagList</span> = pContainer.textContent.split(<span class="org-string">','</span>);
+    tagList.forEach(tag =&gt; tagSet.add(tag));
+    postList.push({
+      container: container.parentElement,
+      tagList: tagList,
+      enabled: tagList.length
+    });
+  }
+
+  <span class="org-comment-delimiter">// </span><span class="org-comment">Create the tag container</span>
+  <span class="org-keyword">const</span> <span class="org-variable-name">contentContainer</span> = document.getElementById(<span class="org-string">'content'</span>);
+  <span class="org-keyword">const</span> <span class="org-variable-name">tagContainer</span> = document.createElement(<span class="org-string">'div'</span>);
+  tagContainer.id = <span class="org-string">'tag-filter-container'</span>;
+  contentContainer.before(tagContainer);
+
+  <span class="org-keyword">let</span> <span class="org-variable-name">numEnabled</span> = tagSet.size;
+  <span class="org-keyword">for</span> (<span class="org-keyword">const</span> <span class="org-variable-name">tag</span> <span class="org-keyword">of</span> tagSet) {
+    <span class="org-keyword">const</span> <span class="org-variable-name">tagElement</span> = document.createElement(<span class="org-string">'div'</span>);
+    tagElement.className = <span class="org-string">"tag-filter-item"</span>;
+    <span class="org-keyword">const</span> <span class="org-variable-name">tagElementLabel</span> = document.createElement(<span class="org-string">'span'</span>);
+    tagElementLabel.innerHTML = tag;
+    <span class="org-keyword">const</span> <span class="org-variable-name">tagElementButton</span> = document.createElement(<span class="org-string">'button'</span>);
+    tagElement.append(tagElementLabel, tagElementButton);
+    tagContainer.append(tagElement);
+
+
+    <span class="org-comment-delimiter">// </span><span class="org-comment">Whenever a tag is clicked, execute the filtering behavior</span>
+    tagElementButton.onclick = <span class="org-keyword">function</span>() {
+      <span class="org-comment-delimiter">// </span><span class="org-comment">Handle enable/disable</span>
+      tagElement.remove();
+
+      <span class="org-keyword">if</span> (tagElement.classList.contains(<span class="org-string">'disabled'</span>)) {
+        tagElement.classList.remove(<span class="org-string">'disabled'</span>);
+        <span class="org-keyword">if</span> (numEnabled === 0) {
+          tagContainer.prepend(tagElement);
+        }
+        <span class="org-keyword">else</span> {
+          tagContainer.children[numEnabled - 1].after(tagElement);
+        }
+        numEnabled++;
+
+        <span class="org-comment-delimiter">// </span><span class="org-comment">Filter</span>
+        postList.forEach(post =&gt; {
+          <span class="org-keyword">if</span> (post.tagList.includes(tag)) {
+            post.enabled++;
+
+            <span class="org-keyword">if</span> (post.enabled) {
+              post.container.style.display = <span class="org-string">'list-item'</span>;
+            }
+          }
+        });
+      }
+      <span class="org-keyword">else</span> {
+        tagElement.classList.add(<span class="org-string">'disabled'</span>);
+        tagContainer.append(tagElement);
+        numEnabled--;
+
+        <span class="org-comment-delimiter">// </span><span class="org-comment">Filter</span>
+        postList.forEach(post =&gt; {
+          <span class="org-keyword">if</span> (post.tagList.includes(tag)) {
+            post.enabled--;
+            <span class="org-keyword">if</span> (!post.enabled) {
+              post.container.style.display = <span class="org-string">'none'</span>;
+            }
+          }
+        });
+      }
+
+      <span class="org-comment-delimiter">// </span><span class="org-comment">Filter</span>
+    };
+  }
+}
+
+window.onload = main;
+</pre>
+</div>
+
+<p>
+Finally, we can modify the <code>org-html-head</code> to include <code>&lt;script src='/posts/post.js'&gt;&lt;/script&gt;</code> so that this script is loaded on every blog post page.
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>
