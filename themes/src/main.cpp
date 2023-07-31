@@ -74,8 +74,7 @@ void load(Theme theme) {
 		break;
     }
 	case Theme::Summer:
-		renderer2d.load(&context);
-		summerTheme.load(&renderer2d);
+		summerTheme.load(&renderer2d, &context);
 		break;
 	default:
 		break;

@@ -7,6 +7,7 @@
 
 struct WebglContext;
 
+/// Responsible for rendering Mesh2Ds
 struct Renderer2d {
 	WebglContext* context = NULL;
 	Mat4x4 projection;
@@ -24,7 +25,9 @@ struct Renderer2d {
 		i32 model;
 	} uniforms;
 
-	void load(WebglContext* context);
+    /// Load with the provided context and shader programs. If the shaders are NULL, the default
+    /// shader is used
+	void load(WebglContext* context, const char* vertexShader = NULL, const char* fragmentShader = NULL);
 	void render();
 	void unload();
 };

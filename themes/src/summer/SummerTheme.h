@@ -16,7 +16,7 @@ struct Sun {
 
 struct SummerTheme {
 	Sun sun;
-	void load(Renderer2d* renderer);
+	void load(Renderer2d*, WebglContext*);
 	void update(f32 dtSeconds);
 	void render(Renderer2d* renderer);
 	void unload();

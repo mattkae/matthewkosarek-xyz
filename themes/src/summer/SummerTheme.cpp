@@ -4,7 +4,8 @@
 #include "../mathlib.h"
 #include <vector>
 
-void SummerTheme::load(Renderer2d* renderer) {
+void SummerTheme::load(Renderer2d* renderer, WebglContext* context) {
+    renderer->load(context);
 	renderer->clearColor = Vector4(0, 181, 286, 255.f).toNormalizedColor();
 	sun.sectors = 180;
 	sun.radius = renderer->context->width / 4.f;

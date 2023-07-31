@@ -6,7 +6,7 @@
 
 // Note: In the 'transform' attribute, the transform.x is the scale,
 // transform.y is the rotation, and transform.zw is the translation.
-const char* Vertex2DShader = 
+const char* DEFAULT_VERTEX_SHADER = 
 "attribute vec2 position; \n"
 "attribute vec4 color; \n"
 "attribute mat4 vMatrix; \n"
@@ -19,16 +19,18 @@ const char* Vertex2DShader =
 "    VertexColor = color; \n"
 "}";
 
-const char* renderer2dFragmentShader = 
+const char* DEFAULT_FRAGMENT_SHADER = 
 "varying lowp vec4 VertexColor; \n"
 "void main() { \n"
 "    gl_FragColor = VertexColor; \n"
 "}";
 
-void Renderer2d::load(WebglContext* inContext) {
+void Renderer2d::load(WebglContext* inContext, const char* inVertexShader, const char* inFragmentShader) {
+    auto vertexShader = inVertexShader ? inVertexShader : DEFAULT_VERTEX_SHADER;
+    auto fragmentShader = inFragmentShader ? inFragmentShader : DEFAULT_FRAGMENT_SHADER;
 	context = inContext;
 	printf("Compiling Renderer2d shader...\n");
-	shader = loadShader(Vertex2DShader, renderer2dFragmentShader);
+	shader = loadShader(vertexShader, fragmentShader);
 
 	useShader(shader);
 	attributes.position = getShaderAttribute(shader, "position");
