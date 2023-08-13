@@ -1,0 +1,16 @@
+#include "renderer2d_vert.h"
+
+const char* shader_renderer2d_vert = " \n"
+"attribute vec2 position;  \n"
+"attribute vec4 color;  \n"
+"attribute mat4 vMatrix;  \n"
+"uniform mat4 projection;  \n"
+"uniform mat4 model;  \n"
+"varying lowp vec4 VertexColor; \n"
+" \n"
+"void main() {  \n"
+"    vec4 fragmentPosition = projection * model * vMatrix * vec4(position.x, position.y, 0, 1);  \n"
+"    gl_Position = fragmentPosition;  \n"
+"    VertexColor = color;  \n"
+"} \n"
+" \n";

@@ -17,6 +17,8 @@ struct Renderer2d {
 	struct {
 		i32 position;
 		i32 color;
+
+        // TODO: vMatrix is not standard and does not belong here
 		i32 vMatrix;
 	} attributes;
 

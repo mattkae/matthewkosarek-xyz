@@ -3,31 +3,15 @@
 #include "WebglContext.h"
 #include "mathlib.h"
 #include <cstdio>
+#include "shaders/renderer2d_vert.h"
+#include "shaders/renderer2d_frag.h"
 
 // Note: In the 'transform' attribute, the transform.x is the scale,
 // transform.y is the rotation, and transform.zw is the translation.
-const char* DEFAULT_VERTEX_SHADER = 
-"attribute vec2 position; \n"
-"attribute vec4 color; \n"
-"attribute mat4 vMatrix; \n"
-"uniform mat4 projection; \n"
-"uniform mat4 model; \n"
-"varying lowp vec4 VertexColor; \n"
-"void main() { \n"
-"    vec4 fragmentPosition = projection * model * vMatrix * vec4(position.x, position.y, 0, 1); \n"
-"    gl_Position = fragmentPosition; \n"
-"    VertexColor = color; \n"
-"}";
-
-const char* DEFAULT_FRAGMENT_SHADER = 
-"varying lowp vec4 VertexColor; \n"
-"void main() { \n"
-"    gl_FragColor = VertexColor; \n"
-"}";
 
 void Renderer2d::load(WebglContext* inContext, const char* inVertexShader, const char* inFragmentShader) {
-    auto vertexShader = inVertexShader ? inVertexShader : DEFAULT_VERTEX_SHADER;
-    auto fragmentShader = inFragmentShader ? inFragmentShader : DEFAULT_FRAGMENT_SHADER;
+    auto vertexShader = inVertexShader ? inVertexShader : shader_renderer2d_vert;
+    auto fragmentShader = inFragmentShader ? inFragmentShader : shader_renderer2d_frag;
 	context = inContext;
 	printf("Compiling Renderer2d shader...\n");
 	shader = loadShader(vertexShader, fragmentShader);

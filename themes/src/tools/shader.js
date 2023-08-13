@@ -15,16 +15,23 @@ files.forEach(file => {
   const splitText = text.split('\n');
   const splitName = file.split('.');
   const def = `SHADER_${splitName.join('_').toUpperCase()}`;
-  let result = `#ifndef ${def} \n`;
-  result += `#define ${def} \n`;
-  result += `const char* ${def.toLowerCase()} = `
+  let header_result = `#ifndef ${def} \n`;
+  const filename = splitName.join('_');
+  const header_name = filename + ".h";
+  const cpp_name = filename + ".cpp";
+  header_result += `#define ${def} \n`;
+  header_result += `extern const char* ${def.toLowerCase()};\n`;
+  header_result += '#endif\n';
+  fs.writeFileSync(path.join(out_directory, header_name), header_result);
+  
+  let cpp_result = `#include "${header_name}"\n\n`
+  cpp_result += `const char* ${def.toLowerCase()} = `
   splitText.forEach((line, index) => {
-    result += "\"" + line + " \\n\"";
+    cpp_result += "\"" + line + " \\n\"";
     if (index == splitText.length - 1)
-      result += ";\n";
+      cpp_result += ";\n";
     else
-      result += "\n";
+      cpp_result += "\n";
   });
-  result += '#endif\n';
-  fs.writeFileSync(path.join(out_directory, splitName.join('_') + '.h'), result);
+  fs.writeFileSync(path.join(out_directory,  cpp_name), cpp_result);
 });
