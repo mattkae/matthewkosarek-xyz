@@ -2,10 +2,12 @@
 #include "../Renderer2d.h"
 #include "../list.h"
 #include "../mathlib.h"
+#include "../shaders/sun_frag.h"
+#include "../shaders/sun_vert.h"
 #include <vector>
 
 void SummerTheme::load(Renderer2d* renderer, WebglContext* context) {
-    renderer->load(context);
+    renderer->load(context, shader_sun_vert, shader_sun_frag);
 	renderer->clearColor = Vector4(0, 181, 286, 255.f).toNormalizedColor();
 	sun.sectors = 180;
 	sun.radius = renderer->context->width / 4.f;
