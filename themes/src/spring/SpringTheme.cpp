@@ -44,8 +44,8 @@ void SpringTheme::load(WebglContext* context) {
 
 	fetch_shader(
         {
-            "themes/src/shaders/renderer3d.vert",
-            "themes/src/shaders/renderer3d.frag"
+            "themes/src/_shaders/renderer3d.vert",
+            "themes/src/_shaders/renderer3d.frag"
         },
         on_shaders_loader,
         this

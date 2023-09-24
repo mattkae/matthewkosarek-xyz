@@ -8,6 +8,10 @@ const fs = require('fs');
 const directory = path.join(__dirname, "..", "_shaders");
 const out_directory = path.join(__dirname, "..", "shaders");
 
+if (!fs.existsSync(out_directory)){
+    fs.mkdirSync(out_directory);
+}
+
 const files = fs.readdirSync(directory);
 files.forEach(file => {
   const filePath = path.join(directory, file);
