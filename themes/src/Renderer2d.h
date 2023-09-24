@@ -32,6 +32,8 @@ struct Renderer2d {
 	void load(WebglContext* context, const char* vertexShader = NULL, const char* fragmentShader = NULL);
 	void render();
 	void unload();
+    f32 get_width();
+    f32 get_height();
 };
 
 struct Vertex2D {

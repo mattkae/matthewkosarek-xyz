@@ -48,6 +48,14 @@ void Renderer2d::unload() {
 	glDeleteProgram(shader);
 }
 
+f32 Renderer2d::get_width() {
+    return context->width;
+}
+
+f32 Renderer2d::get_height() {
+    return context->height;
+}
+
 
 void Mesh2D::load(Vertex2D* inVertices, u32 inNumVertices, Renderer2d* renderer) {
 	ebo = 0;

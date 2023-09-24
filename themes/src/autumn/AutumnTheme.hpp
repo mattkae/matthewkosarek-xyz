@@ -4,12 +4,15 @@
 #include "TreeShape.h"
 #include "LeafParticleRender.h"
 #include "../types.h"
+#include <memory>
 
 struct Renderer2d;
+class RectangularGradient;
 
 struct AutumnTheme {
 	TreeShape tree;
 	LeafParticleRender leafParticles;
+    RectangularGradient* background;
 
 	void load(Renderer2d* renderer);
 	void update(f32 dtSeconds);
