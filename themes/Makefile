@@ -4,7 +4,7 @@ BUILD_DIR ?= ./dist
 SRC_DIRS ?= ./src
 
 CC   := emcc
-CXX	 := emcc
+CXX	 := em++
 SRCS := $(shell find $(SRC_DIRS) -name *.cpp -or -name *.c -or -name *.s)
 OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)

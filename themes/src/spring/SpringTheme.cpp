@@ -37,6 +37,16 @@ inline void on_shaders_loader(ShaderFetchResult* result) {
 	fetch_bunny(theme);
 }
 
+SpringTheme::SpringTheme(WebglContext* context)
+{
+    load(context);
+}
+
+SpringTheme::~SpringTheme()
+{
+    unload();
+}
+
 void SpringTheme::load(WebglContext* context) {
     state = SpringThemeState::Loading;
 	renderer.context = context;

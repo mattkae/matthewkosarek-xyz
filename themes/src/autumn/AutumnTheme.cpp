@@ -8,6 +8,17 @@ namespace
     const int NUM_HILLS = 3;
 }
 
+AutumnTheme::AutumnTheme(Renderer2d* renderer)
+    : renderer{renderer}
+{
+    load(renderer);
+}
+
+AutumnTheme::~AutumnTheme()
+{
+    unload();
+}
+
 void AutumnTheme::load(Renderer2d* renderer) {
     renderer->clearColor = Vector4(252, 210, 153, 255).toNormalizedColor();
 	auto lr = tree.load(renderer);
@@ -45,7 +56,8 @@ void AutumnTheme::update(f32 dtSeconds) {
 	leafParticles.update(dtSeconds);
 }
 
-void AutumnTheme::render(Renderer2d* renderer) {
+void AutumnTheme::render() {
+    renderer->render();
     background->render();
     background_hill->render();
 	tree.render(renderer);

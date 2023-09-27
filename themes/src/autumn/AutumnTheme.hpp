@@ -4,6 +4,7 @@
 #include "TreeShape.h"
 #include "LeafParticleRender.h"
 #include "../types.h"
+#include "../theme.h"
 #include <memory>
 #include <vector>
 
@@ -11,7 +12,10 @@ struct Renderer2d;
 class RectangularGradient;
 class Circleish;
 
-struct AutumnTheme {
+class AutumnTheme : public Theme {
+public:
+    AutumnTheme(Renderer2d* renderer);
+    ~AutumnTheme();
 	TreeShape tree;
 	LeafParticleRender leafParticles;
     RectangularGradient* background;
@@ -20,8 +24,10 @@ struct AutumnTheme {
 
 	void load(Renderer2d* renderer);
 	void update(f32 dtSeconds);
-	void render(Renderer2d* renderer);
+	void render();
 	void unload();
+private:
+    Renderer2d* renderer;
 };
 
 #endif

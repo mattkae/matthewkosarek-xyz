@@ -1,6 +1,7 @@
 #pragma once
 #include "../types.h"
 #include "../Renderer2d.h"
+#include "../theme.h"
 #include <vector>
 
 struct Sun {
@@ -14,10 +15,15 @@ struct Sun {
 	void unload();
 };
 
-struct SummerTheme {
+class SummerTheme : public Theme {
+public:
+    SummerTheme(Renderer2d*, WebglContext*);
+    ~SummerTheme();
 	Sun sun;
 	void load(Renderer2d*, WebglContext*);
 	void update(f32 dtSeconds);
-	void render(Renderer2d* renderer);
+	void render();
 	void unload();
+private:
+    Renderer2d* renderer;
 };

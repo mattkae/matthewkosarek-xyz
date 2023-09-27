@@ -4,6 +4,7 @@
 #include "../mathlib.h"
 #include "../types.h"
 #include "../Renderer3d.h"
+#include "../theme.h"
 
 
 enum class SpringThemeState {
@@ -15,7 +16,10 @@ enum class SpringThemeState {
 	Idle
 };
 
-struct SpringTheme {
+class SpringTheme : public Theme {
+public:
+    SpringTheme(WebglContext*);
+    ~SpringTheme();
 	Renderer3d renderer;
 	SpringThemeState state;
 	f32 bunnySpeed = 5.f;

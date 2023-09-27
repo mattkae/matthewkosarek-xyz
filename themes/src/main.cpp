@@ -2,6 +2,7 @@
 #include "MainLoop.h"
 #include "Renderer2d.h"
 #include "mathlib.h"
+#include "theme.h"
 #include "types.h"
 #include "summer/SummerTheme.h"
 #include "autumn/AutumnTheme.hpp"
@@ -9,15 +10,6 @@
 #include "winter/WinterTheme.hpp"
 #include <cstdio>
 #include <emscripten/fetch.h>
-
-
-enum Theme {
-	Default = 0,
-    Autumn,
-	Winter,
-	Spring,
-	Summer
-};
 
 void load(Theme theme);
 void unload();
@@ -31,11 +23,12 @@ EM_BOOL selectSummer(int eventType, const EmscriptenMouseEvent* mouseEvent, void
 WebglContext context;
 Renderer2d renderer2d;
 MainLoop mainLoop;
-Theme activeTheme = Theme::Default;
-AutumnTheme autumnTheme;
-WinterTheme winterTheme;
-SpringTheme springTheme;
-SummerTheme summerTheme;
+ThemeType type;
+Theme* active_theme;
+AutumnTheme* autumnTheme;
+WinterTheme* winterTheme;
+SpringTheme* springTheme;
+SummerTheme* summerTheme;
 
 int main() {
 	context.init("#theme_canvas");
@@ -49,32 +42,31 @@ int main() {
 }
 
 // -- Scene loading, updating, and unloading logic
-void load(Theme theme) {
-	if (activeTheme == theme) {
+void load(ThemeType theme) {
+	if (type == theme) {
 		printf("This theme is already active.\n");
 		return;
 	}
 
     unload(); // Try and unload before we load, so that we start fresh
 
-	activeTheme = theme;
+	type = theme;
 	mainLoop.run(update);
 
-	switch (activeTheme) {
-	case Theme::Autumn:
+	switch (type) {
+	case ThemeType::Autumn:
 		renderer2d.load(&context);
-		autumnTheme.load(&renderer2d);
+        active_theme = new AutumnTheme(&renderer2d);
 		break;
-	case Theme::Winter:
+	case ThemeType::Winter:
 		renderer2d.load(&context);
-		winterTheme.load(&renderer2d);
+        active_theme = new WinterTheme(&renderer2d);
 		break;
-	case Theme::Spring: {
-		springTheme.load(&context);
+	case ThemeType::Spring:
+        active_theme = new SpringTheme(&context);
 		break;
-    }
-	case Theme::Summer:
-		summerTheme.load(&renderer2d, &context);
+	case ThemeType::Summer:
+        active_theme = new SummerTheme(&renderer2d, &context);
 		break;
 	default:
 		break;
@@ -82,65 +74,14 @@ void load(Theme theme) {
 }
 
 void update(f32 dtSeconds, void* userData) {
-	// -- Update
-	switch (activeTheme) {
-	case Theme::Autumn:
-		autumnTheme.update(dtSeconds);
-		break;
-	case Theme::Winter:
-		winterTheme.update(dtSeconds);
-		break;
-	case Theme::Spring:
-		springTheme.update(dtSeconds);
-		break;
-	case Theme::Summer:
-		summerTheme.update(dtSeconds);
-		break;
-	default:
-		break;
-	}
-	
-	// -- Render
-	switch (activeTheme) {
-	case Theme::Autumn:
-		renderer2d.render();
-		autumnTheme.render(&renderer2d);
-		break;
-	case Theme::Winter:
-		renderer2d.render();
-		winterTheme.render(&renderer2d);
-		break;
-	case Theme::Spring:
-		springTheme.render();
-		break;
-	case Theme::Summer:
-		renderer2d.render();
-	    summerTheme.render(&renderer2d);
-		break;
-	default:
-		break;
-	}
+	active_theme->update(dtSeconds);
+    active_theme->render();
 }
 
 void unload() {
-	switch (activeTheme) {
-	case Theme::Autumn:
-		autumnTheme.unload();
-		break;
-	case Theme::Winter:
-		winterTheme.unload();
-		break;
-	case Theme::Spring:
-		springTheme.unload();
-		break;
-	case Theme::Summer:
-		summerTheme.unload();
-		break;
-	default:
-		break;
-	}
+	delete active_theme;
 	
-	activeTheme = Theme::Default;
+	type = ThemeType::Default;
 	if (mainLoop.isRunning) {
 		mainLoop.stop();
 		renderer2d.unload();
@@ -156,24 +97,24 @@ EM_BOOL selectNone(int eventType, const EmscriptenMouseEvent* mouseEvent, void* 
 
 EM_BOOL selectAutumn(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
 	printf("Autumn theme selected\n");
-	load(Theme::Autumn);
+	load(ThemeType::Autumn);
 	return true;
 }
 
 EM_BOOL selectWinter(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
 	printf("Winter theme selected\n");
-	load(Theme::Winter);
+	load(ThemeType::Winter);
 	return true;
 }
 
 EM_BOOL selectSpring(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
 	printf("Spring theme selected\n");
-	load(Theme::Spring);
+	load(ThemeType::Spring);
 	return true;
 }
 
 EM_BOOL selectSummer(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
 	printf("Summer theme selected\n");
-	load(Theme::Summer);
+	load(ThemeType::Summer);
 	return true;
 }

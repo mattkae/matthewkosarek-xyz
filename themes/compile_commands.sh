@@ -1,5 +1,5 @@
 make --always-make --dry-run \
- | grep -wE 'emcc|gcc|g\+\+|c\+\+' \
+ | grep -wE 'em++|emcc|gcc|g\+\+|c\+\+' \
  | grep -w '\-c' \
  | jq -nR '[inputs|{directory:".", command:., file: match(" [^ ]+$").string[1:]}]' \
  > compile_commands.json
