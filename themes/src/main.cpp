@@ -11,7 +11,7 @@
 #include <cstdio>
 #include <emscripten/fetch.h>
 
-void load(Theme theme);
+void load(ThemeType theme);
 void unload();
 void update(f32 dtSeconds, void* userData);
 EM_BOOL selectNone(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
@@ -21,14 +21,9 @@ EM_BOOL selectSpring(int eventType, const EmscriptenMouseEvent* mouseEvent, void
 EM_BOOL selectSummer(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData);
 
 WebglContext context;
-Renderer2d renderer2d;
 MainLoop mainLoop;
 ThemeType type;
 Theme* active_theme;
-AutumnTheme* autumnTheme;
-WinterTheme* winterTheme;
-SpringTheme* springTheme;
-SummerTheme* summerTheme;
 
 int main() {
 	context.init("#theme_canvas");
@@ -55,18 +50,16 @@ void load(ThemeType theme) {
 
 	switch (type) {
 	case ThemeType::Autumn:
-		renderer2d.load(&context);
-        active_theme = new AutumnTheme(&renderer2d);
+        active_theme = new AutumnTheme(&context);
 		break;
 	case ThemeType::Winter:
-		renderer2d.load(&context);
-        active_theme = new WinterTheme(&renderer2d);
+        active_theme = new WinterTheme(&context);
 		break;
 	case ThemeType::Spring:
         active_theme = new SpringTheme(&context);
 		break;
 	case ThemeType::Summer:
-        active_theme = new SummerTheme(&renderer2d, &context);
+        active_theme = new SummerTheme(&context);
 		break;
 	default:
 		break;
@@ -84,7 +77,6 @@ void unload() {
 	type = ThemeType::Default;
 	if (mainLoop.isRunning) {
 		mainLoop.stop();
-		renderer2d.unload();
 	}
 }
 

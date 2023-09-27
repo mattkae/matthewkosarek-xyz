@@ -58,8 +58,7 @@ function locateFile(path) {
 // Hooks that are implemented differently in different runtime environments.
 var read_,
     readAsync,
-    readBinary,
-    setWindowTitle;
+    readBinary;
 
 if (ENVIRONMENT_IS_NODE) {
   if (typeof process == 'undefined' || !process.release || process.release.name !== 'node') throw new Error('not compiled for this environment (did you build to HTML and try to run it not on the web, or set ENVIRONMENT to something - like node - and run it someplace else - like on the web?)');
@@ -269,8 +268,6 @@ read_ = (url) => {
 
 // end include: web_or_worker_shell_read.js
   }
-
-  setWindowTitle = (title) => document.title = title;
 } else
 {
   throw new Error('environment detection error');
@@ -306,7 +303,7 @@ assert(typeof Module['filePackagePrefixURL'] == 'undefined', 'Module.filePackage
 assert(typeof Module['read'] == 'undefined', 'Module.read option was removed (modify read_ in JS)');
 assert(typeof Module['readAsync'] == 'undefined', 'Module.readAsync option was removed (modify readAsync in JS)');
 assert(typeof Module['readBinary'] == 'undefined', 'Module.readBinary option was removed (modify readBinary in JS)');
-assert(typeof Module['setWindowTitle'] == 'undefined', 'Module.setWindowTitle option was removed (modify setWindowTitle in JS)');
+assert(typeof Module['setWindowTitle'] == 'undefined', 'Module.setWindowTitle option was removed (modify emscripten_set_window_title in JS)');
 assert(typeof Module['TOTAL_MEMORY'] == 'undefined', 'Module.TOTAL_MEMORY has been renamed Module.INITIAL_MEMORY');
 legacyModuleProp('asm', 'wasmExports');
 legacyModuleProp('read', 'read_');
@@ -316,6 +313,11 @@ legacyModuleProp('setWindowTitle', 'setWindowTitle');
 var IDBFS = 'IDBFS is no longer included by default; build with -lidbfs.js';
 var PROXYFS = 'PROXYFS is no longer included by default; build with -lproxyfs.js';
 var WORKERFS = 'WORKERFS is no longer included by default; build with -lworkerfs.js';
+var FETCHFS = 'FETCHFS is no longer included by default; build with -lfetchfs.js';
+var ICASEFS = 'ICASEFS is no longer included by default; build with -licasefs.js';
+var JSFILEFS = 'JSFILEFS is no longer included by default; build with -ljsfilefs.js';
+var OPFS = 'OPFS is no longer included by default; build with -lopfs.js';
+
 var NODEFS = 'NODEFS is no longer included by default; build with -lnodefs.js';
 
 assert(!ENVIRONMENT_IS_SHELL, "shell environment detected but not enabled at build time.  Add 'shell' to `-sENVIRONMENT` to enable.");
@@ -344,7 +346,6 @@ if (typeof WebAssembly != 'object') {
 // Wasm globals
 
 var wasmMemory;
-var wasmExports;
 
 //========================================
 // Runtime essentials
@@ -393,9 +394,9 @@ function updateMemoryViews() {
   var b = wasmMemory.buffer;
   Module['HEAP8'] = HEAP8 = new Int8Array(b);
   Module['HEAP16'] = HEAP16 = new Int16Array(b);
-  Module['HEAP32'] = HEAP32 = new Int32Array(b);
   Module['HEAPU8'] = HEAPU8 = new Uint8Array(b);
   Module['HEAPU16'] = HEAPU16 = new Uint16Array(b);
+  Module['HEAP32'] = HEAP32 = new Int32Array(b);
   Module['HEAPU32'] = HEAPU32 = new Uint32Array(b);
   Module['HEAPF32'] = HEAPF32 = new Float32Array(b);
   Module['HEAPF64'] = HEAPF64 = new Float64Array(b);
@@ -410,12 +411,6 @@ assert(typeof Int32Array != 'undefined' && typeof Float64Array !== 'undefined' &
 assert(!Module['wasmMemory'], 'Use of `wasmMemory` detected.  Use -sIMPORTED_MEMORY to define wasmMemory externally');
 assert(!Module['INITIAL_MEMORY'], 'Detected runtime INITIAL_MEMORY setting.  Use -sIMPORTED_MEMORY to define wasmMemory dynamically');
 
-// include: runtime_init_table.js
-// In regular non-RELOCATABLE mode the table is exported
-// from the wasm module and this will be assigned once
-// the exports are available.
-var wasmTable;
-// end include: runtime_init_table.js
 // include: runtime_stack_check.js
 // Initializes the stack cookie. Called at the startup of main and at the startup of each thread in pthreads mode.
 function writeStackCookie() {
@@ -594,7 +589,7 @@ function addRunDependency(id) {
             shown = true;
             err('still waiting on run dependencies:');
           }
-          err('dependency: ' + dep);
+          err(`dependency: ${dep}`);
         }
         if (shown) {
           err('(end of list)');
@@ -767,11 +762,11 @@ function instantiateArrayBuffer(binaryFile, imports, receiver) {
   }).then((instance) => {
     return instance;
   }).then(receiver, (reason) => {
-    err('failed to asynchronously prepare wasm: ' + reason);
+    err(`failed to asynchronously prepare wasm: ${reason}`);
 
     // Warn on some common problems.
     if (isFileURI(wasmBinaryFile)) {
-      err('warning: Loading from a file URI (' + wasmBinaryFile + ') is not supported in most browsers. See https://emscripten.org/docs/getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing');
+      err(`warning: Loading from a file URI (${wasmBinaryFile}) is not supported in most browsers. See https://emscripten.org/docs/getting_started/FAQ.html#how-do-i-run-a-local-webserver-for-testing-why-does-my-program-stall-in-downloading-or-preparing`);
     }
     abort(reason);
   });
@@ -804,7 +799,7 @@ function instantiateAsync(binary, binaryFile, imports, callback) {
         function(reason) {
           // We expect the most common failure cause to be a bad MIME type for the binary,
           // in which case falling back to ArrayBuffer instantiation should work.
-          err('wasm streaming compile failed: ' + reason);
+          err(`wasm streaming compile failed: ${reason}`);
           err('falling back to ArrayBuffer instantiation');
           return instantiateArrayBuffer(binaryFile, imports, callback);
         });
@@ -826,9 +821,8 @@ function createWasm() {
   // performing other necessary setup
   /** @param {WebAssembly.Module=} module*/
   function receiveInstance(instance, module) {
-    var exports = instance.exports;
+    wasmExports = instance.exports;
 
-    wasmExports = exports;
     
 
     wasmMemory = wasmExports['memory'];
@@ -847,7 +841,7 @@ function createWasm() {
     addOnInit(wasmExports['__wasm_call_ctors']);
 
     removeRunDependency('wasm-instantiate');
-    return exports;
+    return wasmExports;
   }
   // wait for the pthread pool (if any)
   addRunDependency('wasm-instantiate');
@@ -878,7 +872,7 @@ function createWasm() {
     try {
       return Module['instantiateWasm'](info, receiveInstance);
     } catch(e) {
-      err('Module.instantiateWasm callback failed with error: ' + e);
+      err(`Module.instantiateWasm callback failed with error: ${e}`);
         return false;
     }
   }
@@ -937,6 +931,7 @@ function missingGlobal(sym, msg) {
 }
 
 missingGlobal('buffer', 'Please use HEAP8.buffer or wasmMemory.buffer');
+missingGlobal('asm', 'Please use wasmExports instead');
 
 function missingLibrarySymbol(sym) {
   if (typeof globalThis !== 'undefined' && !Object.getOwnPropertyDescriptor(globalThis, sym)) {
@@ -1090,11 +1085,11 @@ function dbg(text) {
       return yday;
     };
   
-  function convertI32PairToI53Checked(lo, hi) {
+  var convertI32PairToI53Checked = (lo, hi) => {
       assert(lo == (lo >>> 0) || lo == (lo|0)); // lo should either be a i32 or a u32
       assert(hi === (hi|0));                    // hi should be a i32
       return ((hi + 0x200000) >>> 0 < 0x400001 - !!lo) ? (lo >>> 0) + hi * 4294967296 : NaN;
-    }
+    };
   function __localtime_js(time_low, time_high,tmPtr) {
     var time = convertI32PairToI53Checked(time_low, time_high);;
   
@@ -1191,7 +1186,7 @@ function dbg(text) {
     };
   var stringToUTF8 = (str, outPtr, maxBytesToWrite) => {
       assert(typeof maxBytesToWrite == 'number', 'stringToUTF8(str, outPtr, maxBytesToWrite) is missing the third parameter that specifies the length of the output buffer!');
-      return stringToUTF8Array(str, HEAPU8,outPtr, maxBytesToWrite);
+      return stringToUTF8Array(str, HEAPU8, outPtr, maxBytesToWrite);
     };
   
   var stringToNewUTF8 = (str) => {
@@ -1244,9 +1239,7 @@ function dbg(text) {
       abort('native code called abort()');
     };
 
-  function _emscripten_date_now() {
-      return Date.now();
-    }
+  var _emscripten_date_now = () => Date.now();
 
   var withStackSave = (f) => {
       var stack = stackSave();
@@ -1256,21 +1249,21 @@ function dbg(text) {
     };
   var JSEvents = {
   inEventHandler:0,
-  removeAllEventListeners:function() {
+  removeAllEventListeners() {
         for (var i = JSEvents.eventHandlers.length-1; i >= 0; --i) {
           JSEvents._removeHandler(i);
         }
         JSEvents.eventHandlers = [];
         JSEvents.deferredCalls = [];
       },
-  registerRemoveEventListeners:function() {
+  registerRemoveEventListeners() {
         if (!JSEvents.removeEventListenersRegistered) {
           __ATEXIT__.push(JSEvents.removeAllEventListeners);
           JSEvents.removeEventListenersRegistered = true;
         }
       },
   deferredCalls:[],
-  deferCall:function(targetFunction, precedence, argsList) {
+  deferCall(targetFunction, precedence, argsList) {
         function arraysHaveEqualContent(arrA, arrB) {
           if (arrA.length != arrB.length) return false;
   
@@ -1292,9 +1285,9 @@ function dbg(text) {
           argsList
         });
   
-        JSEvents.deferredCalls.sort(function(x,y) { return x.precedence < y.precedence; });
+        JSEvents.deferredCalls.sort((x,y) => x.precedence < y.precedence);
       },
-  removeDeferredCalls:function(targetFunction) {
+  removeDeferredCalls(targetFunction) {
         for (var i = 0; i < JSEvents.deferredCalls.length; ++i) {
           if (JSEvents.deferredCalls[i].targetFunction == targetFunction) {
             JSEvents.deferredCalls.splice(i, 1);
@@ -1302,7 +1295,7 @@ function dbg(text) {
           }
         }
       },
-  canPerformEventHandlerRequests:function() {
+  canPerformEventHandlerRequests() {
         if (navigator.userActivation) {
           // Verify against transient activation status from UserActivation API
           // whether it is possible to perform a request here without needing to defer. See
@@ -1311,9 +1304,10 @@ function dbg(text) {
           // At the time of writing, Firefox does not support this API: https://bugzilla.mozilla.org/show_bug.cgi?id=1791079
           return navigator.userActivation.isActive;
         }
+  
         return JSEvents.inEventHandler && JSEvents.currentEventHandler.allowsDeferredCalls;
       },
-  runDeferredCalls:function() {
+  runDeferredCalls() {
         if (!JSEvents.canPerformEventHandlerRequests()) {
           return;
         }
@@ -1325,20 +1319,20 @@ function dbg(text) {
         }
       },
   eventHandlers:[],
-  removeAllHandlersOnTarget:function(target, eventTypeString) {
+  removeAllHandlersOnTarget:(target, eventTypeString) => {
         for (var i = 0; i < JSEvents.eventHandlers.length; ++i) {
-          if (JSEvents.eventHandlers[i].target == target && 
+          if (JSEvents.eventHandlers[i].target == target &&
             (!eventTypeString || eventTypeString == JSEvents.eventHandlers[i].eventTypeString)) {
              JSEvents._removeHandler(i--);
            }
         }
       },
-  _removeHandler:function(i) {
+  _removeHandler(i) {
         var h = JSEvents.eventHandlers[i];
         h.target.removeEventListener(h.eventTypeString, h.eventListenerFunc, h.useCapture);
         JSEvents.eventHandlers.splice(i, 1);
       },
-  registerOrRemoveHandler:function(eventHandler) {
+  registerOrRemoveHandler(eventHandler) {
         if (!eventHandler.target) {
           err('registerOrRemoveHandler: the target element for event handler registration does not exist, when processing the following event handler registration:');
           console.dir(eventHandler);
@@ -1357,7 +1351,7 @@ function dbg(text) {
           // Out of event handler - restore nesting count.
           --JSEvents.inEventHandler;
         };
-        
+  
         if (eventHandler.callbackfunc) {
           eventHandler.eventListenerFunc = jsEventHandler;
           eventHandler.target.addEventListener(eventHandler.eventTypeString, jsEventHandler, eventHandler.useCapture);
@@ -1373,13 +1367,13 @@ function dbg(text) {
         }
         return 0;
       },
-  getNodeNameForTarget:function(target) {
+  getNodeNameForTarget(target) {
         if (!target) return '';
         if (target == window) return '#window';
         if (target == screen) return '#screen';
         return (target && target.nodeName) ? target.nodeName : '';
       },
-  fullscreenEnabled:function() {
+  fullscreenEnabled() {
         return document.fullscreenEnabled
         // Safari 13.0.3 on macOS Catalina 10.15.1 still ships with prefixed webkitFullscreenEnabled.
         // TODO: If Safari at some point ships with unprefixed version, update the version check above.
@@ -1461,25 +1455,23 @@ function dbg(text) {
       assert(typeof ptr == 'number');
       return ptr ? UTF8ArrayToString(HEAPU8, ptr, maxBytesToRead) : '';
     };
-  function maybeCStringToJsString(cString) {
+  var maybeCStringToJsString = (cString) => {
       // "cString > 2" checks if the input is a number, and isn't of the special
       // values we accept here, EMSCRIPTEN_EVENT_TARGET_* (which map to 0, 1, 2).
       // In other words, if cString > 2 then it's a pointer to a valid place in
       // memory, and points to a C string.
       return cString > 2 ? UTF8ToString(cString) : cString;
-    }
+    };
   
   var specialHTMLTargets = [0, typeof document != 'undefined' ? document : 0, typeof window != 'undefined' ? window : 0];
-  function findEventTarget(target) {
+  var findEventTarget = (target) => {
       target = maybeCStringToJsString(target);
       var domElement = specialHTMLTargets[target] || (typeof document != 'undefined' ? document.querySelector(target) : undefined);
       return domElement;
-    }
+    };
   
-  function getBoundingClientRect(e) {
-      return specialHTMLTargets.indexOf(e) < 0 ? e.getBoundingClientRect() : {'left':0,'top':0};
-    }
-  function _emscripten_get_element_css_size(target, width, height) {
+  var getBoundingClientRect = (e) => specialHTMLTargets.indexOf(e) < 0 ? e.getBoundingClientRect() : {'left':0,'top':0};
+  var _emscripten_get_element_css_size = (target, width, height) => {
       target = findEventTarget(target);
       if (!target) return -4;
   
@@ -1488,15 +1480,16 @@ function dbg(text) {
       HEAPF64[((height)>>3)] = rect.height;
   
       return 0;
-    }
+    };
 
-  function _emscripten_is_main_browser_thread() {
-      return !ENVIRONMENT_IS_WORKER;
-    }
+  var _emscripten_is_main_browser_thread = () =>
+      !ENVIRONMENT_IS_WORKER;
 
-  var _emscripten_memcpy_big = (dest, src, num) => HEAPU8.copyWithin(dest, src, src + num);
+  var _emscripten_memcpy_js = (dest, src, num) => HEAPU8.copyWithin(dest, src, src + num);
 
   var wasmTableMirror = [];
+  
+  var wasmTable;
   var getWasmTableEntry = (funcPtr) => {
       var func = wasmTableMirror[funcPtr];
       if (!func) {
@@ -1506,14 +1499,14 @@ function dbg(text) {
       assert(wasmTable.get(funcPtr) == func, "JavaScript-side Wasm function table mirror is out of date!");
       return func;
     };
-  function _emscripten_request_animation_frame_loop(cb, userData) {
+  var _emscripten_request_animation_frame_loop = (cb, userData) => {
       function tick(timeStamp) {
         if (getWasmTableEntry(cb)(timeStamp, userData)) {
           requestAnimationFrame(tick);
         }
       }
       return requestAnimationFrame(tick);
-    }
+    };
 
   var getHeapMax = () =>
       // Stay one Wasm page short of 4GB: while e.g. Chrome is able to allocate
@@ -1524,7 +1517,7 @@ function dbg(text) {
   
   var growMemory = (size) => {
       var b = wasmMemory.buffer;
-      var pages = (size - b.byteLength + 65535) >>> 16;
+      var pages = (size - b.byteLength + 65535) / 65536;
       try {
         // round size grow request up to wasm page size (fixed 64KB per spec)
         wasmMemory.grow(pages); // .grow() takes a delta compared to the previous size
@@ -1565,7 +1558,7 @@ function dbg(text) {
       // (the wasm binary specifies it, so if we tried, we'd fail anyhow).
       var maxHeapSize = getHeapMax();
       if (requestedSize > maxHeapSize) {
-        err(`Cannot enlarge memory, asked to go up to ${requestedSize} bytes, but the limit is ${maxHeapSize} bytes!`);
+        err(`Cannot enlarge memory, requested ${requestedSize} bytes, but the limit is ${maxHeapSize} bytes!`);
         return false;
       }
   
@@ -1592,19 +1585,19 @@ function dbg(text) {
     };
 
   
-  function findCanvasEventTarget(target) { return findEventTarget(target); }
-  function _emscripten_set_canvas_element_size(target, width, height) {
+  var findCanvasEventTarget = (target) => findEventTarget(target);
+  var _emscripten_set_canvas_element_size = (target, width, height) => {
       var canvas = findCanvasEventTarget(target);
       if (!canvas) return -4;
       canvas.width = width;
       canvas.height = height;
       return 0;
-    }
+    };
 
   
   
   
-  function fillMouseEventData(eventStruct, e, target) {
+  var fillMouseEventData = (eventStruct, e, target) => {
       assert(eventStruct % 4 == 0);
       HEAPF64[((eventStruct)>>3)] = e.timeStamp;
       var idx = eventStruct >> 2;
@@ -1629,15 +1622,15 @@ function dbg(text) {
       HEAP32[idx + 13] = e.clientX - rect.left;
       HEAP32[idx + 14] = e.clientY - rect.top;
   
-    }
+    };
   
   
   
-  function registerMouseEventCallback(target, userData, useCapture, callbackfunc, eventTypeId, eventTypeString, targetThread) {
-      if (!JSEvents.mouseEvent) JSEvents.mouseEvent = _malloc( 72 );
+  var registerMouseEventCallback = (target, userData, useCapture, callbackfunc, eventTypeId, eventTypeString, targetThread) => {
+      if (!JSEvents.mouseEvent) JSEvents.mouseEvent = _malloc(72);
       target = findEventTarget(target);
   
-      var mouseEventHandlerFunc = function(e = event) {
+      var mouseEventHandlerFunc = (e = event) => {
         // TODO: Make this access thread safe, or this could update live while app is reading it.
         fillMouseEventData(JSEvents.mouseEvent, e, target);
   
@@ -1653,20 +1646,19 @@ function dbg(text) {
         useCapture
       };
       return JSEvents.registerOrRemoveHandler(eventHandler);
-    }
-  function _emscripten_set_click_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
-      return registerMouseEventCallback(target, userData, useCapture, callbackfunc, 4, "click", targetThread);
-    }
+    };
+  var _emscripten_set_click_callback_on_thread = (target, userData, useCapture, callbackfunc, targetThread) =>
+      registerMouseEventCallback(target, userData, useCapture, callbackfunc, 4, "click", targetThread);
 
   
   
   
-  function registerUiEventCallback(target, userData, useCapture, callbackfunc, eventTypeId, eventTypeString, targetThread) {
-      if (!JSEvents.uiEvent) JSEvents.uiEvent = _malloc( 36 );
+  var registerUiEventCallback = (target, userData, useCapture, callbackfunc, eventTypeId, eventTypeString, targetThread) => {
+      if (!JSEvents.uiEvent) JSEvents.uiEvent = _malloc(36);
   
       target = findEventTarget(target);
   
-      var uiEventHandlerFunc = function(e = event) {
+      var uiEventHandlerFunc = (e = event) => {
         if (e.target != target) {
           // Never take ui events such as scroll via a 'bubbled' route, but always from the direct element that
           // was targeted. Otherwise e.g. if app logs a message in response to a page scroll, the Emscripten log
@@ -1700,10 +1692,9 @@ function dbg(text) {
         useCapture
       };
       return JSEvents.registerOrRemoveHandler(eventHandler);
-    }
-  function _emscripten_set_resize_callback_on_thread(target, userData, useCapture, callbackfunc, targetThread) {
-      return registerUiEventCallback(target, userData, useCapture, callbackfunc, 10, "resize", targetThread);
-    }
+    };
+  var _emscripten_set_resize_callback_on_thread = (target, userData, useCapture, callbackfunc, targetThread) =>
+      registerUiEventCallback(target, userData, useCapture, callbackfunc, 10, "resize", targetThread);
 
   
   
@@ -1737,7 +1728,7 @@ function dbg(text) {
       this.freelist = [];
     }
   var Fetch = {
-  openDatabase:function(dbname, dbversion, onsuccess, onerror) {
+  openDatabase(dbname, dbversion, onsuccess, onerror) {
       try {
         var openRequest = indexedDB.open(dbname, dbversion);
       } catch (e) { return onerror(e); }
@@ -1752,7 +1743,7 @@ function dbg(text) {
       openRequest.onsuccess = (event) => onsuccess(event.target.result);
       openRequest.onerror = (error) => onerror(error);
     },
-  init:function() {
+  init() {
       Fetch.xhrs = new HandleAllocator();
       var onsuccess = (db) => {
         Fetch.dbInstance = db;
@@ -1953,10 +1944,12 @@ function dbg(text) {
   varargs:undefined,
   get() {
         assert(SYSCALLS.varargs != undefined);
+        // the `+` prepended here is necessary to convince the JSCompiler that varargs is indeed a number.
+        var ret = HEAP32[((+SYSCALLS.varargs)>>2)];
         SYSCALLS.varargs += 4;
-        var ret = HEAP32[(((SYSCALLS.varargs)-(4))>>2)];
         return ret;
       },
+  getp() { return SYSCALLS.get() },
   getStr(ptr) {
         var ret = UTF8ToString(ptr);
         return ret;
@@ -2009,19 +2002,21 @@ function dbg(text) {
       }
     };
   
-  function readI53FromI64(ptr) {
-      return HEAPU32[ptr>>2] + HEAP32[ptr+4>>2] * 4294967296;
-    }
+  var readI53FromI64 = (ptr) => {
+      return HEAPU32[((ptr)>>2)] + HEAP32[(((ptr)+(4))>>2)] * 4294967296;
+    };
   
-  function readI53FromU64(ptr) {
-      return HEAPU32[ptr>>2] + HEAPU32[ptr+4>>2] * 4294967296;
-    }
-  function writeI53ToI64(ptr, num) {
-      HEAPU32[ptr>>2] = num;
-      HEAPU32[ptr+4>>2] = (num - HEAPU32[ptr>>2])/4294967296;
+  var readI53FromU64 = (ptr) => {
+      return HEAPU32[((ptr)>>2)] + HEAPU32[(((ptr)+(4))>>2)] * 4294967296;
+    };
+  var writeI53ToI64 = (ptr, num) => {
+      HEAPU32[((ptr)>>2)] = num;
+      var lower = HEAPU32[((ptr)>>2)];
+      HEAPU32[(((ptr)+(4))>>2)] = (num - lower)/4294967296;
       var deserialized = (num >= 0) ? readI53FromU64(ptr) : readI53FromI64(ptr);
-      if (deserialized != num) warnOnce('writeI53ToI64() out of range: serialized JS Number ' + num + ' to Wasm heap as bytes lo=' + ptrToString(HEAPU32[ptr>>2]) + ', hi=' + ptrToString(HEAPU32[ptr+4>>2]) + ', which deserializes back to ' + deserialized + ' instead!');
-    }
+      var offset = ((ptr)>>2);
+      if (deserialized != num) warnOnce(`writeI53ToI64() out of range: serialized JS Number ${num} to Wasm heap as bytes lo=${ptrToString(HEAPU32[offset])}, hi=${ptrToString(HEAPU32[offset+1])}, which deserializes back to ${deserialized} instead!`);
+    };
   
   
   function fetchCacheData(/** @type {IDBDatabase} */ db, fetch, data, onsuccess, onerror) {
@@ -2245,52 +2240,51 @@ function dbg(text) {
     return fetch;
   }
 
-  function webgl_enable_ANGLE_instanced_arrays(ctx) {
+  var webgl_enable_ANGLE_instanced_arrays = (ctx) => {
       // Extension available in WebGL 1 from Firefox 26 and Google Chrome 30 onwards. Core feature in WebGL 2.
       var ext = ctx.getExtension('ANGLE_instanced_arrays');
       if (ext) {
-        ctx['vertexAttribDivisor'] = function(index, divisor) { ext['vertexAttribDivisorANGLE'](index, divisor); };
-        ctx['drawArraysInstanced'] = function(mode, first, count, primcount) { ext['drawArraysInstancedANGLE'](mode, first, count, primcount); };
-        ctx['drawElementsInstanced'] = function(mode, count, type, indices, primcount) { ext['drawElementsInstancedANGLE'](mode, count, type, indices, primcount); };
+        ctx['vertexAttribDivisor'] = (index, divisor) => ext['vertexAttribDivisorANGLE'](index, divisor);
+        ctx['drawArraysInstanced'] = (mode, first, count, primcount) => ext['drawArraysInstancedANGLE'](mode, first, count, primcount);
+        ctx['drawElementsInstanced'] = (mode, count, type, indices, primcount) => ext['drawElementsInstancedANGLE'](mode, count, type, indices, primcount);
         return 1;
       }
-    }
+    };
   
-  function webgl_enable_OES_vertex_array_object(ctx) {
+  var webgl_enable_OES_vertex_array_object = (ctx) => {
       // Extension available in WebGL 1 from Firefox 25 and WebKit 536.28/desktop Safari 6.0.3 onwards. Core feature in WebGL 2.
       var ext = ctx.getExtension('OES_vertex_array_object');
       if (ext) {
-        ctx['createVertexArray'] = function() { return ext['createVertexArrayOES'](); };
-        ctx['deleteVertexArray'] = function(vao) { ext['deleteVertexArrayOES'](vao); };
-        ctx['bindVertexArray'] = function(vao) { ext['bindVertexArrayOES'](vao); };
-        ctx['isVertexArray'] = function(vao) { return ext['isVertexArrayOES'](vao); };
+        ctx['createVertexArray'] = () => ext['createVertexArrayOES']();
+        ctx['deleteVertexArray'] = (vao) => ext['deleteVertexArrayOES'](vao);
+        ctx['bindVertexArray'] = (vao) => ext['bindVertexArrayOES'](vao);
+        ctx['isVertexArray'] = (vao) => ext['isVertexArrayOES'](vao);
         return 1;
       }
-    }
+    };
   
-  function webgl_enable_WEBGL_draw_buffers(ctx) {
+  var webgl_enable_WEBGL_draw_buffers = (ctx) => {
       // Extension available in WebGL 1 from Firefox 28 onwards. Core feature in WebGL 2.
       var ext = ctx.getExtension('WEBGL_draw_buffers');
       if (ext) {
-        ctx['drawBuffers'] = function(n, bufs) { ext['drawBuffersWEBGL'](n, bufs); };
+        ctx['drawBuffers'] = (n, bufs) => ext['drawBuffersWEBGL'](n, bufs);
         return 1;
       }
-    }
+    };
   
-  function webgl_enable_WEBGL_draw_instanced_base_vertex_base_instance(ctx) {
+  var webgl_enable_WEBGL_draw_instanced_base_vertex_base_instance = (ctx) =>
       // Closure is expected to be allowed to minify the '.dibvbi' property, so not accessing it quoted.
-      return !!(ctx.dibvbi = ctx.getExtension('WEBGL_draw_instanced_base_vertex_base_instance'));
-    }
+      !!(ctx.dibvbi = ctx.getExtension('WEBGL_draw_instanced_base_vertex_base_instance'));
   
-  function webgl_enable_WEBGL_multi_draw_instanced_base_vertex_base_instance(ctx) {
+  var webgl_enable_WEBGL_multi_draw_instanced_base_vertex_base_instance = (ctx) => {
       // Closure is expected to be allowed to minify the '.mdibvbi' property, so not accessing it quoted.
       return !!(ctx.mdibvbi = ctx.getExtension('WEBGL_multi_draw_instanced_base_vertex_base_instance'));
-    }
+    };
   
-  function webgl_enable_WEBGL_multi_draw(ctx) {
+  var webgl_enable_WEBGL_multi_draw = (ctx) => {
       // Closure is expected to be allowed to minify the '.multiDrawWebgl' property, so not accessing it quoted.
       return !!(ctx.multiDrawWebgl = ctx.getExtension('WEBGL_multi_draw'));
-    }
+    };
   
   
   var GL = {
@@ -2323,7 +2317,7 @@ function dbg(text) {
           GL.lastError = errorCode;
         }
       },
-  getNewId:function(table) {
+  getNewId:(table) => {
         var ret = GL.counter++;
         for (var i = table.length; i < ret; i++) {
           table[i] = null;
@@ -2332,10 +2326,10 @@ function dbg(text) {
       },
   MAX_TEMP_BUFFER_SIZE:2097152,
   numTempVertexBuffersPerSize:64,
-  log2ceilLookup:function(i) {
+  log2ceilLookup:(i) => {
         return 32 - Math.clz32(i === 0 ? 0 : i - 1);
       },
-  generateTempBuffers:function(quads, context) {
+  generateTempBuffers:(quads, context) => {
         var largestIndex = GL.log2ceilLookup(GL.MAX_TEMP_BUFFER_SIZE);
         context.tempVertexBufferCounters1 = [];
         context.tempVertexBufferCounters2 = [];
@@ -2429,7 +2423,7 @@ function dbg(text) {
           GL.currentContext.tempVertexBufferCounters1[i] = 0;
         }
       },
-  getSource:function(shader, count, string, length) {
+  getSource:(shader, count, string, length) => {
         var source = '';
         for (var i = 0; i < count; ++i) {
           var len = length ? HEAP32[(((length)+(i*4))>>2)] : -1;
@@ -2469,7 +2463,7 @@ function dbg(text) {
           GLctx.bindBuffer(0x8892 /*GL_ARRAY_BUFFER*/, GL.buffers[GLctx.currentArrayBufferBinding]);
         }
       },
-  createContext:function(/** @type {HTMLCanvasElement} */ canvas, webGLContextAttributes) {
+  createContext:(/** @type {HTMLCanvasElement} */ canvas, webGLContextAttributes) => {
   
         // BUG: Workaround Safari WebGL issue: After successfully acquiring WebGL context on a canvas,
         // calling .getContext() will always return that context independent of which 'webgl' or 'webgl2'
@@ -2501,7 +2495,7 @@ function dbg(text) {
   
         return handle;
       },
-  registerContext:function(ctx, webGLContextAttributes) {
+  registerContext:(ctx, webGLContextAttributes) => {
         // without pthreads a context is just an integer ID
         var handle = GL.getNewId(GL.contexts);
   
@@ -2529,22 +2523,22 @@ function dbg(text) {
   
         return handle;
       },
-  makeContextCurrent:function(contextHandle) {
+  makeContextCurrent:(contextHandle) => {
   
         GL.currentContext = GL.contexts[contextHandle]; // Active Emscripten GL layer context object.
         Module.ctx = GLctx = GL.currentContext && GL.currentContext.GLctx; // Active WebGL context object.
         return !(contextHandle && !GLctx);
       },
-  getContext:function(contextHandle) {
+  getContext:(contextHandle) => {
         return GL.contexts[contextHandle];
       },
-  deleteContext:function(contextHandle) {
+  deleteContext:(contextHandle) => {
         if (GL.currentContext === GL.contexts[contextHandle]) GL.currentContext = null;
         if (typeof JSEvents == 'object') JSEvents.removeAllHandlersOnTarget(GL.contexts[contextHandle].GLctx.canvas); // Release all JS event handlers on the DOM element that the GL context is associated with since the context is now deleted.
         if (GL.contexts[contextHandle] && GL.contexts[contextHandle].GLctx.canvas) GL.contexts[contextHandle].GLctx.canvas.GLctxObject = undefined; // Make sure the canvas object no longer refers to the context object so there are no GC surprises.
         GL.contexts[contextHandle] = null;
       },
-  initExtensions:function(context) {
+  initExtensions:(context) => {
         // If this function is called without a specific context object, init the extensions of the currently active context.
         if (!context) context = GL.currentContext;
   
@@ -2553,7 +2547,7 @@ function dbg(text) {
   
         var GLctx = context.GLctx;
   
-        // Detect the presence of a few extensions manually, this GL interop layer itself will need to know if they exist.
+        // Detect the presence of a few extensions manually, ction GL interop layer itself will need to know if they exist.
   
         // Extensions that are only available in WebGL 1 (the calls will be no-ops if called on a WebGL 2 context active)
         webgl_enable_ANGLE_instanced_arrays(GLctx);
@@ -2582,7 +2576,7 @@ function dbg(text) {
   
         // .getSupportedExtensions() can return null if context is lost, so coerce to empty array.
         var exts = GLctx.getSupportedExtensions() || [];
-        exts.forEach(function(ext) {
+        exts.forEach((ext) => {
           // WEBGL_lose_context, WEBGL_debug_renderer_info and WEBGL_debug_shaders are not enabled by default.
           if (!ext.includes('lose_context') && !ext.includes('debug')) {
             // Call .getExtension() to enable that extension permanently.
@@ -2598,7 +2592,7 @@ function dbg(text) {
   
   
   /** @suppress {duplicate } */
-  function _emscripten_webgl_do_create_context(target, attributes) {
+  var _emscripten_webgl_do_create_context = (target, attributes) => {
       assert(attributes);
       var a = attributes >> 2;
       var powerPreference = HEAP32[a + (24>>2)];
@@ -2632,10 +2626,10 @@ function dbg(text) {
   
       var contextHandle = GL.createContext(canvas, contextAttributes);
       return contextHandle;
-    }
+    };
   var _emscripten_webgl_create_context = _emscripten_webgl_do_create_context;
 
-  function _emscripten_webgl_init_context_attributes(attributes) {
+  var _emscripten_webgl_init_context_attributes = (attributes) => {
       assert(attributes);
       var a = attributes >> 2;
       for (var i = 0; i < (56>>2); ++i) {
@@ -2649,12 +2643,12 @@ function dbg(text) {
       HEAP32[a + (32>>2)] = 
       HEAP32[a + (40>>2)] = 1;
   
-    }
+    };
 
-  function _emscripten_webgl_make_context_current(contextHandle) {
+  var _emscripten_webgl_make_context_current = (contextHandle) => {
       var success = GL.makeContextCurrent(contextHandle);
       return success ? 0 : -5;
-    }
+    };
 
   var _fd_close = (fd) => {
       abort('fd_close called without SYSCALLS_REQUIRE_FILESYSTEM');
@@ -2706,11 +2700,11 @@ function dbg(text) {
       return 0;
     };
 
-  function _glAttachShader(program, shader) {
+  var _glAttachShader = (program, shader) => {
       GLctx.attachShader(GL.programs[program], GL.shaders[shader]);
-    }
+    };
 
-  function _glBindBuffer(target, buffer) {
+  var _glBindBuffer = (target, buffer) => {
       if (target == 0x8892 /*GL_ARRAY_BUFFER*/) {
         GLctx.currentArrayBufferBinding = buffer;
       } else if (target == 0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/) {
@@ -2731,17 +2725,17 @@ function dbg(text) {
         GLctx.currentPixelUnpackBufferBinding = buffer;
       }
       GLctx.bindBuffer(target, GL.buffers[buffer]);
-    }
+    };
 
-  function _glBindVertexArray(vao) {
+  var _glBindVertexArray = (vao) => {
       GLctx.bindVertexArray(GL.vaos[vao]);
       var ibo = GLctx.getParameter(0x8895 /*ELEMENT_ARRAY_BUFFER_BINDING*/);
       GLctx.currentElementArrayBufferBinding = ibo ? (ibo.name | 0) : 0;
-    }
+    };
 
   function _glBlendFunc(x0, x1) { GLctx.blendFunc(x0, x1) }
 
-  function _glBufferData(target, size, data, usage) {
+  var _glBufferData = (target, size, data, usage) => {
   
       if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
         // If size is zero, WebGL would interpret uploading the whole input arraybuffer (starting from given offset), which would
@@ -2757,15 +2751,15 @@ function dbg(text) {
         // randomly mixing both uses in calling code, to avoid any potential JS engine JIT issues.
         GLctx.bufferData(target, data ? HEAPU8.subarray(data, data+size) : size, usage);
       }
-    }
+    };
 
-  function _glBufferSubData(target, offset, size, data) {
+  var _glBufferSubData = (target, offset, size, data) => {
       if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
         size && GLctx.bufferSubData(target, offset, HEAPU8, data, size);
         return;
       }
       GLctx.bufferSubData(target, offset, HEAPU8.subarray(data, data+size));
-    }
+    };
 
   function _glClear(x0) { GLctx.clear(x0) }
 
@@ -2773,11 +2767,11 @@ function dbg(text) {
 
   function _glClearDepth(x0) { GLctx.clearDepth(x0) }
 
-  function _glCompileShader(shader) {
+  var _glCompileShader = (shader) => {
       GLctx.compileShader(GL.shaders[shader]);
-    }
+    };
 
-  function _glCreateProgram() {
+  var _glCreateProgram = () => {
       var id = GL.getNewId(GL.programs);
       var program = GLctx.createProgram();
       // Store additional information needed for each shader program:
@@ -2787,16 +2781,16 @@ function dbg(text) {
       program.uniformIdCounter = 1;
       GL.programs[id] = program;
       return id;
-    }
+    };
 
-  function _glCreateShader(shaderType) {
+  var _glCreateShader = (shaderType) => {
       var id = GL.getNewId(GL.shaders);
       GL.shaders[id] = GLctx.createShader(shaderType);
   
       return id;
-    }
+    };
 
-  function _glDeleteBuffers(n, buffers) {
+  var _glDeleteBuffers = (n, buffers) => {
       for (var i = 0; i < n; i++) {
         var id = HEAP32[(((buffers)+(i*4))>>2)];
         var buffer = GL.buffers[id];
@@ -2814,9 +2808,9 @@ function dbg(text) {
         if (id == GLctx.currentPixelPackBufferBinding) GLctx.currentPixelPackBufferBinding = 0;
         if (id == GLctx.currentPixelUnpackBufferBinding) GLctx.currentPixelUnpackBufferBinding = 0;
       }
-    }
+    };
 
-  function _glDeleteProgram(id) {
+  var _glDeleteProgram = (id) => {
       if (!id) return;
       var program = GL.programs[id];
       if (!program) { // glDeleteProgram actually signals an error when deleting a nonexisting object, unlike some other GL delete functions.
@@ -2826,9 +2820,9 @@ function dbg(text) {
       GLctx.deleteProgram(program);
       program.name = 0;
       GL.programs[id] = null;
-    }
+    };
 
-  function _glDeleteShader(id) {
+  var _glDeleteShader = (id) => {
       if (!id) return;
       var shader = GL.shaders[id];
       if (!shader) { // glDeleteShader actually signals an error when deleting a nonexisting object, unlike some other GL delete functions.
@@ -2837,32 +2831,32 @@ function dbg(text) {
       }
       GLctx.deleteShader(shader);
       GL.shaders[id] = null;
-    }
+    };
 
-  function _glDeleteVertexArrays(n, vaos) {
+  var _glDeleteVertexArrays = (n, vaos) => {
       for (var i = 0; i < n; i++) {
         var id = HEAP32[(((vaos)+(i*4))>>2)];
         GLctx.deleteVertexArray(GL.vaos[id]);
         GL.vaos[id] = null;
       }
-    }
+    };
 
   function _glDepthFunc(x0) { GLctx.depthFunc(x0) }
 
-  function _glDepthMask(flag) {
+  var _glDepthMask = (flag) => {
       GLctx.depthMask(!!flag);
-    }
+    };
 
-  function _glDrawArrays(mode, first, count) {
+  var _glDrawArrays = (mode, first, count) => {
       // bind any client-side buffers
       GL.preDrawHandleClientVertexAttribBindings(first + count);
   
       GLctx.drawArrays(mode, first, count);
   
       GL.postDrawHandleClientVertexAttribBindings();
-    }
+    };
 
-  function _glDrawElements(mode, count, type, indices) {
+  var _glDrawElements = (mode, count, type, indices) => {
       var buf;
       if (!GLctx.currentElementArrayBufferBinding) {
         var size = GL.calcBufLength(1, type, 0, count);
@@ -2885,18 +2879,18 @@ function dbg(text) {
       if (!GLctx.currentElementArrayBufferBinding) {
         GLctx.bindBuffer(0x8893 /*GL_ELEMENT_ARRAY_BUFFER*/, null);
       }
-    }
+    };
 
   function _glEnable(x0) { GLctx.enable(x0) }
 
-  function _glEnableVertexAttribArray(index) {
+  var _glEnableVertexAttribArray = (index) => {
       var cb = GL.currentContext.clientBuffers[index];
       cb.enabled = true;
       GLctx.enableVertexAttribArray(index);
-    }
+    };
 
-  function __glGenObject(n, buffers, createFunction, objectTable
-      ) {
+  var __glGenObject = (n, buffers, createFunction, objectTable
+      ) => {
       for (var i = 0; i < n; i++) {
         var buffer = GLctx[createFunction]();
         var id = buffer && GL.getNewId(objectTable);
@@ -2908,12 +2902,12 @@ function dbg(text) {
         }
         HEAP32[(((buffers)+(i*4))>>2)] = id;
       }
-    }
+    };
   
-  function _glGenBuffers(n, buffers) {
+  var _glGenBuffers = (n, buffers) => {
       __glGenObject(n, buffers, 'createBuffer', GL.buffers
         );
-    }
+    };
 
   
   function _glGenVertexArrays(n, arrays) {
@@ -2922,18 +2916,18 @@ function dbg(text) {
     }
 
   
-  function _glGetAttribLocation(program, name) {
+  var _glGetAttribLocation = (program, name) => {
       return GLctx.getAttribLocation(GL.programs[program], UTF8ToString(name));
-    }
+    };
 
-  function _glGetProgramInfoLog(program, maxLength, length, infoLog) {
+  var _glGetProgramInfoLog = (program, maxLength, length, infoLog) => {
       var log = GLctx.getProgramInfoLog(GL.programs[program]);
       if (log === null) log = '(unknown error)';
       var numBytesWrittenExclNull = (maxLength > 0 && infoLog) ? stringToUTF8(log, infoLog, maxLength) : 0;
       if (length) HEAP32[((length)>>2)] = numBytesWrittenExclNull;
-    }
+    };
 
-  function _glGetProgramiv(program, pname, p) {
+  var _glGetProgramiv = (program, pname, p) => {
       if (!p) {
         // GLES2 specification does not specify how to behave if p is a null pointer. Since calling this function does not make sense
         // if p == null, issue a GL error to notify user about it.
@@ -2976,17 +2970,17 @@ function dbg(text) {
       } else {
         HEAP32[((p)>>2)] = GLctx.getProgramParameter(program, pname);
       }
-    }
+    };
 
   
-  function _glGetShaderInfoLog(shader, maxLength, length, infoLog) {
+  var _glGetShaderInfoLog = (shader, maxLength, length, infoLog) => {
       var log = GLctx.getShaderInfoLog(GL.shaders[shader]);
       if (log === null) log = '(unknown error)';
       var numBytesWrittenExclNull = (maxLength > 0 && infoLog) ? stringToUTF8(log, infoLog, maxLength) : 0;
       if (length) HEAP32[((length)>>2)] = numBytesWrittenExclNull;
-    }
+    };
 
-  function _glGetShaderiv(shader, pname, p) {
+  var _glGetShaderiv = (shader, pname, p) => {
       if (!p) {
         // GLES2 specification does not specify how to behave if p is a null pointer. Since calling this function does not make sense
         // if p == null, issue a GL error to notify user about it.
@@ -3011,17 +3005,17 @@ function dbg(text) {
       } else {
         HEAP32[((p)>>2)] = GLctx.getShaderParameter(GL.shaders[shader], pname);
       }
-    }
+    };
 
   /** @suppress {checkTypes} */
   var jstoi_q = (str) => parseInt(str);
   
   /** @noinline */
-  function webglGetLeftBracePos(name) {
+  var webglGetLeftBracePos = (name) => {
       return name.slice(-1) == ']' && name.lastIndexOf('[');
-    }
+    };
   
-  function webglPrepareUniformLocationsBeforeFirstUse(program) {
+  var webglPrepareUniformLocationsBeforeFirstUse = (program) => {
       var uniformLocsById = program.uniformLocsById, // Maps GLuint -> WebGLUniformLocation
         uniformSizeAndIdsByName = program.uniformSizeAndIdsByName, // Maps name -> [uniform array length, GLuint]
         i, j;
@@ -3053,17 +3047,17 @@ function dbg(text) {
   
           // Store placeholder integers in place that highlight that these
           // >0 index locations are array indices pending population.
-          for(j = 0; j < sz; ++j) {
+          for (j = 0; j < sz; ++j) {
             uniformLocsById[id] = j;
             program.uniformArrayNamesById[id++] = arrayName;
           }
         }
       }
-    }
+    };
   
   
   
-  function _glGetUniformLocation(program, name) {
+  var _glGetUniformLocation = (program, name) => {
   
       name = UTF8ToString(name);
   
@@ -3104,24 +3098,24 @@ function dbg(text) {
         GL.recordError(0x501 /* GL_INVALID_VALUE */);
       }
       return -1;
-    }
+    };
 
-  function _glLinkProgram(program) {
+  var _glLinkProgram = (program) => {
       program = GL.programs[program];
       GLctx.linkProgram(program);
       // Invalidate earlier computed uniform->ID mappings, those have now become stale
       program.uniformLocsById = 0; // Mark as null-like so that glGetUniformLocation() knows to populate this again.
       program.uniformSizeAndIdsByName = {};
   
-    }
+    };
 
-  function _glShaderSource(shader, count, string, length) {
+  var _glShaderSource = (shader, count, string, length) => {
       var source = GL.getSource(shader, count, string, length);
   
       GLctx.shaderSource(GL.shaders[shader], source);
-    }
+    };
 
-  function webglGetUniformLocation(location) {
+  var webglGetUniformLocation = (location) => {
       var p = GLctx.currentProgram;
   
       if (p) {
@@ -3138,11 +3132,11 @@ function dbg(text) {
       } else {
         GL.recordError(0x502/*GL_INVALID_OPERATION*/);
       }
-    }
+    };
   
   var miniTempWebGLFloatBuffers = [];
   
-  function _glUniformMatrix4fv(location, count, transpose, value) {
+  var _glUniformMatrix4fv = (location, count, transpose, value) => {
   
       if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
         count && GLctx.uniformMatrix4fv(webglGetUniformLocation(location), !!transpose, HEAPF32, value>>2, count*16);
@@ -3179,21 +3173,21 @@ function dbg(text) {
         var view = HEAPF32.subarray((value)>>2, (value+count*64)>>2);
       }
       GLctx.uniformMatrix4fv(webglGetUniformLocation(location), !!transpose, view);
-    }
+    };
 
-  function _glUseProgram(program) {
+  var _glUseProgram = (program) => {
       program = GL.programs[program];
       GLctx.useProgram(program);
       // Record the currently active program so that we can access the uniform
       // mapping table of that program.
       GLctx.currentProgram = program;
-    }
+    };
 
-  function _glVertexAttribDivisor(index, divisor) {
+  var _glVertexAttribDivisor = (index, divisor) => {
       GLctx.vertexAttribDivisor(index, divisor);
-    }
+    };
 
-  function _glVertexAttribPointer(index, size, type, normalized, stride, ptr) {
+  var _glVertexAttribPointer = (index, size, type, normalized, stride, ptr) => {
       var cb = GL.currentContext.clientBuffers[index];
       if (!GLctx.currentArrayBufferBinding) {
         cb.size = size;
@@ -3209,7 +3203,7 @@ function dbg(text) {
       }
       cb.clientside = false;
       GLctx.vertexAttribPointer(index, size, type, !!normalized, stride, ptr);
-    }
+    };
 
 
 Fetch.init();;
@@ -3224,64 +3218,120 @@ function checkIncomingModuleAPI() {
   ignoredModuleProp('fetchSettings');
 }
 var wasmImports = {
+  /** @export */
   _emscripten_fetch_free: __emscripten_fetch_free,
+  /** @export */
   _localtime_js: __localtime_js,
+  /** @export */
   _tzset_js: __tzset_js,
+  /** @export */
   abort: _abort,
+  /** @export */
   emscripten_date_now: _emscripten_date_now,
+  /** @export */
   emscripten_get_element_css_size: _emscripten_get_element_css_size,
+  /** @export */
   emscripten_is_main_browser_thread: _emscripten_is_main_browser_thread,
-  emscripten_memcpy_big: _emscripten_memcpy_big,
+  /** @export */
+  emscripten_memcpy_js: _emscripten_memcpy_js,
+  /** @export */
   emscripten_request_animation_frame_loop: _emscripten_request_animation_frame_loop,
+  /** @export */
   emscripten_resize_heap: _emscripten_resize_heap,
+  /** @export */
   emscripten_set_canvas_element_size: _emscripten_set_canvas_element_size,
+  /** @export */
   emscripten_set_click_callback_on_thread: _emscripten_set_click_callback_on_thread,
+  /** @export */
   emscripten_set_resize_callback_on_thread: _emscripten_set_resize_callback_on_thread,
+  /** @export */
   emscripten_start_fetch: _emscripten_start_fetch,
+  /** @export */
   emscripten_webgl_create_context: _emscripten_webgl_create_context,
+  /** @export */
   emscripten_webgl_init_context_attributes: _emscripten_webgl_init_context_attributes,
+  /** @export */
   emscripten_webgl_make_context_current: _emscripten_webgl_make_context_current,
+  /** @export */
   fd_close: _fd_close,
+  /** @export */
   fd_seek: _fd_seek,
+  /** @export */
   fd_write: _fd_write,
+  /** @export */
   glAttachShader: _glAttachShader,
+  /** @export */
   glBindBuffer: _glBindBuffer,
+  /** @export */
   glBindVertexArray: _glBindVertexArray,
+  /** @export */
   glBlendFunc: _glBlendFunc,
+  /** @export */
   glBufferData: _glBufferData,
+  /** @export */
   glBufferSubData: _glBufferSubData,
+  /** @export */
   glClear: _glClear,
+  /** @export */
   glClearColor: _glClearColor,
+  /** @export */
   glClearDepth: _glClearDepth,
+  /** @export */
   glCompileShader: _glCompileShader,
+  /** @export */
   glCreateProgram: _glCreateProgram,
+  /** @export */
   glCreateShader: _glCreateShader,
+  /** @export */
   glDeleteBuffers: _glDeleteBuffers,
+  /** @export */
   glDeleteProgram: _glDeleteProgram,
+  /** @export */
   glDeleteShader: _glDeleteShader,
+  /** @export */
   glDeleteVertexArrays: _glDeleteVertexArrays,
+  /** @export */
   glDepthFunc: _glDepthFunc,
+  /** @export */
   glDepthMask: _glDepthMask,
+  /** @export */
   glDrawArrays: _glDrawArrays,
+  /** @export */
   glDrawElements: _glDrawElements,
+  /** @export */
   glEnable: _glEnable,
+  /** @export */
   glEnableVertexAttribArray: _glEnableVertexAttribArray,
+  /** @export */
   glGenBuffers: _glGenBuffers,
+  /** @export */
   glGenVertexArrays: _glGenVertexArrays,
+  /** @export */
   glGetAttribLocation: _glGetAttribLocation,
+  /** @export */
   glGetProgramInfoLog: _glGetProgramInfoLog,
+  /** @export */
   glGetProgramiv: _glGetProgramiv,
+  /** @export */
   glGetShaderInfoLog: _glGetShaderInfoLog,
+  /** @export */
   glGetShaderiv: _glGetShaderiv,
+  /** @export */
   glGetUniformLocation: _glGetUniformLocation,
+  /** @export */
   glLinkProgram: _glLinkProgram,
+  /** @export */
   glShaderSource: _glShaderSource,
+  /** @export */
   glUniformMatrix4fv: _glUniformMatrix4fv,
+  /** @export */
   glUseProgram: _glUseProgram,
+  /** @export */
   glVertexAttribDivisor: _glVertexAttribDivisor,
+  /** @export */
   glVertexAttribPointer: _glVertexAttribPointer
 };
-var asm = createWasm();
+var wasmExports = createWasm();
 var ___wasm_call_ctors = createExportWrapper('__wasm_call_ctors');
 var _malloc = createExportWrapper('malloc');
 var _free = createExportWrapper('free');
@@ -3435,6 +3485,9 @@ var missingLibrarySymbols = [
   'FS_modeStringToFlags',
   'FS_getMode',
   'FS_stdin_getChar',
+  'FS_createDataFile',
+  'FS_unlink',
+  'FS_mkdirTree',
   '_setNetworkCallback',
   'heapObjectForWebGLType',
   'heapAccessShiftForWebGLHeap',
@@ -3453,7 +3506,6 @@ var missingLibrarySymbols = [
   'SDL_unicode',
   'SDL_ttfContext',
   'SDL_audio',
-  'GLFW_Window',
   'emscriptenWebGLGetIndexed',
   'ALLOC_NORMAL',
   'ALLOC_STACK',
@@ -3474,18 +3526,16 @@ var unexportedSymbols = [
   'removeRunDependency',
   'FS_createFolder',
   'FS_createPath',
-  'FS_createDataFile',
   'FS_createLazyFile',
   'FS_createLink',
   'FS_createDevice',
-  'FS_unlink',
+  'FS_readFile',
   'out',
   'err',
   'callMain',
   'abort',
   'keepRuntimeAlive',
   'wasmMemory',
-  'wasmTable',
   'wasmExports',
   'stackAlloc',
   'stackSave',
@@ -3524,6 +3574,7 @@ var unexportedSymbols = [
   'maybeExit',
   'handleAllocatorInit',
   'HandleAllocator',
+  'wasmTable',
   'freeTableIndexes',
   'functionsInTableMap',
   'setValue',
@@ -3585,7 +3636,6 @@ var unexportedSymbols = [
   'IDBStore',
   'SDL',
   'SDL_gfx',
-  'GLFW',
   'webgl_enable_WEBGL_draw_instanced_base_vertex_base_instance',
   'webgl_enable_WEBGL_multi_draw_instanced_base_vertex_base_instance',
   'allocateUTF8',

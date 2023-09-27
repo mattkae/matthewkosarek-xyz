@@ -6,10 +6,10 @@
 #include "../shaders/sun_vert.h"
 #include <vector>
 
-SummerTheme::SummerTheme(Renderer2d* renderer, WebglContext* context)
-    : renderer{renderer}
+SummerTheme::SummerTheme(WebglContext* context)
 {
-    load(renderer, context);
+    renderer.load(context);
+    load(context);
 }
 
 SummerTheme::~SummerTheme()
@@ -17,12 +17,12 @@ SummerTheme::~SummerTheme()
     unload();
 }
 
-void SummerTheme::load(Renderer2d* renderer, WebglContext* context) {
-    renderer->load(context, shader_sun_vert, shader_sun_frag);
-	renderer->clearColor = Vector4(0, 181, 286, 255.f).toNormalizedColor();
+void SummerTheme::load(WebglContext* context) {
+    renderer.load(context, shader_sun_vert, shader_sun_frag);
+	renderer.clearColor = Vector4(0, 181, 286, 255.f).toNormalizedColor();
 	sun.sectors = 180;
-	sun.radius = renderer->context->width / 4.f;
-	sun.load(renderer);
+	sun.radius = renderer.context->width / 4.f;
+	sun.load(&renderer);
 }
 
 void SummerTheme::update(f32 dtSeconds) {
@@ -30,8 +30,8 @@ void SummerTheme::update(f32 dtSeconds) {
 }
 
 void SummerTheme::render() {
-    renderer->render();
-	sun.render(renderer);
+    renderer.render();
+	sun.render(&renderer);
 }
 
 void SummerTheme::unload() {

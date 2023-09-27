@@ -5,16 +5,16 @@
 #include "LeafParticleRender.h"
 #include "../types.h"
 #include "../theme.h"
+#include "../Renderer2d.h"
 #include <memory>
 #include <vector>
 
-struct Renderer2d;
 class RectangularGradient;
 class Circleish;
 
 class AutumnTheme : public Theme {
 public:
-    AutumnTheme(Renderer2d* renderer);
+    AutumnTheme(WebglContext*);
     ~AutumnTheme();
 	TreeShape tree;
 	LeafParticleRender leafParticles;
@@ -22,12 +22,12 @@ public:
     Circleish* tree_hill;
     Circleish* background_hill;
 
-	void load(Renderer2d* renderer);
+	void load();
 	void update(f32 dtSeconds);
 	void render();
 	void unload();
 private:
-    Renderer2d* renderer;
+    Renderer2d renderer;
 };
 
 #endif

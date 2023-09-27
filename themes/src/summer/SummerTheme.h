@@ -17,13 +17,13 @@ struct Sun {
 
 class SummerTheme : public Theme {
 public:
-    SummerTheme(Renderer2d*, WebglContext*);
+    SummerTheme(WebglContext*);
     ~SummerTheme();
 	Sun sun;
-	void load(Renderer2d*, WebglContext*);
+	void load(WebglContext*);
 	void update(f32 dtSeconds);
 	void render();
 	void unload();
 private:
-    Renderer2d* renderer;
+    Renderer2d renderer;
 };

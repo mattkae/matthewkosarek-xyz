@@ -1,10 +1,10 @@
 #include "WinterTheme.hpp"
 #include "../Renderer2d.h"
 
-WinterTheme::WinterTheme(Renderer2d* renderer)
-    : renderer{renderer}
+WinterTheme::WinterTheme(WebglContext* context)
 {
-    load(renderer);
+    renderer.load(context);
+    load();
 }
 
 WinterTheme::~WinterTheme()
@@ -12,10 +12,10 @@ WinterTheme::~WinterTheme()
     unload();
 }
 
-void WinterTheme::load(Renderer2d* renderer) {
-    renderer->clearColor = Vector4(200, 229, 239, 255).toNormalizedColor();
+void WinterTheme::load() {
+    renderer.clearColor = Vector4(200, 229, 239, 255).toNormalizedColor();
 	SnowflakeLoadParameters lp;
-	spr.load(lp, renderer);
+	spr.load(lp, &renderer);
 }
 
 void WinterTheme::update(f32 dtSeconds) {
@@ -23,8 +23,8 @@ void WinterTheme::update(f32 dtSeconds) {
 }
 
 void WinterTheme::render() {
-    renderer->render();
-	spr.render(renderer);
+    renderer.render();
+	spr.render(&renderer);
 }
 
 void WinterTheme::unload()  {

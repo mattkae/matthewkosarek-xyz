@@ -4,21 +4,22 @@
 #include "Snowflake.h"
 #include "../types.h"
 #include "../theme.h"
+#include "../Renderer2d.h"
 
-struct Renderer2d;
+struct WebglContext;
 
 struct WinterTheme : public Theme {
 public:
-    WinterTheme(Renderer2d* renderer);
+    WinterTheme(WebglContext*);
     ~WinterTheme();
 	SnowflakeParticleRenderer spr;
 	
-	void load(Renderer2d* renderer);
+	void load();
 	void update(f32 dtSeconds);
 	void render();
 	void unload();
 private:
-    Renderer2d* renderer;
+    Renderer2d renderer;
 };
 
 #endif
