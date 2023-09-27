@@ -26,4 +26,23 @@ class RectangularGradient
     Mesh2D mesh;
 };
 
+
+/// Supports full and partial circles
+class Circleish
+{
+public:
+    Circleish(
+        Renderer2d& renderer,
+        f32 radius,
+        Vector4 color,
+        i32 segments,
+        i32 segment_start = 0,
+        i32 segment_end = 0);
+    ~Circleish();
+    void render();
+
+    Renderer2d& renderer;
+    Mesh2D mesh;
+};
+
 #endif

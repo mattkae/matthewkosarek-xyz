@@ -42,7 +42,7 @@ TreeShapeLoadResult TreeShape::load(Renderer2d* renderer) {
     lr.updateData = updateData;
     lr.numBranches = numBranches;
     i32 branchIndex = 0;
-    createBranch(&ld, generationData, numBranches, &branchIndex, 0, ld.trunkWidth, ld.trunkHeight, Vector2 { 300.f, 50.f }, 0, NULL, vertices, &lr);
+    createBranch(&ld, generationData, numBranches, &branchIndex, 0, ld.trunkWidth, ld.trunkHeight, Vector2 { 300.f, 200.f }, 0, NULL, vertices, &lr);
 
     useShader(renderer->shader);
 

@@ -5,14 +5,18 @@
 #include "LeafParticleRender.h"
 #include "../types.h"
 #include <memory>
+#include <vector>
 
 struct Renderer2d;
 class RectangularGradient;
+class Circleish;
 
 struct AutumnTheme {
 	TreeShape tree;
 	LeafParticleRender leafParticles;
     RectangularGradient* background;
+    Circleish* tree_hill;
+    Circleish* background_hill;
 
 	void load(Renderer2d* renderer);
 	void update(f32 dtSeconds);
