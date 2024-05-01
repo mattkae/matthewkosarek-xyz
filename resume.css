@@ -1,5 +1,5 @@
 @font-face {
-    font-family: Iosevka;
+    font-family: Ubuntu;
     src: url(fonts/Ubuntu-M.ttf);
   }
 
@@ -25,7 +25,7 @@ header {
     text-align: left;
     background-color: white;
     color: black;
-    font-family: 'Iosevka', Tahoma, Geneva, Verdana, sans-serif; 
+    font-family: 'Ubuntu', Tahoma, Geneva, Verdana, sans-serif; 
     line-height: 1.325rem;
 }
 
