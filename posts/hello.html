@@ -28,9 +28,9 @@
 
 
 
-<div id="outline-container-org3e6eeb2" class="outline-2">
-<h2 id="org3e6eeb2">TLDR</h2>
-<div class="outline-text-2" id="text-org3e6eeb2">
+<div id="outline-container-org8ca89e4" class="outline-2">
+<h2 id="org8ca89e4">TLDR</h2>
+<div class="outline-text-2" id="text-org8ca89e4">
 <ul class="org-ul">
 <li>Create a new folder</li>
 <li>Put <a href="https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/index.css">index.css</a>, <a href="https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/publish.el">publish.el</a>, and <a href="https://github.com/mattkae/matthewkosarek-xyz/blob/master/publish.sh">publish.sh</a> in the folder</li>
@@ -45,9 +45,9 @@
 </div>
 </div>
 
-<div id="outline-container-org6ad5101" class="outline-2">
-<h2 id="org6ad5101">Introduction</h2>
-<div class="outline-text-2" id="text-org6ad5101">
+<div id="outline-container-orgdbe8752" class="outline-2">
+<h2 id="orgdbe8752">Introduction</h2>
+<div class="outline-text-2" id="text-orgdbe8752">
 <p>
 I've recently fallen in love with <code>org-mode</code>, specifically when I use it with <a href="https://www.orgroam.com/">org-roam</a>. I find the whole workflow of creating, tagging, and - later on - searching for information on my computer to be very elegant. On top of that, now that I have the time, I want to begin writing blog posts to better work out my thoughts. With both of these things in mind, I am again turning to the universal tool for human prospering: <code>org-mode</code>. This time, I want to see how it can help me turn a simple org file into a blog post on my website. My requirements are:
 </p>
@@ -71,9 +71,9 @@ And that's pretty much it for now. Without further ado, let's jump into getting 
 </div>
 </div>
 
-<div id="outline-container-org29c17b2" class="outline-2">
-<h2 id="org29c17b2">Basic HTML File</h2>
-<div class="outline-text-2" id="text-org29c17b2">
+<div id="outline-container-orgaada31d" class="outline-2">
+<h2 id="orgaada31d">Basic HTML File</h2>
+<div class="outline-text-2" id="text-orgaada31d">
 <p>
 As a pilot, we are going to use this org file that I am currently writing (<code>hello.org</code>) as our guinea pig. The goal is to have this org file be our very first blog post.
 </p>
@@ -114,9 +114,9 @@ We then do a <code>chmod +x publish.sh</code> to make it an executable and run i
 </div>
 </div>
 
-<div id="outline-container-orgd0c4ad6" class="outline-2">
-<h2 id="orgd0c4ad6">Disabling features that we don't want</h2>
-<div class="outline-text-2" id="text-orgd0c4ad6">
+<div id="outline-container-orgd7e6626" class="outline-2">
+<h2 id="orgd7e6626">Disabling features that we don't want</h2>
+<div class="outline-text-2" id="text-orgd7e6626">
 <p>
 The next thing will be to remove some of the generated items that I didn't ask for, namely the table of contents, author, section numbers, creation time stamp, and the validation link.
 </p>
@@ -146,9 +146,9 @@ The next thing will be to remove some of the generated items that I didn't ask f
 </div>
 </div>
 
-<div id="outline-container-orge031e7b" class="outline-2">
-<h2 id="orge031e7b">Styling &amp; Code Highlighting</h2>
-<div class="outline-text-2" id="text-orge031e7b">
+<div id="outline-container-orgfe549f7" class="outline-2">
+<h2 id="orgfe549f7">Styling &amp; Code Highlighting</h2>
+<div class="outline-text-2" id="text-orgfe549f7">
 <p>
 Next thing on our list is custom styling. This can be achieved by first installing the <code>htmlize</code> package from <code>melpa</code> / <code>elpa</code>.  The EmacsWiki describes this as "a package for exporting the contents of an Emacs buffer to HTML while respecting display properties such as colors, fonts, underlining, invisibility, etc" (<a href="https://www.emacswiki.org/emacs/Htmlize">reference</a>). If used "out-of-the-box", the buffer will be exported to HTML with all of the styles inlined (e.g. if you underline something in your org file, you will generate a <code>&lt;span style="text-decoration: underline"&gt;...&lt;/span&gt;</code>).  However, we are more interested in styling everything by ourselves: we don't want <code>htmlize</code> making assumptions about what underlining means to us! Luckily, <code>htmlize</code> gives us the option to export with class names instead of inline styles so that we can specify each style for ourselves.
 </p>
@@ -206,54 +206,54 @@ Now that our generated elements have class names, we can define the style for ea
 </p>
 
 <div class="org-src-container">
-<pre class="src src-css"><span class="org-css-selector">pre </span>{
+<pre class="src src-css"><span class="org-css-selector">pre</span> {
     <span class="org-css-property">background-color</span>: <span class="custom-21">#FEFEFE</span>;
     <span class="org-css-property">border</span>: 1px solid <span class="custom-20">#D5D5D5</span>;
     <span class="org-css-property">border-radius</span>: 2px;
     <span class="org-css-property">padding</span>: 1rem;
 }
 
-<span class="org-css-selector">code </span>{
+<span class="org-css-selector">code</span> {
     <span class="org-css-property">font-family</span>: <span class="org-string">"Consolas"</span> sans-serif;
     <span class="org-css-property">color</span>: <span class="custom-19">#D0372D</span>;
 }
 
-<span class="org-css-selector">.underline </span>{
+<span class="org-css-selector">.underline</span> {
     <span class="org-css-property">text-decoration</span>: underline;
 }
 
 <span class="org-comment-delimiter">/* </span><span class="org-comment">Taken from: https://emacs.stackexchange.com/questions/7629/the-syntax-highlight-and-indentation-of-source-code-block-in-exported-html-file</span><span class="org-comment-delimiter"> */</span>
-<span class="org-css-selector">pre span.org-builtin                     </span>{<span class="org-css-property">color</span>:<span class="custom-18">#006FE0</span>;<span class="org-css-property">font-weight</span>:bold;}
-<span class="org-css-selector">pre span.org-string                      </span>{<span class="org-css-property">color</span>:<span class="custom-17">#008000</span>;}
-<span class="org-css-selector">pre span.org-keyword                     </span>{<span class="org-css-property">color</span>:<span class="custom-16">#0000FF</span>;}
-<span class="org-css-selector">pre span.org-variable-name               </span>{<span class="org-css-property">color</span>:<span class="custom-15">#BA36A5</span>;}
-<span class="org-css-selector">pre span.org-function-name               </span>{<span class="org-css-property">color</span>:<span class="custom-14">#006699</span>;}
-<span class="org-css-selector">pre span.org-type                        </span>{<span class="org-css-property">color</span>:<span class="custom-13">#6434A3</span>;}
-<span class="org-css-selector">pre span.org-preprocessor                </span>{<span class="org-css-property">color</span>:<span class="custom-12">#808080</span>;<span class="org-css-property">font-weight</span>:bold;}
-<span class="org-css-selector">pre span.org-constant                    </span>{<span class="org-css-property">color</span>:<span class="custom-19">#D0372D</span>;}
-<span class="org-css-selector">pre span.org-comment-delimiter           </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;}
-<span class="org-css-selector">pre span.org-comment                     </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">1pre span.org-outshine-level-1           </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">pre span.org-outshine-level-2            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">pre span.org-outshine-level-3            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">pre span.org-outshine-level-4            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">pre span.org-outshine-level-5            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">pre span.org-outshine-level-6            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">pre span.org-outshine-level-7            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">pre span.org-outshine-level-8            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">pre span.org-outshine-level-9            </span>{<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
-<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-1  </span>{<span class="org-css-property">color</span>:<span class="custom-10">#707183</span>;}
-<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-2  </span>{<span class="org-css-property">color</span>:<span class="custom-9">#7388d6</span>;}
-<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-3  </span>{<span class="org-css-property">color</span>:<span class="custom-8">#909183</span>;}
-<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-4  </span>{<span class="org-css-property">color</span>:<span class="custom-7">#709870</span>;}
-<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-5  </span>{<span class="org-css-property">color</span>:<span class="custom-6">#907373</span>;}
-<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-6  </span>{<span class="org-css-property">color</span>:<span class="custom-5">#6276ba</span>;}
-<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-7  </span>{<span class="org-css-property">color</span>:<span class="custom-4">#858580</span>;}
-<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-8  </span>{<span class="org-css-property">color</span>:<span class="custom-3">#80a880</span>;}
-<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-9  </span>{<span class="org-css-property">color</span>:<span class="custom-2">#887070</span>;}
-<span class="org-css-selector">pre span.org-sh-quoted-exec              </span>{<span class="org-css-property">color</span>:<span class="custom-1">#FF1493</span>;}
-<span class="org-css-selector">pre span.org-css-selector                </span>{<span class="org-css-property">color</span>:<span class="custom-16">#0000FF</span>;}
-<span class="org-css-selector">pre span.org-css-property                </span>{<span class="org-css-property">color</span>:<span class="custom">#00AA00</span>;}
+<span class="org-css-selector">pre span.org-builtin</span>                     {<span class="org-css-property">color</span>:<span class="custom-18">#006FE0</span>;<span class="org-css-property">font-weight</span>:bold;}
+<span class="org-css-selector">pre span.org-string</span>                      {<span class="org-css-property">color</span>:<span class="custom-17">#008000</span>;}
+<span class="org-css-selector">pre span.org-keyword</span>                     {<span class="org-css-property">color</span>:<span class="custom-16">#0000FF</span>;}
+<span class="org-css-selector">pre span.org-variable-name</span>               {<span class="org-css-property">color</span>:<span class="custom-15">#BA36A5</span>;}
+<span class="org-css-selector">pre span.org-function-name</span>               {<span class="org-css-property">color</span>:<span class="custom-14">#006699</span>;}
+<span class="org-css-selector">pre span.org-type</span>                        {<span class="org-css-property">color</span>:<span class="custom-13">#6434A3</span>;}
+<span class="org-css-selector">pre span.org-preprocessor</span>                {<span class="org-css-property">color</span>:<span class="custom-12">#808080</span>;<span class="org-css-property">font-weight</span>:bold;}
+<span class="org-css-selector">pre span.org-constant</span>                    {<span class="org-css-property">color</span>:<span class="custom-19">#D0372D</span>;}
+<span class="org-css-selector">pre span.org-comment-delimiter</span>           {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;}
+<span class="org-css-selector">pre span.org-comment</span>                     {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">1pre span.org-outshine-level-1</span>           {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-2</span>            {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-3</span>            {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-4</span>            {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-5</span>            {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-6</span>            {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-7</span>            {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-8</span>            {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-outshine-level-9</span>            {<span class="org-css-property">color</span>:<span class="custom-11">#8D8D84</span>;<span class="org-css-property">font-style</span>:italic}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-1</span>  {<span class="org-css-property">color</span>:<span class="custom-10">#707183</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-2</span>  {<span class="org-css-property">color</span>:<span class="custom-9">#7388d6</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-3</span>  {<span class="org-css-property">color</span>:<span class="custom-8">#909183</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-4</span>  {<span class="org-css-property">color</span>:<span class="custom-7">#709870</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-5</span>  {<span class="org-css-property">color</span>:<span class="custom-6">#907373</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-6</span>  {<span class="org-css-property">color</span>:<span class="custom-5">#6276ba</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-7</span>  {<span class="org-css-property">color</span>:<span class="custom-4">#858580</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-8</span>  {<span class="org-css-property">color</span>:<span class="custom-3">#80a880</span>;}
+<span class="org-css-selector">pre span.org-rainbow-delimiters-depth-9</span>  {<span class="org-css-property">color</span>:<span class="custom-2">#887070</span>;}
+<span class="org-css-selector">pre span.org-sh-quoted-exec</span>              {<span class="org-css-property">color</span>:<span class="custom-1">#FF1493</span>;}
+<span class="org-css-selector">pre span.org-css-selector</span>                {<span class="org-css-property">color</span>:<span class="custom-16">#0000FF</span>;}
+<span class="org-css-selector">pre span.org-css-property</span>                {<span class="org-css-property">color</span>:<span class="custom">#00AA00</span>;}
 </pre>
 </div>
 
@@ -319,9 +319,9 @@ If we run the publish again, we can see that we have full styling on our code sn
 </div>
 </div>
 
-<div id="outline-container-org6538ce3" class="outline-2">
-<h2 id="org6538ce3">Images</h2>
-<div class="outline-text-2" id="text-org6538ce3">
+<div id="outline-container-org854b984" class="outline-2">
+<h2 id="org854b984">Images</h2>
+<div class="outline-text-2" id="text-org854b984">
 <p>
 Our first two criteria have been met! Next on the list is solving images. As an example, let's use this <a href="file:///_posts/assets/squirrel.jpg">squirrel image</a> that I found online with an open source license. The ideal situation would be:
 </p>
@@ -366,7 +366,7 @@ So what's the fix here? Well, we have two options, but I am going to go with the
 That's all there is to it! There are simpler ways as well, but that should do it:
 </p>
 
-<div id="org619f6a0" class="figure">
+<div id="org9f865ab" class="figure">
 <p><img src="/_posts/assets/squirrel.jpg" alt="squirrel.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 1: </span>A Cute Squirrel</p>
@@ -375,9 +375,9 @@ That's all there is to it! There are simpler ways as well, but that should do it
 </div>
 
 
-<div id="outline-container-orgf70ee07" class="outline-2">
-<h2 id="orgf70ee07">Creation Date</h2>
-<div class="outline-text-2" id="text-orgf70ee07">
+<div id="outline-container-orgd7096b3" class="outline-2">
+<h2 id="orgd7096b3">Creation Date</h2>
+<div class="outline-text-2" id="text-orgd7096b3">
 <p>
 Let's add the creation date below the title next. To start, we will modify the publish command to remove the title (<code>:with-title nil</code>) and, in its place, show a preamble bit of HTML that contains a formatted <code>div</code> with the title and the "last modified" span.z
 </p>
@@ -417,11 +417,11 @@ On top of this, we can modify our <code>posts/post.css</code> file to make the t
 </p>
 
 <div class="org-src-container">
-<pre class="src src-css"><span class="org-css-selector">.org-article-title &gt; h1 </span>{
+<pre class="src src-css"><span class="org-css-selector">.org-article-title &gt; h1</span> {
     <span class="org-css-property">margin-bottom</span>: 0;
 }
 
-<span class="org-css-selector">.org-article-title &gt; span </span>{
+<span class="org-css-selector">.org-article-title &gt; span</span> {
     <span class="org-css-property">color</span>: <span class="custom">#707183</span>;
 }
 </pre>
@@ -437,9 +437,9 @@ Note that the downside of this is that the created date will change whenever you
 </div>
 </div>
 
-<div id="outline-container-org2497474" class="outline-2">
-<h2 id="org2497474">Generating the Directory</h2>
-<div class="outline-text-2" id="text-org2497474">
+<div id="outline-container-org5fd9dcc" class="outline-2">
+<h2 id="org5fd9dcc">Generating the Directory</h2>
+<div class="outline-text-2" id="text-org5fd9dcc">
 <p>
 For every org file in my <code>_posts</code> folder, I would like to create a link to the generated HTML file at the <code>/posts.html</code> page of my website. You can think of this as the "directory" of all posts. My criteria is:
 </p>
@@ -500,9 +500,9 @@ From here, you may customize it however you like.  The following are my customiz
 </p>
 </div>
 
-<div id="outline-container-orge5d511f" class="outline-3">
-<h3 id="orge5d511f">Sitemap Title</h3>
-<div class="outline-text-3" id="text-orge5d511f">
+<div id="outline-container-orga131ca9" class="outline-3">
+<h3 id="orga131ca9">Sitemap Title</h3>
+<div class="outline-text-3" id="text-orga131ca9">
 <p>
 I changed the title to "Matthew's Blog Posts".
 </p>
@@ -526,9 +526,9 @@ I changed the title to "Matthew's Blog Posts".
 </div>
 
 
-<div id="outline-container-orgd00f9b0" class="outline-3">
-<h3 id="orgd00f9b0">Format blog entries in the list</h3>
-<div class="outline-text-3" id="text-orgd00f9b0">
+<div id="outline-container-org39e11a9" class="outline-3">
+<h3 id="org39e11a9">Format blog entries in the list</h3>
+<div class="outline-text-3" id="text-org39e11a9">
 <p>
 I like to include the creation date on the blog posts. To do this, we can use <code>org-publish-find-property</code> to find the date property of the org file. Afterward, we can format a string that  includes our formatted timestamp and the <code>org-publish-sitemap-default-entry</code>, which is just a link with the title of the post.
 </p>
@@ -550,9 +550,9 @@ I like to include the creation date on the blog posts. To do this, we can use <c
 </div>
 </div>
 
-<div id="outline-container-org06e66bd" class="outline-2">
-<h2 id="org06e66bd">Tags &amp; Filtering</h2>
-<div class="outline-text-2" id="text-org06e66bd">
+<div id="outline-container-org22c8fbe" class="outline-2">
+<h2 id="org22c8fbe">Tags &amp; Filtering</h2>
+<div class="outline-text-2" id="text-org22c8fbe">
 <p>
 I use <a href="https://www.orgroam.com/">Org-roam</a> for all of my note-taking and, in the next blog post, I plan to demonstrate how I will hook up my Org-roam note-taking workflow to my blogging. In the meantime, just know that we can add tags to the top of our org files like this:
 </p>
@@ -596,7 +596,7 @@ We extract the "filetags" from the org file, concatenate them into a comma-delim
 </p>
 
 <div class="org-src-container">
-<pre class="src src-css"><span class="org-css-selector">.sitemap_tag </span>{
+<pre class="src src-css"><span class="org-css-selector">.sitemap_tag</span> {
     <span class="org-css-property">display</span>: none;
 }
 </pre>
@@ -717,14 +717,14 @@ Finally, let's append the following to <code>posts/posts.css</code> so that our 
 </p>
 
 <div class="org-src-container">
-<pre class="src src-css"><span class="org-css-selector">#tag-filter-container </span>{
+<pre class="src src-css"><span class="org-css-selector">#tag-filter-container</span> {
     <span class="org-css-property">display</span>: flex;
     <span class="org-css-property">flex-direction</span>: row;
     <span class="org-css-property">column-gap</span>: 8px;
     <span class="org-css-property">margin-top</span>: 1rem;
 }
 
-<span class="org-css-selector">.tag-filter-item </span>{
+<span class="org-css-selector">.tag-filter-item</span> {
     <span class="org-css-property">display</span>: flex;
     <span class="org-css-property">flex-direction</span>: row;
     <span class="org-css-property">align-items</span>: center;
@@ -736,7 +736,7 @@ Finally, let's append the following to <code>posts/posts.css</code> so that our 
     <span class="org-css-property">background-color</span>: <span class="custom-4">#fffed8</span>;
 }
 
-<span class="org-css-selector">.tag-filter-item button </span>{
+<span class="org-css-selector">.tag-filter-item button</span> {
     <span class="org-css-property">background</span>: none;
     <span class="org-css-property">border</span>: none;
     <span class="org-css-property">outline</span>: none;
@@ -746,25 +746,25 @@ Finally, let's append the following to <code>posts/posts.css</code> so that our 
     <span class="org-css-property">font-size</span>: 1.5rem;
 }
 
-<span class="org-css-selector">.tag-filter-item button:before </span>{
+<span class="org-css-selector">.tag-filter-item button:before</span> {
     <span class="org-css-property">content</span>: <span class="org-string">'\00d7'</span>;
 }
 
-<span class="org-css-selector">.tag-filter-item.disabled button:before </span>{
+<span class="org-css-selector">.tag-filter-item.disabled button:before</span> {
     <span class="org-css-property">content</span>: <span class="org-string">'+'</span>;
 }
 
-<span class="org-css-selector">.tag-filter-item.disabled </span>{
+<span class="org-css-selector">.tag-filter-item.disabled</span> {
     <span class="org-css-property">background-color</span>: <span class="custom-2">#f2f2f2</span>;
     <span class="org-css-property">color</span>: <span class="custom-1">gray</span>;
     <span class="org-css-property">border-color</span>: <span class="custom-1">gray</span>;
 }
 
-<span class="org-css-selector">.tag-filter-item.disabled button </span>{
+<span class="org-css-selector">.tag-filter-item.disabled button</span> {
     <span class="org-css-property">color</span>: <span class="custom">green</span>;
 }
 
-<span class="org-css-selector">.tag-filter-item button:hover </span>{
+<span class="org-css-selector">.tag-filter-item button:hover</span> {
     <span class="org-css-property">cursor</span>: pointer;
     <span class="org-css-property">opacity</span>: 0.8;
 }
@@ -773,9 +773,9 @@ Finally, let's append the following to <code>posts/posts.css</code> so that our 
 </div>
 </div>
 
-<div id="outline-container-orgcd56cd6" class="outline-2">
-<h2 id="orgcd56cd6">Conclusion</h2>
-<div class="outline-text-2" id="text-orgcd56cd6">
+<div id="outline-container-org85c3052" class="outline-2">
+<h2 id="org85c3052">Conclusion</h2>
+<div class="outline-text-2" id="text-org85c3052">
 <p>
 There are many more customizations that I plan to do on this system in the future, but I plan to leave this for now so that I can actually get to some blogging. I will proofread and fix my mistakes as time goes on, but this should be a good jumping off point for anyone interested in using org for their own blogging system.
 </p>

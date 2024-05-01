@@ -1,1 +1,1 @@
-rsync -a ./ root@physicsforgames.com:/var/www/matthewkosarek
+rsync -a ./ root@matthewkosarek.xyz:/var/www/matthewkosarek

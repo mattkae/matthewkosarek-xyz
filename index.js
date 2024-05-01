@@ -28,7 +28,7 @@ function imageCallbacks() {
         }
     } 
 
-    // -- Set up on image clicked
+    // Set up on image clicked
     var imageList = imageContainer.children,
         numImages = imageContainer.children.length;
 

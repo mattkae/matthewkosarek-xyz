@@ -1,6 +1,5 @@
 User-agent: *
 Sitemap: https://www.matthewkosarek.xyz/sitemap.txt
-Disallow: /posts
 Disallow: /download
 Disallow: /themes
 Disallow: /favicon
