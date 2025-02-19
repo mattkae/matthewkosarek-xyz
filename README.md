@@ -9,26 +9,27 @@ If you are on Github, this is a mirror of: https://git.matthewkosarek.xyz/matthe
 firefox localhost:8080
 ```
 
-## Building
+## Build Themes
+1. Install emscripten: https://emscripten.org/docs/getting_started/downloads.html
 
-### Themes
-```sh
-# Compile the shaders
-cd themes/src
-node tools/shaders.js
+2. Compile the shaders 
+   ```sh
+   cd themes/src
+   node tools/shaders.js
+   ```
+3. Build the project
+   ```sh
+   cd ..
+   ./compile-commands.sh
+   make
+   ```
 
-# Build the project
-cd ..
-./compile-commands.sh
-make
-```
-
-### Posts
+## Update Posts
 ```sh
 ./publish.sh
 ```
 
-## Upload
+## Publish New Version
 ```sh
 ./upload.sh
 ```

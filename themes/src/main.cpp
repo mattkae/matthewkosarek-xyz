@@ -67,14 +67,19 @@ void load(ThemeType theme) {
 }
 
 void update(f32 dtSeconds, void* userData) {
+    if (!active_theme)
+        return;
 	active_theme->update(dtSeconds);
     active_theme->render();
 }
 
 void unload() {
 	delete active_theme;
+    active_theme = nullptr;
 	
 	type = ThemeType::Default;
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	if (mainLoop.isRunning) {
 		mainLoop.stop();
 	}
@@ -84,7 +89,7 @@ void unload() {
 EM_BOOL selectNone(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
 	printf("Default theme selected\n");
 	unload();
-	return true;
+    return true;
 }
 
 EM_BOOL selectAutumn(int eventType, const EmscriptenMouseEvent* mouseEvent, void* userData) {
