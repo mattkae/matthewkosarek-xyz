@@ -8,6 +8,10 @@
 
 
 * TLDR
+:PROPERTIES:
+:ID:       b15846be-b33b-4233-86b1-b56a76622478
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 - Create a new folder
 - Put [[https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/index.css][index.css]], [[https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/publish.el][publish.el]], and [[https://github.com/mattkae/matthewkosarek-xyz/blob/master/publish.sh][publish.sh]] in the folder
 - Create a folder called ~_posts~ (this is where blog posts are written)
@@ -19,6 +23,10 @@
 - Navigate to ~localhost:8080/posts/sitemap.html~ to see your posts
 
 * Introduction
+:PROPERTIES:
+:ID:       39f1ddfb-72e3-4894-9c4c-b160c6e224fe
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 I've recently fallen in love with ~org-mode~, specifically when I use it with [[https://www.orgroam.com/][org-roam]]. I find the whole workflow of creating, tagging, and - later on - searching for information on my computer to be very elegant. On top of that, now that I have the time, I want to begin writing blog posts to better work out my thoughts. With both of these things in mind, I am again turning to the universal tool for human prospering: ~org-mode~. This time, I want to see how it can help me turn a simple org file into a blog post on my website. My requirements are:
 
 1. Org files must get published to HTML files in a particular format with a preset stylesheet
@@ -33,6 +41,10 @@ And that's pretty much it for now. Without further ado, let's jump into getting 
 (Note: I will be heavily inspired by [[https://systemcrafters.net/publishing-websites-with-org-mode/building-the-site/#creating-the-build-script][this post from System Crafters]]. I highly recommend that you read his post first before you follow my post, as he provides more details about the ~org-publish-project-alist~ command than I am willing to go into in this post.)
 
 * Basic HTML File
+:PROPERTIES:
+:ID:       fbd6c42a-45cf-4c16-81fc-e99df88e2389
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 As a pilot, we are going to use this org file that I am currently writing (~hello.org~) as our guinea pig. The goal is to have this org file be our very first blog post.
 
 Emacs ships with org export goodies out of the box via the ~ox-publish.el~ package (which you can find [[https://github.com/emacs-mirror/emacs/blob/master/lisp/org/ox-publish.el][here]]). In our case, we will want to use this package to write a script that exports all the ~./_posts/*.org~ files and outputs them to a corresponding ~./posts/*.html~.  Leaning heavily on the System Crafters information, we can create a file called ~publish.el~ and write the following inside of it:
@@ -62,6 +74,10 @@ emacs -Q --script publish.el
  We then do a ~chmod +x publish.sh~ to make it an executable and run it with ~./publish.sh~. If everything went according to plan, we should see a new file at ~posts/hello.html~.
  
 * Disabling features that we don't want
+:PROPERTIES:
+:ID:       393f268d-3200-4857-9c78-097468330437
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 The next thing will be to remove some of the generated items that I didn't ask for, namely the table of contents, author, section numbers, creation time stamp, and the validation link.
 
 #+BEGIN_SRC emacs-lisp
@@ -87,6 +103,10 @@ The next thing will be to remove some of the generated items that I didn't ask f
 #+END_SRC
 
 * Styling & Code Highlighting
+:PROPERTIES:
+:ID:       25bb1f38-ad48-4513-9238-229955db4328
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 Next thing on our list is custom styling. This can be achieved by first installing the ~htmlize~ package from ~melpa~ / ~elpa~.  The EmacsWiki describes this as "a package for exporting the contents of an Emacs buffer to HTML while respecting display properties such as colors, fonts, underlining, invisibility, etc" ([[https://www.emacswiki.org/emacs/Htmlize][reference]]). If used "out-of-the-box", the buffer will be exported to HTML with all of the styles inlined (e.g. if you underline something in your org file, you will generate a ~<span style="text-decoration: underline">...</span>~).  However, we are more interested in styling everything by ourselves: we don't want ~htmlize~ making assumptions about what underlining means to us! Luckily, ~htmlize~ gives us the option to export with class names instead of inline styles so that we can specify each style for ourselves.
 
 #+BEGIN_SRC emacs-lisp
@@ -241,6 +261,10 @@ Finally, we need to tell org mode to include our two CSS files when the page is 
 If we run the publish again, we can see that we have full styling on our code snippets and everything else on our website.
 
 * Images
+:PROPERTIES:
+:ID:       1ca21e46-c212-41ad-b9a7-34fa9909014a
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 Our first two criteria have been met! Next on the list is solving images. As an example, let's use this [[/_posts/assets/squirrel.jpg][squirrel image]] that I found online with an open source license. The ideal situation would be:
 
 1. The squirrel image lives closely to this org document (~hello.org~)
@@ -273,6 +297,10 @@ That's all there is to it! There are simpler ways as well, but that should do it
 
 
 * Creation Date
+:PROPERTIES:
+:ID:       f061a150-b8bc-41cf-8c50-77338ac47c80
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 Let's add the creation date below the title next. To start, we will modify the publish command to remove the title (~:with-title nil~) and, in its place, show a preamble bit of HTML that contains a formatted ~div~ with the title and the "last modified" span.z
 
 #+BEGIN_SRC emacs-lisp
@@ -317,6 +345,10 @@ If you want to see the full list of which values can be included in the ~html-pr
 Note that the downside of this is that the created date will change whenever you next save the buffer. This isn't a huge deal for my purposes, but you may need to come up with a more sophisticated mechanism for the exact "creation" date for your use case.
 
 * Generating the Directory
+:PROPERTIES:
+:ID:       e2226b35-d9ed-4758-8471-71a5c82331f1
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 For every org file in my ~_posts~ folder, I would like to create a link to the generated HTML file at the ~/posts.html~ page of my website. You can think of this as the "directory" of all posts. My criteria is:
 1. Posts should appear in order from newest to oldest
 2. Posts should be searchable by tags (covered in the next section)
@@ -360,6 +392,9 @@ If you open the ~sitemap.html~ file in your browser, you will see a bulleted lis
 From here, you may customize it however you like.  The following are my customizations.
 
 ** Sitemap Title
+:PROPERTIES:
+:ID:       47f964f9-15d7-4370-9483-a76dafd79f4c
+:END:
 I changed the title to "Matthew's Blog Posts".
 
 #+BEGIN_SRC  emacs-lisp
@@ -379,6 +414,9 @@ I changed the title to "Matthew's Blog Posts".
 
  
 ** Format blog entries in the list
+:PROPERTIES:
+:ID:       a1c2f9b9-085a-4540-a9f1-7f7388334191
+:END:
 I like to include the creation date on the blog posts. To do this, we can use ~org-publish-find-property~ to find the date property of the org file. Afterward, we can format a string that  includes our formatted timestamp and the ~org-publish-sitemap-default-entry~, which is just a link with the title of the post.
 #+BEGIN_SRC  emacs-lisp
   (defun get-org-file-title(entry style project)
@@ -395,6 +433,10 @@ I like to include the creation date on the blog posts. To do this, we can use ~o
 #+END_SRC
 
 * Tags & Filtering
+:PROPERTIES:
+:ID:       bb278140-4b5c-4025-a267-693820251199
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 I use [[https://www.orgroam.com/][Org-roam]] for all of my note-taking and, in the next blog post, I plan to demonstrate how I will hook up my Org-roam note-taking workflow to my blogging. In the meantime, just know that we can add tags to the top of our org files like this:
 
 #+BEGIN_SRC org
@@ -585,4 +627,8 @@ Finally, let's append the following to ~posts/posts.css~ so that our tag list is
 #+END_SRC
 
 * Conclusion
+:PROPERTIES:
+:ID:       0612cef6-bdb4-4f43-8ba7-86e2c22120fd
+:PUBDATE:  2025-05-06 Tue 14:32
+:END:
 There are many more customizations that I plan to do on this system in the future, but I plan to leave this for now so that I can actually get to some blogging. I will proofread and fix my mistakes as time goes on, but this should be a good jumping off point for anyone interested in using org for their own blogging system.

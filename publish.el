@@ -47,7 +47,7 @@
   </div>
 "))
              :auto-sitemap t
-             :sitemap-sort-files "chronologically"
+             :sitemap-sort-files 'anti-chronologically
              :sitemap-title "Matthew's Blog Posts"
              :sitemap-format-entry (lambda (entry style project) (get-org-file-title entry style project))
              :sitemap-function (lambda (title list) (my-sitemap-function title list))

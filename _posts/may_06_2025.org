@@ -1,0 +1,17 @@
+:PROPERTIES:
+:ID:       fe8e0951-3201-496f-aa0b-21578e269036
+:END:
+#+TITLE: Update May 06, 2025
+#+DATE: <2025-05-06 Tue 17:00>
+#+filetags: :update:
+
+* What have I been up to?
+I've been meaning to do these little blog-post type updates for a while, and I figured now is as good a time as any. So let's start :)
+
+In the world of miracle-wm, I've been hard at work writing a new settings application for the compositor called [[https://github.com/miracle-wm-org/miracle-settings][miracle-settings]]. While the application is written in Flutter, the logic behind the application is entirely implemented in ~libmiracle-wm-config.so~, a new library that will ship with miracle as part of ~v0.6.0~. If Flutter isn't your cup of tea, you should be able to implement your own settings app for miracle in the language/toolkit of your choice by simply binding to the C (or C++!) API.
+
+I also implemented [[https://wayland.app/protocols/wlr-output-management-unstable-v1][wlr-output-management]] in miracle and changed how we do display configuration in a big way. The display configuration will now always be loaded from ~$HOME/.config/miracle-wm/display.yaml~. Users should now be able to use apps like [[https://github.com/artizirk/wdisplays][wdisplays]] to change the output configuration at runtime, which is pretty cool!
+
+On the Mir project, I've been working on accessibility features (e.g. magnification) in addition to exposing some facilities for compositor authors to write end-to-end tests for Mir-based compositors. These new testing facilities should help us write tests in miracle in a big way.
+
+Also - my cat who ate a sewing needle last year has turned two! 🐱
