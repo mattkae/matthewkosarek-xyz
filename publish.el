@@ -44,6 +44,7 @@
   <div class=\"org-article-title\">
     <h1>%t</h1>
     <span>Last modified: %d</span>
+    <span><a href=\"/posts/feed.xml\">RSS Feed</a></span>
   </div>
 "))
              :auto-sitemap t
