@@ -1,0 +1,25 @@
+:PROPERTIES:
+:ID:       c397a1c8-5980-419d-88d4-a3c9782343d5
+:END:
+#+TITLE: Update June 08, 2025
+#+DATE: <2025-06-08 Sun 15:30>
+#+filetags: :update:
+
+* What have I been up to?
+Another month has gone by, so I guess it's time to see what I've been up to.
+
+Canonical hosted our company's sprint in Frankfurt, Germany during the month of May. It was a very productive time for the whole team. I always enjoy seeing everyone in person, talking through big issues face-to-face, and exploring a new city. I also got to spend some time in Zurich, Switzerland before the sprint began. Zurich is pretty awesome 🏔️!
+
+In miracle-wm, I have been going down quite the rabbit-hole🐇! What began as a plan to fix the remaining warnings in the source code has snowballed into me implemnenting the rest of the IPC mechanism and testing the entire thing. This has been no small feat, as both sway and i3 implement a _lot_ of different commands, and a failure to implement any one of them often leads to half-broken clients. I've had to make some "executive" decisions to ignore parts of the protocol that I deem irrelevant now (especially many of the X-specific bits), but it is a mostly compatible implementation. The good news is that I've nearly completed this journey and should be ready to release version ~0.6.0~ some time in the middle of June.
+
+Miracle is getting closer-and-closer to my vision of it every day. The only problem right now is finding the bandwidth to implement everything that I have in my head :)
+
+On the Mir side of things, I am still implementing the magnifier glass accessibility feature from before, but with a much-improved technical direction that we arrived at during our time in Frankfurt. Unfortunately, this required a quick detour to properly implement the ~overlay_cursor~ flag of [[https://wayland.app/protocols/wlr-screencopy-unstable-v1#zwlr_screencopy_manager_v1:request:capture_output:arg:overlay_cursor][zwlr_screencopy_manager_v1::capture_output_region]], as both screencopy and magnification rely on this same code path. The good news is that I'm quite close on this and it should be landing in full any day now 🤞
+
+I also fixed [[https://github.com/canonical/mir/pull/3968][this very breaking bug]] that was actively preventing miracle from rendering on my second monitor, so that's good.
+
+On addition to these two projects, I am also reinvolving myself in the Flutter multi-window work. For those who don't know, we're trying to make it so that the Flutter toolkit can render to multiple surfaces. This is no small feat, as Flutter was originally written with the assumption that only a single "view" would ever be drawn too. However we've managed to make some great progress on it thus far, and we're very excited to land the first pull request imminently with the help of the folks over a Google!
+
+I hope you're having a great and productive summer 😎
+
+
