@@ -2,7 +2,7 @@
 :ID:       1c09d4f3-1f72-49f6-930d-e2d92473a979
 :END:
 
-TITLE: Update July 28, 2025
+#+TITLE: Update July 28, 2025
 #+DATE: <2025-07-28 Sun 17:30>
 #+filetags: :update:
 

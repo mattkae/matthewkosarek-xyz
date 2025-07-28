@@ -1,12 +1,12 @@
 #+TITLE: Matthew's Blog Posts
 
-#+DATE: 2025-07-28 at 15:17
+#+DATE: 2025-07-28 at 15:19
 
 #+HTML_LINK_HOME: /
 
 #+HTML_LINK_UP: /
 
-- [[file:jul_28_2025.org][jul_28_2025]] created on July 28, 2025
+- [[file:jul_28_2025.org][Update July 28, 2025]] created on July 28, 2025
   #+begin_sitemap_tag
   update
   #+end_sitemap_tag
