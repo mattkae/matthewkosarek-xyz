@@ -59,19 +59,23 @@ void Sun::load(Renderer2d* renderer) {
 		indices.add(second);
 		indices.add(third);
 	}
-	
+
 	mesh.load(&vertices.data[0], vertices.numElements, &indices.data[0], indices.numElements, renderer);
 	mesh.model = Mat4x4().translateByVec2(Vector2(renderer->context->width / 2.f, renderer->context->height / 2.f));
+
+	timeUniform = getShaderUniform(renderer->shader, "time");
+
 	vertices.deallocate();
 	indices.deallocate();
 }
 
 void Sun::update(f32 dtSeconds) {
-
+	elapsedTime += dtSeconds;
 }
 
 void Sun::render(Renderer2d* renderer) {
 	setShaderMat4(renderer->uniforms.model, mesh.model);
+	glUniform1f(timeUniform, elapsedTime);
 	glBindVertexArray(mesh.vao);
     glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

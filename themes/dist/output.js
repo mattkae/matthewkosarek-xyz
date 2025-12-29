@@ -3170,6 +3170,11 @@ function dbg(...args) {
       }
     };
   
+  var _glUniform1f = (location, v0) => {
+      GLctx.uniform1f(webglGetUniformLocation(location), v0);
+    };
+
+  
   var miniTempWebGLFloatBuffers = [];
   
   var _glUniformMatrix4fv = (location, count, transpose, value) => {
@@ -3362,6 +3367,8 @@ var wasmImports = {
   glLinkProgram: _glLinkProgram,
   /** @export */
   glShaderSource: _glShaderSource,
+  /** @export */
+  glUniform1f: _glUniform1f,
   /** @export */
   glUniformMatrix4fv: _glUniformMatrix4fv,
   /** @export */

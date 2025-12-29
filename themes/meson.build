@@ -69,6 +69,30 @@ inc = include_directories(
   'src/tools'
 )
 
+# Custom target to build shaders from GLSL files
+node = find_program('node')
+shader_script = meson.project_source_root() + '/src/tools/shader.js'
+
+# List all GLSL shader files as inputs
+shader_inputs = files(
+  'src/_shaders/renderer2d.frag',
+  'src/_shaders/renderer2d.vert',
+  'src/_shaders/renderer3d.frag',
+  'src/_shaders/renderer3d.vert',
+  'src/_shaders/sun.frag',
+  'src/_shaders/sun.vert'
+)
+
+# Custom target that runs whenever shader files change
+sh = find_program('sh')
+build_shaders = custom_target('build_shaders',
+  input: shader_inputs,
+  output: 'shaders.stamp',
+  command: [sh, '-c', node.full_path() + ' ' + shader_script + ' && touch @OUTPUT@'],
+  build_always_stale: true,
+  build_by_default: true
+)
+
 # Build the executable
 output_exe = executable('output',
   sources,

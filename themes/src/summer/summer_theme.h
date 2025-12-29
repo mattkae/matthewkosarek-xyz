@@ -8,6 +8,8 @@ struct Sun {
     f32 radius = 20.f;
 	i32 sectors = 180;
 	Mesh2D mesh;
+	f32 elapsedTime = 0.f;
+	i32 timeUniform = -1;
 
 	void load(Renderer2d* renderer);
 	void update(f32 dtSeconds);
