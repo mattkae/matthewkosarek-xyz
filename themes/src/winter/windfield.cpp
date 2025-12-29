@@ -1,4 +1,4 @@
-#include "Windfield.hpp"
+#include "windfield.hpp"
 
     
 template <i32 Width, i32 Height, i32 CellDimension>

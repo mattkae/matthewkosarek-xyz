@@ -1,5 +1,5 @@
-#include "SpringTheme.hpp"
-#include "../Renderer3d.h"
+#include "spring_theme.hpp"
+#include "../renderer_3d.h"
 #include "../shader_fetcher.hpp"
 #include <cstdio>
 #include <emscripten/fetch.h>

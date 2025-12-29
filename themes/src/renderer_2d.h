@@ -1,8 +1,8 @@
 #pragma once
 
-#include "WebglContext.h"
+#include "webgl_context.h"
 #include "types.h"
-#include "Shader.h"
+#include "shader.h"
 #include "mathlib.h"
 
 struct WebglContext;

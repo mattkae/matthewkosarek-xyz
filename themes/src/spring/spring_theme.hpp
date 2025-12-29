@@ -3,7 +3,7 @@
 
 #include "../mathlib.h"
 #include "../types.h"
-#include "../Renderer3d.h"
+#include "../renderer_3d.h"
 #include "../theme.h"
 
 

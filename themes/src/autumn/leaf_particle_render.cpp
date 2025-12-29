@@ -1,7 +1,7 @@
-#include "LeafParticleRender.h"
-#include "../Renderer2d.h"
+#include "leaf_particle_render.h"
+#include "../renderer_2d.h"
 #include "../mathlib.h"
-#include "TreeShape.h"
+#include "tree_shape.h"
 #include "../types.h"
 #include <math.h>
 

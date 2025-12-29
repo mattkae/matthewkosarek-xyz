@@ -1,11 +1,11 @@
 #ifndef AUTUMN_THEME_HPP
 #define AUTUMN_THEME_HPP
 
-#include "TreeShape.h"
-#include "LeafParticleRender.h"
+#include "tree_shape.h"
+#include "leaf_particle_render.h"
 #include "../types.h"
 #include "../theme.h"
-#include "../Renderer2d.h"
+#include "../renderer_2d.h"
 #include <memory>
 #include <vector>
 

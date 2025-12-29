@@ -1,10 +1,10 @@
 #ifndef WINTER_THEME_HPP
 #define WINTER_THEME_HPP
 
-#include "Snowflake.h"
+#include "snowflake.h"
 #include "../types.h"
 #include "../theme.h"
-#include "../Renderer2d.h"
+#include "../renderer_2d.h"
 
 struct WebglContext;
 

@@ -1,5 +1,5 @@
-#include "SummerTheme.h"
-#include "../Renderer2d.h"
+#include "summer_theme.h"
+#include "../renderer_2d.h"
 #include "../list.h"
 #include "../mathlib.h"
 #include "../shaders/sun_frag.h"

@@ -1,6 +1,6 @@
 #pragma once
 #include "../types.h"
-#include "../Renderer2d.h"
+#include "../renderer_2d.h"
 #include "../theme.h"
 #include <vector>
 

@@ -1,9 +1,9 @@
-#include "Renderer3d.h"
-#include "Shader.h"
+#include "renderer_3d.h"
+#include "shader.h"
 #include "list.h"
 #include "mathlib.h"
-#include "WebglContext.h"
-#include "Logger.h"
+#include "webgl_context.h"
+#include "logger.h"
 #include <cstdio>
 
 // Note: In the 'transform' attribute, the transform.x is the scale,

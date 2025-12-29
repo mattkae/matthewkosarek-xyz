@@ -1,7 +1,7 @@
 #ifndef GRASS_RENDERER_HPP
 #define GRASS_RENDERER_HPP
 
-#include "Renderer3d.h"
+#include "../renderer_3d.h"
 #include "mathlib.h"
 #include "types.h"
 

@@ -1,5 +1,5 @@
-#include "Snowflake.h"
-#include "../Renderer2d.h"
+#include "snowflake.h"
+#include "../renderer_2d.h"
 #include "../mathlib.h"
 #include "../list.h"
 #include <cstdio>

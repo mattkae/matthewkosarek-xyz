@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdlib>
 #include <cstring>
-#include "Logger.h"
+#include "logger.h"
 
 #define FOREACH(list)												\
 	for (i32 idx = 0; idx < list.numElements; idx++) \

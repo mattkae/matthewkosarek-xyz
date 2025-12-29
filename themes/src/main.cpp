@@ -1,13 +1,13 @@
-#include "WebglContext.h"
-#include "MainLoop.h"
-#include "Renderer2d.h"
+#include "webgl_context.h"
+#include "main_loop.h"
+#include "renderer_2d.h"
 #include "mathlib.h"
 #include "theme.h"
 #include "types.h"
-#include "summer/SummerTheme.h"
-#include "autumn/AutumnTheme.hpp"
-#include "spring/SpringTheme.hpp"
-#include "winter/WinterTheme.hpp"
+#include "summer/summer_theme.h"
+#include "autumn/autumn_theme.hpp"
+#include "spring/spring_theme.hpp"
+#include "winter/winter_theme.hpp"
 #include <cstdio>
 #include <emscripten/fetch.h>
 

@@ -1,5 +1,5 @@
-#include "WinterTheme.hpp"
-#include "../Renderer2d.h"
+#include "winter_theme.hpp"
+#include "../renderer_2d.h"
 
 WinterTheme::WinterTheme(WebglContext* context)
 {

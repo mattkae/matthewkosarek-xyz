@@ -4,7 +4,7 @@
 #include "../types.h"
 #include "../mathlib.h"
 #include "../list.h"
-#include "Windfield.hpp"
+#include "windfield.hpp"
 
 struct Renderer2d;
 struct Vertex2D;

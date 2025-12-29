@@ -1,5 +1,5 @@
-#include "GrassRenderer.hpp"
-#include "Renderer3d.h"
+#include "grass_renderer.hpp"
+#include "../renderer_3d.h"
 
 void GrassRenderer::load(GrassRendererLoadData params, Renderer3d* renderer) {
     const f32 COLUMN_INCREMENT = GRASS_BLADES_PER_COL / params.area.x;

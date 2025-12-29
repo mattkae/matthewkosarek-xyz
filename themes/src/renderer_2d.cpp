@@ -1,6 +1,6 @@
-#include "Renderer2d.h"
-#include "Shader.h"
-#include "WebglContext.h"
+#include "renderer_2d.h"
+#include "shader.h"
+#include "webgl_context.h"
 #include "mathlib.h"
 #include <cstdio>
 #include "shaders/renderer2d_vert.h"
