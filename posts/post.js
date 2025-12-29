@@ -1,7 +1,7 @@
 
 function main() {
 
-  // Gather the used set oof tags
+  // Gather the used set of tags
   const tagSet = new Set();
   const postList = [];
   const tagContainers = document.getElementsByClassName('sitemap_tag');
@@ -12,8 +12,21 @@ function main() {
       continue;
     }
 
-    const tagList = pContainer.textContent.split(',');
-    tagList.forEach(tag => tagSet.add(tag));
+    const tagText = pContainer.textContent.trim();
+    const tagList = tagText.split(',').map(tag => tag.trim());
+
+    // Replace the text content with styled tag badges
+    pContainer.innerHTML = '';
+    tagList.forEach(tag => {
+      if (tag) {
+        tagSet.add(tag);
+        const tagBadge = document.createElement('span');
+        tagBadge.className = 'post-tag';
+        tagBadge.textContent = tag;
+        pContainer.appendChild(tagBadge);
+      }
+    });
+
     postList.push({
       container: container.parentElement,
       tagList: tagList,
@@ -27,31 +40,18 @@ function main() {
   tagContainer.id = 'tag-filter-container';
   contentContainer.before(tagContainer);
 
-  let numEnabled = tagSet.size;
   for (const tag of tagSet) {
     const tagElement = document.createElement('div');
     tagElement.className = "tag-filter-item";
     const tagElementLabel = document.createElement('span');
     tagElementLabel.innerHTML = tag;
-    const tagElementButton = document.createElement('button');
-    tagElement.append(tagElementLabel, tagElementButton);
+    tagElement.append(tagElementLabel);
     tagContainer.append(tagElement);
 
-
     // Whenever a tag is clicked, execute the filtering behavior
-    tagElementButton.onclick = function() {
-      // Handle enable/disable
-      tagElement.remove();
-
+    tagElement.onclick = function() {
       if (tagElement.classList.contains('disabled')) {
         tagElement.classList.remove('disabled');
-        if (numEnabled === 0) {
-          tagContainer.prepend(tagElement);
-        }
-        else {
-          tagContainer.children[numEnabled - 1].after(tagElement);
-        }
-        numEnabled++;
 
         // Filter
         postList.forEach(post => {
@@ -66,8 +66,6 @@ function main() {
       }
       else {
         tagElement.classList.add('disabled');
-        tagContainer.append(tagElement);
-        numEnabled--;
 
         // Filter
         postList.forEach(post => {
