@@ -3,35 +3,25 @@ This contains the entirety of https://matthewkosarek.xyz, which is my personal w
 
 If you are on Github, this is a mirror of: https://git.matthewkosarek.xyz/matthew_kosarek_xyz/
 
+
+## Building
+
+### Themes
+See the [themes subproject](./themes/README.md) for more information on how to build the themes.
+
+### Posts
+```sh
+./publish.sh
+```
+
 ## Running
 ```sh
 ./run_dev.sh
 firefox localhost:8080
 ```
 
-## Build Themes
-First, install emscripten: https://emscripten.org/docs/getting_started/downloads.html
 
-Next, compile the shaders:
-
-```sh
-cd themes/src
-node tools/shaders.js
-```
-Finally, build the project:
-
-```sh
-cd ..
-./compile-commands.sh
-make
-```
-
-## Update Posts
-```sh
-./publish.sh
-```
-
-## Publish New Version
+## Publishing
 ```sh
 ./upload.sh
 ```

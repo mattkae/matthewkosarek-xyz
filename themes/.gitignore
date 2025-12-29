@@ -1,0 +1,15 @@
+# Build directories
+dist/
+builddir/
+.cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Meson
+.meson_subdir/
+compile_commands.json
