@@ -17,15 +17,15 @@ void main() {
     lowp float noiseValue = noise(TexCoord + time * 0.1) * 0.02;
 
     // Create soft edge using smoothstep - ensure fade reaches zero at the actual edge
-    lowp float innerEdge = 0.2;
+    lowp float innerEdge = 0.8;
     lowp float outerEdge = 1.0;
     lowp float alpha = 1.0 - smoothstep(innerEdge, outerEdge, dist);
 
     // Apply wave distortion to the edge
     alpha *= 1.0 - smoothstep(0.85 + wave + noiseValue * 2.0, 1.0, dist);
 
-    // Make edges even more transparent with additional fade
-    alpha = alpha * alpha * alpha;
+    // Make edges more transparent but not too much
+    alpha = alpha * alpha;
 
     // Add slight glow effect at the edge
     lowp float glow = smoothstep(0.5, 0.8, dist) * (1.0 - smoothstep(0.8, 1.0, dist));
