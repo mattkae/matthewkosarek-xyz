@@ -1,4 +1,4 @@
-(defun mk/create-update-post ()
+(defun mk/blog/create-update-post ()
   "Create a new 'Update' post for today in the _posts folder."
   (interactive)
   (let* ((date (current-time))
@@ -38,7 +38,7 @@
       (goto-char (point-max))
       (message "Created new update post: %s" filepath))))
 
-(defun mk/create-regular-post ()
+(defun mk/blog/create-regular-post ()
   "Create a new regular blog post with a custom title in the _posts folder."
   (interactive)
   (let* ((title (read-string "Post title: "))
