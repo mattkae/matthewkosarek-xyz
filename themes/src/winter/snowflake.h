@@ -14,15 +14,20 @@ struct SnowflakeLoadParameters {
 	f32 windIntervalSeconds = 1.5f;
 };
 
+struct SnowflakeInstanceData {
+	Vector2 position;
+	f32 rotation;
+	f32 scale;
+	f32 seed;
+};
+
 struct SnowflakeUpdateData {
 	Vector2 velocity;
 	Vector2 position;
     f32 rotateVelocity = 0.f;
 	f32 rotation = 0;
-    f32 radius;
-
-	i32 vtxIdx = 0;
-	i32 numVertices = 0;
+    f32 scale;
+	f32 seed;
 };
 
 struct SnowflakeParticleRenderer {
@@ -35,10 +40,24 @@ struct SnowflakeParticleRenderer {
 	SnowflakeUpdateData* updateData;
 
 	u32 vao;
-	u32 vbo;
+	u32 quadVbo;           // Base quad geometry
+	u32 instanceVbo;       // Instance data (position, rotation, scale, seed)
+	u32 shader;            // Custom snowflake shader
 	Mat4x4 model;
-	matte::List<Vertex2D> vertices;
-	
+
+	struct {
+		i32 position;
+		i32 instancePos;
+		i32 instanceRot;
+		i32 instanceScale;
+		i32 instanceSeed;
+	} attributes;
+
+	struct {
+		i32 projection;
+		i32 model;
+	} uniforms;
+
 	void load(SnowflakeLoadParameters params, Renderer2d* renderer);
 	void update(f32 dtSeconds);
 	void render(Renderer2d* renderer);

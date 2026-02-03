@@ -2,6 +2,9 @@
 #include "../renderer_2d.h"
 #include "../mathlib.h"
 #include "../list.h"
+#include "../shader.h"
+#include "../shaders/snowflake_vert.h"
+#include "../shaders/snowflake_frag.h"
 #include <cstdio>
 
 /*
@@ -11,12 +14,10 @@
   - Windstream that blows a certain selection of snowflakes in a loop-dee-loop pattern
   - Snowflakes that land on the ground and melt
   - Snowflakes that spin along the Y-axis for a three dimensional effect
-  
+
  */
 
-const Vector4 snowColor = Vector4(1.0, 0.98, 0.98, 1);
-const Vector2 NUM_ARMS_RANGE = Vector2(6.f, 8.f);
-const Vector2 RADIUS_RANGE = Vector2(8.f, 32.f);
+const Vector2 SCALE_RANGE = Vector2(16.f, 48.f);
 const Vector2 VELOCITY_RANGE_X = Vector2(-10.f, 10.f);
 const Vector2 VELOCITY_RANGE_Y = Vector2(-100.f, -85.f);
 const Vector2 ROTATION_VELOCITY_RANGE = Vector2(-PI / 8.f, PI / 8.f);
@@ -24,111 +25,88 @@ const Vector2 WIND_VELOCITY_RANGE_X = Vector2(-3.f, 3.f);
 const Vector2 WIND_VELOCITY_RANGE_Y = Vector2(3.f, 10.f);
 const f32 GRAVITY = 5.f;
 
-inline void generateSnowflakeArm(f32 width, f32 height, f32 angle, matte::List<Vertex2D>* vertices, Mat4x4 transform = Mat4x4()) {
-    f32 halfWidth = width / 2.f;
-    Vector2 leftStart = transform * Vector2(-halfWidth, 0).rotate(angle);
-    Vector2 leftEnd = transform * Vector2(-halfWidth, height).rotate(angle);
-    Vector2 rightStart = transform * Vector2(halfWidth, 0).rotate(angle);
-    Vector2 rightEnd = transform * Vector2(halfWidth, height).rotate(angle);
-
-    vertices->add({ leftStart, snowColor, Mat4x4() });
-    vertices->add({ leftEnd, snowColor, Mat4x4() });
-    vertices->add({ rightEnd, snowColor, Mat4x4() });
-    vertices->add({ leftStart, snowColor, Mat4x4() });
-    vertices->add({ rightEnd, snowColor, Mat4x4() });
-    vertices->add({ rightStart, snowColor, Mat4x4() });
-}
-
-/**
-   Fills in the vertices array vertices that represent a snowflake shape. The snowflake shape consists
-   of numArms jutting out of the center radially. The center of the flake is connected. The radius is
-   used to determine the length of the arms. The first third of each arm is barren, after which branches
-   extends on either side of the arm at an angle of about 60 degrees. Each branch can itself have tiny
-   sub branches jutting out of it, but these should be not nearly as large as the regular branches.
-
-   With all of this in mind, we should be able to build a convincing snowflake.
-
-   :param vertices List of vertices to be filled in
-   :param numArms Number of arms radially sticking out of the snowflake
-   :param radius Length of the snowflake arms
- */
-inline void generateSnowflakeShape(matte::List<Vertex2D>* vertices, i32 numArms, f32 radius, f32 armWidthRatio = 0.08f) {
-    f32 innerRadius = 0;
-    f32 outerRadius = 2 * radius;
-	f32 dx = ((2 * PI) / numArms);
-    for (i32 armIndex = 0; armIndex < numArms; armIndex++) {
-        f32 armAngle = dx * armIndex;
-        generateSnowflakeArm(armWidthRatio * radius, radius, armAngle, vertices);
-        f32 armLeftAngle = DEG_TO_RAD(60.f);
-        f32 armRightAngle = DEG_TO_RAD(-60.f);
-
-        const i32 NUM_SUB_ARMS = 4;
-        for (i32 subArmIndex = 0; subArmIndex < NUM_SUB_ARMS; subArmIndex++) {
-            f32 height = (radius / static_cast<f32>(subArmIndex));
-            f32 width = (armWidthRatio / (subArmIndex + 1)) * height;
-            f32 transY = (radius / (NUM_SUB_ARMS + 1)) * (subArmIndex + 1);
-            Vector2 translation = Vector2(0, transY).rotate(armAngle);
-            generateSnowflakeArm(width, height, armAngle, vertices, Mat4x4().translateByVec2(translation).rotate2D(armLeftAngle));
-            generateSnowflakeArm(width, height, armAngle, vertices, Mat4x4().translateByVec2(translation).rotate2D(armRightAngle));
-        }
-    }
-}
-
 inline void initFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
-    ud->radius = randomFloatBetween(RADIUS_RANGE.x, RADIUS_RANGE.y);
-	ud->vtxIdx = renderer->vertices.numElements;
-	generateSnowflakeShape(&renderer->vertices,
-                           randomFloatBetween(NUM_ARMS_RANGE.x, NUM_ARMS_RANGE.y),
-                           ud->radius);
-    
-	ud->numVertices = renderer->vertices.numElements - ud->vtxIdx;
-	ud->velocity = Vector2(randomFloatBetween(VELOCITY_RANGE_X.x, VELOCITY_RANGE_X.y), randomFloatBetween(VELOCITY_RANGE_Y.x, VELOCITY_RANGE_Y.y));
+    ud->scale = randomFloatBetween(SCALE_RANGE.x, SCALE_RANGE.y);
+    ud->seed = randomFloatBetween(0.f, 1000.f);
+
+	// Scale velocity based on star size - larger stars fall faster
+	f32 sizeRatio = (ud->scale - SCALE_RANGE.x) / (SCALE_RANGE.y - SCALE_RANGE.x);
+	f32 velocityY = VELOCITY_RANGE_Y.x + (VELOCITY_RANGE_Y.y - VELOCITY_RANGE_Y.x) * (0.5f + sizeRatio * 0.5f);
+
+	ud->velocity = Vector2(randomFloatBetween(VELOCITY_RANGE_X.x, VELOCITY_RANGE_X.y), velocityY);
 	ud->position = Vector2(randomFloatBetween(0, renderer->xMax), randomFloatBetween(renderer->yMax, 4 * renderer->yMax));
     ud->rotateVelocity = randomFloatBetween(ROTATION_VELOCITY_RANGE.x, ROTATION_VELOCITY_RANGE.y);
+    ud->rotation = 0.f;
 }
 
 void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d* renderer) {
 	numSnowflakes = params.numSnowflakes;
-
 	updateData = new SnowflakeUpdateData[params.numSnowflakes];
 
 	xMax = static_cast<f32>(renderer->context->width);
     yMax = static_cast<f32>(renderer->context->height);
 
-    vertices.deallocate();
-    vertices.growDynamically = true;
-    
-	// Initialize each snow flake with its shape
+	// Initialize each snowflake
 	for (i32 s = 0; s < numSnowflakes; s++) {
 		auto ud = &updateData[s];
 	    initFlake(this, ud);
 	}
 
-	useShader(renderer->shader);
+	// Load custom snowflake shader
+	shader = loadShader(shader_snowflake_vert, shader_snowflake_frag);
+	useShader(shader);
 
+	// Get attribute and uniform locations
+	attributes.position = getShaderAttribute(shader, "position");
+	attributes.instancePos = getShaderAttribute(shader, "instancePos");
+	attributes.instanceRot = getShaderAttribute(shader, "instanceRot");
+	attributes.instanceScale = getShaderAttribute(shader, "instanceScale");
+	attributes.instanceSeed = getShaderAttribute(shader, "instanceSeed");
+	uniforms.projection = getShaderUniform(shader, "projection");
+	uniforms.model = getShaderUniform(shader, "model");
+
+	// Create base quad geometry (just a square from -1 to 1)
+	Vector2 quadVertices[] = {
+		Vector2(-1.0f, -1.0f),
+		Vector2( 1.0f, -1.0f),
+		Vector2( 1.0f,  1.0f),
+		Vector2(-1.0f, -1.0f),
+		Vector2( 1.0f,  1.0f),
+		Vector2(-1.0f,  1.0f)
+	};
+
+	// Setup VAO
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.numElements * sizeof(Vertex2D), &vertices.data[0], GL_DYNAMIC_DRAW);
+	// Create and setup quad VBO (static geometry)
+    glGenBuffers(1, &quadVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(attributes.position);
+    glVertexAttribPointer(attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Vector2), (GLvoid*)0);
 
-    glEnableVertexAttribArray(renderer->attributes.position);
-    glVertexAttribPointer(renderer->attributes.position, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)0);
+	// Create instance VBO (dynamic data)
+	glGenBuffers(1, &instanceVbo);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceVbo);
+	glBufferData(GL_ARRAY_BUFFER, numSnowflakes * sizeof(SnowflakeInstanceData), NULL, GL_DYNAMIC_DRAW);
 
-    glEnableVertexAttribArray(renderer->attributes.color);
-    glVertexAttribPointer(renderer->attributes.color, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (GLvoid *)offsetof(Vertex2D, color));
+	// Setup instance attributes
+	glEnableVertexAttribArray(attributes.instancePos);
+	glVertexAttribPointer(attributes.instancePos, 2, GL_FLOAT, GL_FALSE, sizeof(SnowflakeInstanceData), (GLvoid*)offsetof(SnowflakeInstanceData, position));
+	glVertexAttribDivisor(attributes.instancePos, 1);
 
-	for (i32 idx = 0; idx < 4; idx++) {
-		i32 offset = (4 * sizeof(f32)) * idx;
-		glEnableVertexAttribArray(renderer->attributes.vMatrix + idx);
-		glVertexAttribPointer(renderer->attributes.vMatrix + idx,
-							  4,
-							  GL_FLOAT,
-							  GL_FALSE,
-							  sizeof(Vertex2D),
-							  (GLvoid *)(offsetof(Vertex2D, vMatrix) + offset));
-	}
+	glEnableVertexAttribArray(attributes.instanceRot);
+	glVertexAttribPointer(attributes.instanceRot, 1, GL_FLOAT, GL_FALSE, sizeof(SnowflakeInstanceData), (GLvoid*)offsetof(SnowflakeInstanceData, rotation));
+	glVertexAttribDivisor(attributes.instanceRot, 1);
+
+	glEnableVertexAttribArray(attributes.instanceScale);
+	glVertexAttribPointer(attributes.instanceScale, 1, GL_FLOAT, GL_FALSE, sizeof(SnowflakeInstanceData), (GLvoid*)offsetof(SnowflakeInstanceData, scale));
+	glVertexAttribDivisor(attributes.instanceScale, 1);
+
+	glEnableVertexAttribArray(attributes.instanceSeed);
+	glVertexAttribPointer(attributes.instanceSeed, 1, GL_FLOAT, GL_FALSE, sizeof(SnowflakeInstanceData), (GLvoid*)offsetof(SnowflakeInstanceData, seed));
+	glVertexAttribDivisor(attributes.instanceSeed, 1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -136,22 +114,22 @@ void SnowflakeParticleRenderer::load(SnowflakeLoadParameters params, Renderer2d*
 
 inline void resetFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud) {
     ud->position.y = 2 * renderer->yMax;
-    ud->velocity = Vector2(randomFloatBetween(-10, 10), randomFloatBetween(-100, -85));
+
+	// Scale velocity based on star size - larger stars fall faster
+	f32 sizeRatio = (ud->scale - SCALE_RANGE.x) / (SCALE_RANGE.y - SCALE_RANGE.x);
+	f32 velocityY = VELOCITY_RANGE_Y.x + (VELOCITY_RANGE_Y.y - VELOCITY_RANGE_Y.x) * (0.5f + sizeRatio * 0.5f);
+
+    ud->velocity = Vector2(randomFloatBetween(VELOCITY_RANGE_X.x, VELOCITY_RANGE_X.y), velocityY);
     ud->rotation = 0;
 }
 
 inline void updateFlake(SnowflakeParticleRenderer* renderer, SnowflakeUpdateData* ud, i32 s, f32 dtSeconds) {
     ud->velocity = ud->velocity + Vector2(0, -(GRAVITY * dtSeconds));
-	//if (addWind) ud->velocity += renderer->windSpeed;	
+	//if (addWind) ud->velocity += renderer->windSpeed;
 	ud->position += ud->velocity * dtSeconds;
     ud->rotation += ud->rotateVelocity * dtSeconds;
 
-	Mat4x4 m = Mat4x4().translateByVec2(ud->position).rotate2D(ud->rotation);
-	for (i32 v = ud->vtxIdx; v < (ud->vtxIdx + ud->numVertices); v++) {
-		renderer->vertices.data[v].vMatrix = m;
-	}
-
-    if (ud->position.y <= -ud->radius) {
+    if (ud->position.y <= -ud->scale) {
         resetFlake(renderer, ud);
     }
 }
@@ -169,21 +147,39 @@ void SnowflakeParticleRenderer::update(f32 dtSeconds) {
 }
 
 void SnowflakeParticleRenderer::render(Renderer2d* renderer) {
-	setShaderMat4(renderer->uniforms.model, model);
+	useShader(shader);
+	setShaderMat4(uniforms.projection, renderer->projection);
+	setShaderMat4(uniforms.model, model);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.numElements * sizeof(Vertex2D), &vertices.data[0]);
+	// Prepare instance data
+	SnowflakeInstanceData* instanceData = new SnowflakeInstanceData[numSnowflakes];
+	for (i32 s = 0; s < numSnowflakes; s++) {
+		instanceData[s].position = updateData[s].position;
+		instanceData[s].rotation = updateData[s].rotation;
+		instanceData[s].scale = updateData[s].scale;
+		instanceData[s].seed = updateData[s].seed;
+	}
 
+	// Upload instance data
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, numSnowflakes * sizeof(SnowflakeInstanceData), instanceData);
+
+	// Draw instanced
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, vertices.numElements);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, numSnowflakes);
     glBindVertexArray(0);
+
+	delete[] instanceData;
 }
 
 void SnowflakeParticleRenderer::unload() {
 	glDeleteVertexArrays(1, &vao);
-    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &quadVbo);
+	glDeleteBuffers(1, &instanceVbo);
+	glDeleteProgram(shader);
 	vao = 0;
-	vbo = 0;
-	vertices.deallocate();
-	delete [] updateData;
+	quadVbo = 0;
+	instanceVbo = 0;
+	shader = 0;
+	delete[] updateData;
 }

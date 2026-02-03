@@ -38,6 +38,8 @@ sources = files(
   'src/shaders/renderer3d_vert.cpp',
   'src/shaders/sun_frag.cpp',
   'src/shaders/sun_vert.cpp',
+  'src/shaders/snowflake_frag.cpp',
+  'src/shaders/snowflake_vert.cpp',
 
   # Autumn theme
   'src/autumn/autumn_theme.cpp',
@@ -80,7 +82,9 @@ shader_inputs = files(
   'src/_shaders/renderer3d.frag',
   'src/_shaders/renderer3d.vert',
   'src/_shaders/sun.frag',
-  'src/_shaders/sun.vert'
+  'src/_shaders/sun.vert',
+  'src/_shaders/snowflake.frag',
+  'src/_shaders/snowflake.vert'
 )
 
 # Custom target that runs whenever shader files change

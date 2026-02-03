@@ -2875,6 +2875,10 @@ function dbg(...args) {
       GL.postDrawHandleClientVertexAttribBindings();
     };
 
+  var _glDrawArraysInstanced = (mode, first, count, primcount) => {
+      GLctx.drawArraysInstanced(mode, first, count, primcount);
+    };
+
   var _glDrawElements = (mode, count, type, indices) => {
       var buf;
       var vertexes = 0;
@@ -3341,6 +3345,8 @@ var wasmImports = {
   glDepthMask: _glDepthMask,
   /** @export */
   glDrawArrays: _glDrawArrays,
+  /** @export */
+  glDrawArraysInstanced: _glDrawArraysInstanced,
   /** @export */
   glDrawElements: _glDrawElements,
   /** @export */
