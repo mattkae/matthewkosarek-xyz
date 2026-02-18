@@ -21,7 +21,7 @@ header > h1 {
 }
 
 header > nav {	
-  margin-top: 2rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   padding-left: 0.25rem;
 }
@@ -32,21 +32,23 @@ header > nav > ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  gap: 1rem;
 }
 
 header > nav > ul > li {
-  padding-right: 1rem;
+  display: flex;
+  align-items: center;
 }
 
 header > nav > ul a {
   text-decoration: none;
-  color: blue;
+  color: darkviolet;
   font-size: 1rem;
 	border-bottom: 1px solid transparent;
 }
 
 header > nav > ul a:hover {
-	opacity: 0.7;
+	opacity: 0.8;
 	text-decoration: underline;
 }
 

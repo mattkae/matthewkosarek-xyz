@@ -4,3 +4,4 @@
 .cache
 themes/dist
 .packages
+public/themes
