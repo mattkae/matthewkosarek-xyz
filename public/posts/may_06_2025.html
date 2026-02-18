@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Update May 06, 2025</title>
+<meta name="generator" content="Org Mode" />
+
+<link rel="stylesheet" href="/index.css" />
+<link rel="stylesheet" href="/posts/post.css" />
+<link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+</head>
+<body>
+<header>
+  <nav>
+    <ul>
+      <li><a href='/'>&#127969; Home</a></li>
+      <li><a href='/resume.html'>&#128216; CV</a></li>
+      <li><a href='/posts/sitemap.html'>&#128221; Posts</a></li>
+    </ul>
+  </nav>
+</header><div id="preamble" class="status">
+
+  <div class="org-article-title">
+    <h1>Update May 06, 2025</h1>
+    <a href="/posts/feed.xml">RSS Feed</a>
+  </div>
+</div>
+<div id="content" class="content">
+<div id="outline-container-org8c64ed6" class="outline-2">
+<h2 id="org8c64ed6">What have I been up to?</h2>
+<div class="outline-text-2" id="text-org8c64ed6">
+<p>
+I've been meaning to do these little blog-post type updates for a while, and I figured now is as good a time as any. So let's start :)
+</p>
+
+<p>
+In the world of miracle-wm, I've been hard at work writing a new settings application for the compositor called <a href="https://github.com/miracle-wm-org/miracle-settings">miracle-settings</a>. While the application is written in Flutter, the logic behind the application is entirely implemented in <code>libmiracle-wm-config.so</code>, a new library that will ship with miracle as part of <code>v0.6.0</code>. If Flutter isn't your cup of tea, you should be able to implement your own settings app for miracle in the language/toolkit of your choice by simply binding to the C (or C++!) API.
+</p>
+
+<p>
+I also implemented <a href="https://wayland.app/protocols/wlr-output-management-unstable-v1">wlr-output-management</a> in miracle and changed how we do display configuration in a big way. The display configuration will now always be loaded from <code>$HOME/.config/miracle-wm/display.yaml</code>. Users should now be able to use apps like <a href="https://github.com/artizirk/wdisplays">wdisplays</a> to change the output configuration at runtime, which is pretty cool!
+</p>
+
+<p>
+On the Mir project, I've been working on accessibility features (e.g. magnification) in addition to exposing some facilities for compositor authors to write end-to-end tests for Mir-based compositors. These new testing facilities should help us write tests in miracle in a big way.
+</p>
+
+<p>
+Also - my cat who ate a sewing needle last year has turned two! 🐱
+</p>
+</div>
+</div>
+</div>
+</body>
+</html>
