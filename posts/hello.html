@@ -11,24 +11,27 @@
 <link rel="stylesheet" href="/index.css" />
 <link rel="stylesheet" href="/posts/post.css" />
 <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
-<script src='/posts/post.js'></script>
 </head>
 <body>
-<div id="org-div-home-and-up">
- <a accesskey="h" href="/posts/sitemap.html"> UP </a>
- <a accesskey="H" href="/"> HOME </a>
-</div><div id="preamble" class="status">
+<header>
+  <nav>
+    <ul>
+      <li><a href='/'>&#127969; Home</a></li>
+      <li><a href='/resume.html'>&#128216; CV</a></li>
+      <li><a href='/posts/sitemap.html'>&#128221; Posts</a></li>
+    </ul>
+  </nav>
+</header><div id="preamble" class="status">
 
   <div class="org-article-title">
     <h1>Hello, Org</h1>
-    <span>Last modified: 2023-06-20 Tue 11:45</span>
-    <span><a href="/posts/feed.xml">RSS Feed</a></span>
+    <a href="/posts/feed.xml">RSS Feed</a>
   </div>
 </div>
 <div id="content" class="content">
-<div id="outline-container-orgd5cccc4" class="outline-2">
-<h2 id="orgd5cccc4">TLDR</h2>
-<div class="outline-text-2" id="text-orgd5cccc4">
+<div id="outline-container-org2b1e1ee" class="outline-2">
+<h2 id="org2b1e1ee">TLDR</h2>
+<div class="outline-text-2" id="text-org2b1e1ee">
 <ul class="org-ul">
 <li>Create a new folder</li>
 <li>Put <a href="https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/index.css">index.css</a>, <a href="https://raw.githubusercontent.com/mattkae/matthewkosarek-xyz/master/publish.el">publish.el</a>, and <a href="https://github.com/mattkae/matthewkosarek-xyz/blob/master/publish.sh">publish.sh</a> in the folder</li>
@@ -42,9 +45,9 @@
 </ul>
 </div>
 </div>
-<div id="outline-container-org61c4348" class="outline-2">
-<h2 id="org61c4348">Introduction</h2>
-<div class="outline-text-2" id="text-org61c4348">
+<div id="outline-container-org6971d65" class="outline-2">
+<h2 id="org6971d65">Introduction</h2>
+<div class="outline-text-2" id="text-org6971d65">
 <p>
 I've recently fallen in love with <code>org-mode</code>, specifically when I use it with <a href="https://www.orgroam.com/">org-roam</a>. I find the whole workflow of creating, tagging, and - later on - searching for information on my computer to be very elegant. On top of that, now that I have the time, I want to begin writing blog posts to better work out my thoughts. With both of these things in mind, I am again turning to the universal tool for human prospering: <code>org-mode</code>. This time, I want to see how it can help me turn a simple org file into a blog post on my website. My requirements are:
 </p>
@@ -67,9 +70,9 @@ And that's pretty much it for now. Without further ado, let's jump into getting 
 </p>
 </div>
 </div>
-<div id="outline-container-org8795819" class="outline-2">
-<h2 id="org8795819">Basic HTML File</h2>
-<div class="outline-text-2" id="text-org8795819">
+<div id="outline-container-org535b5ee" class="outline-2">
+<h2 id="org535b5ee">Basic HTML File</h2>
+<div class="outline-text-2" id="text-org535b5ee">
 <p>
 As a pilot, we are going to use this org file that I am currently writing (<code>hello.org</code>) as our guinea pig. The goal is to have this org file be our very first blog post.
 </p>
@@ -109,9 +112,9 @@ We then do a <code>chmod +x publish.sh</code> to make it an executable and run i
 </p>
 </div>
 </div>
-<div id="outline-container-org2f52ef7" class="outline-2">
-<h2 id="org2f52ef7">Disabling features that we don't want</h2>
-<div class="outline-text-2" id="text-org2f52ef7">
+<div id="outline-container-org1a375b8" class="outline-2">
+<h2 id="org1a375b8">Disabling features that we don't want</h2>
+<div class="outline-text-2" id="text-org1a375b8">
 <p>
 The next thing will be to remove some of the generated items that I didn't ask for, namely the table of contents, author, section numbers, creation time stamp, and the validation link.
 </p>
@@ -140,9 +143,9 @@ The next thing will be to remove some of the generated items that I didn't ask f
 </div>
 </div>
 </div>
-<div id="outline-container-org809ec6b" class="outline-2">
-<h2 id="org809ec6b">Styling &amp; Code Highlighting</h2>
-<div class="outline-text-2" id="text-org809ec6b">
+<div id="outline-container-orga60e1a1" class="outline-2">
+<h2 id="orga60e1a1">Styling &amp; Code Highlighting</h2>
+<div class="outline-text-2" id="text-orga60e1a1">
 <p>
 Next thing on our list is custom styling. This can be achieved by first installing the <code>htmlize</code> package from <code>melpa</code> / <code>elpa</code>.  The EmacsWiki describes this as "a package for exporting the contents of an Emacs buffer to HTML while respecting display properties such as colors, fonts, underlining, invisibility, etc" (<a href="https://www.emacswiki.org/emacs/Htmlize">reference</a>). If used "out-of-the-box", the buffer will be exported to HTML with all of the styles inlined (e.g. if you underline something in your org file, you will generate a <code>&lt;span style="text-decoration: underline"&gt;...&lt;/span&gt;</code>).  However, we are more interested in styling everything by ourselves: we don't want <code>htmlize</code> making assumptions about what underlining means to us! Luckily, <code>htmlize</code> gives us the option to export with class names instead of inline styles so that we can specify each style for ourselves.
 </p>
@@ -312,9 +315,9 @@ If we run the publish again, we can see that we have full styling on our code sn
 </p>
 </div>
 </div>
-<div id="outline-container-org40ba39e" class="outline-2">
-<h2 id="org40ba39e">Images</h2>
-<div class="outline-text-2" id="text-org40ba39e">
+<div id="outline-container-org534b88d" class="outline-2">
+<h2 id="org534b88d">Images</h2>
+<div class="outline-text-2" id="text-org534b88d">
 <p>
 Our first two criteria have been met! Next on the list is solving images. As an example, let's use this <a href="file:///_posts/assets/squirrel.jpg">squirrel image</a> that I found online with an open source license. The ideal situation would be:
 </p>
@@ -359,16 +362,16 @@ So what's the fix here? Well, we have two options, but I am going to go with the
 That's all there is to it! There are simpler ways as well, but that should do it:
 </p>
 
-<div id="org11fc996" class="figure">
+<div id="orgbd990b6" class="figure">
 <p><img src="/_posts/assets/squirrel.jpg" alt="squirrel.jpg" width="300" />
 </p>
 <p><span class="figure-number">Figure 1: </span>A Cute Squirrel</p>
 </div>
 </div>
 </div>
-<div id="outline-container-orgbf45d8f" class="outline-2">
-<h2 id="orgbf45d8f">Creation Date</h2>
-<div class="outline-text-2" id="text-orgbf45d8f">
+<div id="outline-container-org27f5dc6" class="outline-2">
+<h2 id="org27f5dc6">Creation Date</h2>
+<div class="outline-text-2" id="text-org27f5dc6">
 <p>
 Let's add the creation date below the title next. To start, we will modify the publish command to remove the title (<code>:with-title nil</code>) and, in its place, show a preamble bit of HTML that contains a formatted <code>div</code> with the title and the "last modified" span.z
 </p>
@@ -427,9 +430,9 @@ Note that the downside of this is that the created date will change whenever you
 </p>
 </div>
 </div>
-<div id="outline-container-org4838556" class="outline-2">
-<h2 id="org4838556">Generating the Directory</h2>
-<div class="outline-text-2" id="text-org4838556">
+<div id="outline-container-org77049f2" class="outline-2">
+<h2 id="org77049f2">Generating the Directory</h2>
+<div class="outline-text-2" id="text-org77049f2">
 <p>
 For every org file in my <code>_posts</code> folder, I would like to create a link to the generated HTML file at the <code>/posts.html</code> page of my website. You can think of this as the "directory" of all posts. My criteria is:
 </p>
@@ -489,9 +492,9 @@ If you open the <code>sitemap.html</code> file in your browser, you will see a b
 From here, you may customize it however you like.  The following are my customizations.
 </p>
 </div>
-<div id="outline-container-org033bdd5" class="outline-3">
-<h3 id="org033bdd5">Sitemap Title</h3>
-<div class="outline-text-3" id="text-org033bdd5">
+<div id="outline-container-org624c8ab" class="outline-3">
+<h3 id="org624c8ab">Sitemap Title</h3>
+<div class="outline-text-3" id="text-org624c8ab">
 <p>
 I changed the title to "Matthew's Blog Posts".
 </p>
@@ -513,9 +516,9 @@ I changed the title to "Matthew's Blog Posts".
 </div>
 </div>
 </div>
-<div id="outline-container-orgf3eb8a5" class="outline-3">
-<h3 id="orgf3eb8a5">Format blog entries in the list</h3>
-<div class="outline-text-3" id="text-orgf3eb8a5">
+<div id="outline-container-orge3da018" class="outline-3">
+<h3 id="orge3da018">Format blog entries in the list</h3>
+<div class="outline-text-3" id="text-orge3da018">
 <p>
 I like to include the creation date on the blog posts. To do this, we can use <code>org-publish-find-property</code> to find the date property of the org file. Afterward, we can format a string that  includes our formatted timestamp and the <code>org-publish-sitemap-default-entry</code>, which is just a link with the title of the post.
 </p>
@@ -536,9 +539,9 @@ I like to include the creation date on the blog posts. To do this, we can use <c
 </div>
 </div>
 </div>
-<div id="outline-container-org7dc2312" class="outline-2">
-<h2 id="org7dc2312">Tags &amp; Filtering</h2>
-<div class="outline-text-2" id="text-org7dc2312">
+<div id="outline-container-org25166ff" class="outline-2">
+<h2 id="org25166ff">Tags &amp; Filtering</h2>
+<div class="outline-text-2" id="text-org25166ff">
 <p>
 I use <a href="https://www.orgroam.com/">Org-roam</a> for all of my note-taking and, in the next blog post, I plan to demonstrate how I will hook up my Org-roam note-taking workflow to my blogging. In the meantime, just know that we can add tags to the top of our org files like this:
 </p>
@@ -758,9 +761,9 @@ Finally, let's append the following to <code>posts/posts.css</code> so that our 
 </div>
 </div>
 </div>
-<div id="outline-container-org9f7bdd1" class="outline-2">
-<h2 id="org9f7bdd1">Conclusion</h2>
-<div class="outline-text-2" id="text-org9f7bdd1">
+<div id="outline-container-org2fdd91d" class="outline-2">
+<h2 id="org2fdd91d">Conclusion</h2>
+<div class="outline-text-2" id="text-org2fdd91d">
 <p>
 There are many more customizations that I plan to do on this system in the future, but I plan to leave this for now so that I can actually get to some blogging. I will proofread and fix my mistakes as time goes on, but this should be a good jumping off point for anyone interested in using org for their own blogging system.
 </p>

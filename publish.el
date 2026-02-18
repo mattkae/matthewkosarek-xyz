@@ -48,13 +48,12 @@
              :html-preamble-format '(("en" "
   <div class=\"org-article-title\">
     <h1>%t</h1>
-    <span>Last modified: %d</span>
-    <span><a href=\"/posts/feed.xml\">RSS Feed</a></span>
+    <a href=\"/posts/feed.xml\">RSS Feed</a>
   </div>
 "))
              :auto-sitemap t
              :sitemap-sort-files 'anti-chronologically
-             :sitemap-title "Matthew's Blog Posts"
+             :sitemap-title ""
              :sitemap-format-entry (lambda (entry style project) (get-org-file-title entry style project))
              :sitemap-function (lambda (title list) (my-sitemap-function title list))
              )))
@@ -77,16 +76,20 @@
 <link rel=\"stylesheet\" href=\"/index.css\" />
 <link rel=\"stylesheet\" href=\"/posts/post.css\" />
 <link rel=\"shortcut icon\" href=\"/favicon/favicon.ico\" type=\"image/x-icon\">
-<script src='/posts/post.js'></script>
 "
       org-html-inline-images t
       org-html-link-home "/"
       org-html-link-up "/posts/sitemap.html"
       org-html-html5-fancy t
-      org-html-home/up-format "<div id=\"org-div-home-and-up\">
- <a accesskey=\"h\" href=\"%s\"> UP </a>
- <a accesskey=\"H\" href=\"%s\"> HOME </a>
-</div>"
+      org-html-home/up-format "<header>
+  <nav>
+    <ul>
+      <li><a href='/'>&#127969; Home</a></li>
+      <li><a href='/resume.html'>&#128216; CV</a></li>
+      <li><a href='/posts/sitemap.html'>&#128221; Posts</a></li>
+    </ul>
+  </nav>
+</header>"
       )
 
 (defun update-rss-feed ()

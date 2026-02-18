@@ -15,6 +15,18 @@ code {
     text-decoration: underline;
 }
 
+.org-article-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.org-article-title h1 {
+    margin: 0;
+   font-family: "Dancing Script", cursive;
+}
+
+
 /* Taken from: https://emacs.stackexchange.com/questions/7629/the-syntax-highlight-and-indentation-of-source-code-block-in-exported-html-file */
 pre span.org-builtin                     {color:#006FE0;font-weight:bold;}
 pre span.org-string                      {color:#008000;}
@@ -26,7 +38,7 @@ pre span.org-preprocessor                {color:#808080;font-weight:bold;}
 pre span.org-constant                    {color:#D0372D;}
 pre span.org-comment-delimiter           {color:#8D8D84;}
 pre span.org-comment                     {color:#8D8D84;font-style:italic}
-1pre span.org-outshine-level-1           {color:#8D8D84;font-style:italic}
+pre span.org-outshine-level-1            {color:#8D8D84;font-style:italic}
 pre span.org-outshine-level-2            {color:#8D8D84;font-style:italic}
 pre span.org-outshine-level-3            {color:#8D8D84;font-style:italic}
 pre span.org-outshine-level-4            {color:#8D8D84;font-style:italic}
@@ -49,7 +61,7 @@ pre span.org-css-selector                {color:#0000FF;}
 pre span.org-css-property                {color:#00AA00;}
 
 #content {
-    padding-bottom: 50vh;
+    padding-bottom: 10vh;
 }
 
 .figure p {
