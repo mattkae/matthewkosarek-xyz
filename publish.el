@@ -37,7 +37,7 @@
        (list "matthewkosarek.xyz"
              :recursive t
              :base-directory "./_posts"
-             :publishing-directory "./posts"
+             :publishing-directory "./public/posts"
              :publishing-function 'my-org-html-publish-to-html
              :with-toc nil
              :with-author nil
@@ -95,7 +95,7 @@
 (defun update-rss-feed ()
   "Update the RSS feed with the newest post from _posts directory."
   (let* ((posts-dir (expand-file-name "_posts"))
-         (feed-file (expand-file-name "posts/feed.xml"))
+         (feed-file (expand-file-name "public/posts/feed.xml"))
          (org-files (seq-filter (lambda (f) (not (string-match-p "sitemap\\.org$" f)))
                                 (directory-files posts-dir t "\\.org$")))
          (newest-file (car (sort org-files (lambda (a b) (time-less-p (file-attribute-modification-time (file-attributes b))
