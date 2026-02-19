@@ -1,6 +1,8 @@
 #include "spring_theme.hpp"
 #include "../renderer_3d.h"
+#include "../shader.h"
 #include "../shader_fetcher.hpp"
+#include "../shapes_2d.h"
 #include <cstdio>
 #include <emscripten/fetch.h>
 
@@ -49,7 +51,15 @@ SpringTheme::~SpringTheme() { unload(); }
 void SpringTheme::load(WebglContext *context) {
   state = SpringThemeState::Loading;
   renderer.context = context;
-  renderer.clearColor = Vector4(160, 231, 160, 255.f).toNormalizedColor();
+  renderer.clearColor = Vector4(174, 216, 230, 255.f).toNormalizedColor();
+
+  renderer2d.load(context);
+  background = new RectangularGradient(
+      renderer2d, Vector4(174, 216, 230, 255).toNormalizedColor(),
+      Vector4(144, 238, 144, 255).toNormalizedColor(), renderer2d.get_width(),
+      renderer2d.get_height(), {0, 0});
+
+  grassRenderer.load({Vector2(0, -20), Vector2(96, 96), 3.f}, &renderer);
 
   fetch_shader({"themes/src/_shaders/renderer3d.vert",
                 "themes/src/_shaders/renderer3d.frag"},
@@ -74,6 +84,9 @@ inline f32 rotationLerp(f32 start, f32 target, f32 t) {
 }
 
 void SpringTheme::update(f32 dtSeconds) {
+  if (state != SpringThemeState::Loading) {
+    grassRenderer.update(dtSeconds);
+  }
   switch (state) {
   case SpringThemeState::Loading:
     return;
@@ -98,6 +111,15 @@ void SpringTheme::update(f32 dtSeconds) {
         yDir = -1;
       bunnyTarget = bunnyPosition + Vector3(randomFloatBetween(0, xDir * 25), 0,
                                             randomFloatBetween(0, yDir * 25));
+      // Clamp bunnyTarget to within the grass circle (origin=(0,-20), radius=48)
+      const Vector3 grassCenter(0, 0, -20);
+      const f32 grassRadius = 48.f;
+      Vector3 toTarget = bunnyTarget - grassCenter;
+      toTarget.y = 0;
+      if (toTarget.length() > grassRadius) {
+        toTarget = toTarget.normalize() * grassRadius;
+        bunnyTarget = Vector3(grassCenter.x + toTarget.x, 0, grassCenter.z + toTarget.z);
+      }
       auto direction = (bunnyTarget - bunnyPosition);
       auto distance = direction.length();
       direction = direction.normalize();
@@ -197,12 +219,29 @@ void SpringTheme::update(f32 dtSeconds) {
 
 void SpringTheme::render() {
   renderer.render();
+
+  // Draw the 2D gradient background without writing to the depth buffer so
+  // the 3D content rendered afterwards is unobstructed.
+  glDepthMask(GL_FALSE);
+  useShader(renderer2d.shader);
+  setShaderMat4(renderer2d.uniforms.projection, renderer2d.projection);
+  background->render();
+  glDepthMask(GL_TRUE);
+
   if (state != SpringThemeState::Loading) {
+    grassRenderer.render(&renderer);
+    // Restore the 3D renderer's shader after the grass shader took over
+    useShader(renderer.shader);
+    setShaderMat4(renderer.uniforms.projection, renderer.projection);
+    setShaderMat4(renderer.uniforms.view, renderer.view);
     bunnyMesh.render(&renderer);
   }
 }
 
 void SpringTheme::unload() {
   renderer.unload();
+  renderer2d.unload();
+  delete background;
   bunnyMesh.unload();
+  grassRenderer.unload();
 }
