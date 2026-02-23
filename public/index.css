@@ -173,6 +173,14 @@ input:focus {
 }
 
 /* Theme Selector */
+#theme_section {
+  position: fixed;
+  bottom: 1rem;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
 #theme_selector {
 	display: flex;
 	align-items: center;
@@ -193,7 +201,7 @@ input:focus {
 	width: 6rem;
 	height: 2rem;
 	border-radius: 3px;
-	border: 1px solid black;
+	border: 1px solid gray;
 	color: black;
 	background-color: white;
 	cursor: pointer;
@@ -223,6 +231,10 @@ input:focus {
   background-color: yellow;
 }
 
+.theme_button_text {
+  margin-left: 0.5rem;
+}
+
 /* Phone screen adjustments */
 @media only screen and (device-width: 1280px),
 only screen and (max-width:1280px) {
@@ -237,10 +249,12 @@ only screen and (max-width:1280px) {
 
 @media only screen and (device-width: 960px),
 only screen and (max-width:960px) {
-    #theme_selector  {
-        padding-bottom: 2rem !important;
-        flex-direction: column;
-        gap: 1rem;
+    #theme_selector {
+      margin-left: 1rem;
+      margin-right: 1rem; 
+    }
+    .theme_button_text {
+      display: none;
     }
 
     #theme_selector > button {
