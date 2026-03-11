@@ -1,0 +1,48 @@
+pre {
+    background-color: #FEFEFE;
+    border: 1px solid #D5D5D5;
+    border-radius: 2px;
+    padding: 1rem;
+    overflow: auto;
+}
+
+code {
+    font-family: "Consolas" sans-serif;
+    color: #D0372D;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.org-article-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.org-article-title h1 {
+    margin: 0;
+   font-family: "Dancing Script", cursive;
+}
+
+#content {
+    padding-bottom: 10vh;
+}
+
+.figure p {
+    text-align: center;
+}
+
+.org-article-title > h1 {
+    margin-bottom: 0;
+}
+
+.org-article-title > span {
+    color: #707183;
+}
+
+#org-div-home-and-up {
+    display: flex;
+    column-gap: 8px;
+}

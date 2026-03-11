@@ -1,1 +1,1 @@
-rsync -a ./public/ root@matthewkosarek.xyz:/var/www/matthewkosarek
+rsync -a ./dist/ root@matthewkosarek.xyz:/var/www/matthewkosarek

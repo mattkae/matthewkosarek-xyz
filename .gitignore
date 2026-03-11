@@ -5,3 +5,5 @@
 themes/dist
 .packages
 public/themes
+dist/
+node_modules/

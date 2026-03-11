@@ -1,0 +1,18 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import '../styles/post.css';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <div class="org-article-title">
+    <h1>{title}</h1>
+    <a href="/posts/feed.xml">RSS Feed</a>
+  </div>
+  <slot />
+</BaseLayout>

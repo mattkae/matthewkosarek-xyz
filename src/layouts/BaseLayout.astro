@@ -1,0 +1,40 @@
+---
+import '../styles/index.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = "The personal website of Matthew Kosarek",
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href='https://fonts.googleapis.com/css?family=Noto Sans' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
+    <meta name="description" content={description}>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href='/'>&#127969; Home</a></li>
+          <li><a href='/resume'>&#128216; CV</a></li>
+          <li><a href='/posts'>&#128221; Posts</a></li>
+        </ul>
+      </nav>
+    </header>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,88 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/post.css';
+import '../../styles/sitemap.css';
+
+const allPosts = await getCollection('posts');
+allPosts.sort((a: CollectionEntry<'posts'>, b: CollectionEntry<'posts'>) => b.data.date.localeCompare(a.data.date));
+
+function formatDate(dateStr: string): string {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const d = new Date(year, month - 1, day);
+  return d.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+}
+---
+
+<BaseLayout title="Posts">
+  <div class="org-article-title">
+    <h1></h1>
+    <a href="/posts/feed.xml">RSS Feed</a>
+  </div>
+
+  <div id="tag-filter-container"></div>
+
+  <div id="content" class="content">
+    <ul class="org-ul" id="posts-list">
+      {allPosts.map((post: CollectionEntry<'posts'>) => (
+        <li data-tags={post.data.tags.join(',')}>
+          <p><a href={`/posts/${post.slug}`}>{post.data.title}</a></p>
+          <div class="sitemap_date"><p>{formatDate(post.data.date)}</p></div>
+          <div class="sitemap_tag"><p>{post.data.tags.join(',')}</p></div>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <script is:inline>
+    (function () {
+      const list = document.getElementById('posts-list');
+      const filterContainer = document.getElementById('tag-filter-container');
+      if (!list || !filterContainer) return;
+
+      const items = Array.from(list.querySelectorAll('li[data-tags]'));
+
+      // Collect unique tags
+      const tagSet = new Set();
+      items.forEach(item => {
+        const tags = item.getAttribute('data-tags') || '';
+        tags.split(',').filter(Boolean).forEach(t => tagSet.add(t.trim()));
+      });
+
+      if (tagSet.size === 0) return;
+
+      // Track which tags are enabled
+      const enabledTags = new Set(tagSet);
+
+      function applyFilter() {
+        items.forEach(item => {
+          const itemTags = (item.getAttribute('data-tags') || '')
+            .split(',')
+            .filter(Boolean)
+            .map(t => t.trim());
+          const visible = itemTags.some(t => enabledTags.has(t)) || itemTags.length === 0;
+          item.style.display = visible ? '' : 'none';
+        });
+      }
+
+      // Create filter buttons
+      tagSet.forEach(tag => {
+        const btn = document.createElement('span');
+        btn.textContent = tag;
+        btn.className = 'tag-filter-item';
+        btn.dataset.tag = tag;
+        btn.addEventListener('click', () => {
+          if (enabledTags.has(tag)) {
+            enabledTags.delete(tag);
+            btn.classList.add('disabled');
+          } else {
+            enabledTags.add(tag);
+            btn.classList.remove('disabled');
+          }
+          applyFilter();
+        });
+        filterContainer.appendChild(btn);
+      });
+    })();
+  </script>
+</BaseLayout>
