@@ -3,6 +3,47 @@
     src: url(/fonts/Ubuntu-M.ttf);
   }
 
+:root {
+  --resume-bg: white;
+  --resume-color: black;
+  --resume-link-color: #343231;
+  --resume-section-bg: #583759;
+  --resume-section-color: white;
+  --skills-bar-bg: white;
+  --skills-table-border: gray;
+  --skills-table-inner-border: lightgray;
+  --skills-table-th-color: #2E4C6D;
+  --experience-hover-color: #583759;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --resume-bg: #161b22;
+    --resume-color: #e6edf3;
+    --resume-link-color: #8b949e;
+    --resume-section-bg: #3d2b5e;
+    --resume-section-color: #e6edf3;
+    --skills-bar-bg: #21262d;
+    --skills-table-border: #444c56;
+    --skills-table-inner-border: #30363d;
+    --skills-table-th-color: #79b8ff;
+    --experience-hover-color: #b083f0;
+  }
+}
+
+[data-theme="dark"] {
+  --resume-bg: #161b22;
+  --resume-color: #e6edf3;
+  --resume-link-color: #8b949e;
+  --resume-section-bg: #3d2b5e;
+  --resume-section-color: #e6edf3;
+  --skills-bar-bg: #21262d;
+  --skills-table-border: #444c56;
+  --skills-table-inner-border: #30363d;
+  --skills-table-th-color: #79b8ff;
+  --experience-hover-color: #b083f0;
+}
+
 html {
     overflow-y: overlay;
     font-size: 16px;
@@ -23,8 +64,8 @@ header {
 #resume {
     position: relative;
     text-align: left;
-    background-color: white;
-    color: black;
+    background-color: var(--resume-bg);
+    color: var(--resume-color);
     font-family: 'Ubuntu', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.325rem;
 }
@@ -35,7 +76,7 @@ header {
 }
 
 #resume a {
-    color: #343231;
+    color: var(--resume-link-color);
 }
 
 #resume_sidebar {
@@ -96,8 +137,8 @@ header {
     padding: 0;
     margin: 0;
     padding: 0.25rem;
-    background-color: #583759;
-    color: white;
+    background-color: var(--resume-section-bg);
+    color: var(--resume-section-color);
 }
 
 .resume_section_content {
@@ -111,7 +152,7 @@ header {
 }
 
 .experience-item:hover {
-    color: #583759;
+    color: var(--experience-hover-color);
 }
 
 .experience-item ul {
@@ -145,7 +186,7 @@ header {
 .skills_table {
     width: 100%;
     border-spacing: 0;
-    border: 1px solid gray;
+    border: 1px solid var(--skills-table-border);
     border-radius: 2px;
     margin-bottom: 2rem;
 }
@@ -155,11 +196,11 @@ header {
 }
 
 .skills_table th, .skills_table tr:not(:last-child) td {
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid var(--skills-table-inner-border);
 }
 
 .skills_table tr th {
-    color: #2E4C6D;
+    color: var(--skills-table-th-color);
 }
 
 .skills_table td, th {
@@ -183,9 +224,9 @@ header {
     position: relative;
     width: 100%;
     height: 1rem;
-    background-color: white;
+    background-color: var(--skills-bar-bg);
     border-radius: 3px;
-    border: 1px solid lightgray;
+    border: 1px solid var(--skills-table-inner-border);
 }
 
 .skills_section_bar_fill {
@@ -222,7 +263,7 @@ header {
 .skills_section_label {
     width: 100%;
     margin-top: 0.25rem;
-    color: black;
+    color: var(--resume-color);
     font-size: 1rem;
 }
 

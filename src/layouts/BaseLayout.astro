@@ -24,6 +24,17 @@ const {
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link rel="shortcut icon" href="/favicon/favicon.ico" type="image/x-icon">
     <meta name="description" content={description}>
+    <script is:inline>
+      (function() {
+        var saved = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (saved === 'dark' || (!saved && prefersDark)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else if (saved === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </head>
   <body>
     <header>
@@ -32,9 +43,40 @@ const {
           <li><a href='/'>&#127969; Home</a></li>
           <li><a href='/resume'>&#128216; CV</a></li>
           <li><a href='/posts'>&#128221; Posts</a></li>
+          <li style="margin-left: auto">
+            <button id="theme-toggle" aria-label="Toggle color theme">Dark</button>
+          </li>
         </ul>
       </nav>
     </header>
     <slot />
+    <script is:inline>
+      (function() {
+        var btn = document.getElementById('theme-toggle');
+        var root = document.documentElement;
+
+        function getCurrentTheme() {
+          var explicit = root.getAttribute('data-theme');
+          if (explicit) return explicit;
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function setTheme(theme) {
+          root.setAttribute('data-theme', theme);
+          localStorage.setItem('theme', theme);
+          updateButton(theme);
+        }
+
+        function updateButton(theme) {
+          btn.textContent = theme === 'dark' ? '🌗 Light' : '🌗 Dark';
+        }
+
+        updateButton(getCurrentTheme());
+
+        btn.addEventListener('click', function() {
+          setTheme(getCurrentTheme() === 'dark' ? 'light' : 'dark');
+        });
+      })();
+    </script>
   </body>
 </html>

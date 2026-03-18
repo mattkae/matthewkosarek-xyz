@@ -1,6 +1,29 @@
+:root {
+  --code-bg: #F5F0FF;
+  --code-border: #D5C8F0;
+  --code-inline-color: #D0372D;
+  --meta-color: #707183;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --code-bg: #1e1b2e;
+    --code-border: #3d3560;
+    --code-inline-color: #ff9090;
+    --meta-color: #8b929e;
+  }
+}
+
+[data-theme="dark"] {
+  --code-bg: #1e1b2e;
+  --code-border: #3d3560;
+  --code-inline-color: #ff9090;
+  --meta-color: #8b929e;
+}
+
 pre {
-    background-color: #FEFEFE;
-    border: 1px solid #D5D5D5;
+    background-color: var(--code-bg);
+    border: 1px solid var(--code-border);
     border-radius: 2px;
     padding: 1rem;
     overflow: auto;
@@ -8,7 +31,27 @@ pre {
 
 code {
     font-family: "Consolas" sans-serif;
-    color: #D0372D;
+    color: var(--code-inline-color);
+}
+
+/* Shiki dual-theme support */
+.astro-code, .astro-code span {
+    color: var(--shiki-light) !important;
+    background-color: var(--shiki-light-bg) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .astro-code,
+  :root:not([data-theme="light"]) .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
+
+[data-theme="dark"] .astro-code,
+[data-theme="dark"] .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
 }
 
 .underline {
@@ -26,7 +69,7 @@ code {
     font-family: "Space Grotesk", sans-serif;
 }
 
-#content {
+.org-article-content {
     padding-bottom: 10vh;
 }
 
@@ -39,7 +82,7 @@ code {
 }
 
 .org-article-title > span {
-    color: #707183;
+    color: var(--meta-color);
 }
 
 #org-div-home-and-up {
