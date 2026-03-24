@@ -27,6 +27,7 @@ pre {
     border-radius: 2px;
     padding: 1rem;
     overflow: auto;
+    font-size: 0.8rem;
 }
 
 code {
@@ -71,6 +72,43 @@ code {
 
 .org-article-content {
     padding-bottom: 10vh;
+}
+
+.org-article-content h2,
+.org-article-content h3,
+.org-article-content h4 {
+    position: relative;
+    font-family: "Space Grotesk", sans-serif;
+}
+
+.org-article-content h2 {
+    font-size: 1.6rem;
+    border-bottom: 2px solid var(--link-color);
+    padding-bottom: 0.2rem;
+}
+
+.org-article-content h3 {
+    font-size: 1.2rem;
+    color: var(--link-color);
+}
+
+.org-article-content h2 > a.heading-anchor,
+.org-article-content h3 > a.heading-anchor,
+.org-article-content h4 > a.heading-anchor {
+    position: absolute;
+    left: -1.4em;
+    top: 0;
+    opacity: 0;
+    text-decoration: none;
+    font-weight: normal;
+    color: var(--link-color);
+    transition: opacity 100ms ease;
+}
+
+.org-article-content h2:hover > a.heading-anchor,
+.org-article-content h3:hover > a.heading-anchor,
+.org-article-content h4:hover > a.heading-anchor {
+    opacity: 1;
 }
 
 .figure p {
