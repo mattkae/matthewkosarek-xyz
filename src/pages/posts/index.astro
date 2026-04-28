@@ -28,7 +28,9 @@ function formatDate(dateStr: string): string {
         <li data-tags={post.data.tags.join(',')}>
           <p><a href={`/posts/${post.slug}`}>{post.data.title}</a></p>
           <div class="sitemap_date"><p>{formatDate(post.data.date)}</p></div>
-          <div class="sitemap_tag"><p>{post.data.tags.join(',')}</p></div>
+          {post.data.tags.map((tag: string) => (
+            <div class="sitemap_tag"><p>{tag}</p></div>
+          ))}
         </li>
       ))}
     </ul>

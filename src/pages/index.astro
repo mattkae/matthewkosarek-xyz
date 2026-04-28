@@ -1,46 +1,40 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import OpenMoji from '../components/OpenMoji.astro';
 ---
 
 <BaseLayout title="Matthew Kosarek" description="The personal website of Matthew Kosarek">
-  <div id="theme_container">
-    <canvas id="theme_canvas"></canvas>
-  </div>
+  <div class="index-layout">
+    <aside class="sidebar">
+      <ul>
+        <li><a href="https://github.com/mattkae">Github</a><span>my personal github with most of my projects</span></li>
+        <li><a href="https://git.matthewkosarek.xyz">CGit</a><span>my self-hosted git instance with a few of my projects</span></li>
+        <li style="display: none;"><a href="https://physicsforgames.com">physicsforgames.com</a><span>a project that I'm currently working on in my spare time where I explore the world of realtime physics</span></li>
+        <li><a href="https://www.linkedin.com/in/matthew-kosarek/">LinkedIn</a><span>corporate goings-ons</span></li>
+        <li><a href="mailto:matthew@matthewkosarek.xyz">Email</a><span>matthew@matthewkosarek.xyz</span></li>
+      </ul>
+    </aside>
 
-  <section>
-    <h2>About Me</h2>
-    <p>
-      Hi there 🌊 My name is Matthew Kosarek.
-      I am a computer programmer from northern New Jersey and I currently live in Philadelphia, PA. I work at Canonical on
-      <a href="https://github.com/canonical/mir">Mir</a> and I am currently building
-      <a href="https://github.com/miracle-wm-org/miracle-wm">miracle-wm</a>, a Mir-based tiling window manager.
-    </p>
-  </section>
-  <section>
-    <h2>Links</h2>
-    <ul>
-      <li><a href="https://github.com/mattkae">Github</a>: my personal github with most of my projects</li>
-      <li><a href="https://git.matthewkosarek.xyz">CGit</a>: my self-hosted git instance with a few of my projects</li>
-      <li style="display: none;"><a href="https://physicsforgames.com">physicsforgames.com</a>: a project that I'm currently working on in my spare time where I explore the world of realtime physics</li>
-      <li><a href="https://www.linkedin.com/in/matthew-kosarek/">LinkedIn</a></li>
-    </ul>
-  </section>
-
-  <section id="theme_section">
-    <div id="theme_selector">
-      <button id="theme_button_default">🙂<span class="theme_button_text">Default</span></button>
-      <button id="theme_button_autumn">🍁<span class="theme_button_text">Autumn</span></button>
-      <button id="theme_button_winter">⛄<span class="theme_button_text">Winter</span></button>
-      <button id="theme_button_spring">🐦<span class="theme_button_text">Spring</span></button>
-      <button id="theme_button_summer">🌻<span class="theme_button_text">Summer</span></button>
+    <div class="index-main">
+      <section>
+        <p>
+          Hi there <OpenMoji code="1F30A" alt="wave" />
+        </p>
+        <p>
+          My name is Matthew Kosarek.
+          I am a computer programmer from northern New Jersey and I currently live in Philadelphia, PA. I work at Canonical on
+          <a href="https://github.com/canonical/mir">Mir</a> and <a href="https://github.com/flutter/flutter">Flutter</a>. I
+          have a strong interest in C++, Computer Graphics, Rust, and Linux.
+        <p/>
+        <p>
+          In my spare time, I work on <a href="https://github.com/miracle-wm-org/miracle-wm">miracle-wm</a>, a Mir-based
+          window manager that features manual tiling and a WebAssembly-powered plugin system for window management and beyond.
+        </p>
+        <p>
+          Off the computer, you can find me surfing, walking my dog, or hanging out with my fiancee and friends in Philly. I
+          also have 3 cats!
+        </p>
+      </section>
     </div>
-  </section>
-
-  <script>
-    function main() {
-    }
-
-    main();
-  </script>
-  <script is:inline src="/themes/dist/output.js"></script>
+  </div>
 </BaseLayout>

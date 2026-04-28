@@ -1,5 +1,6 @@
 ---
 import '../styles/index.css';
+import OpenMoji from '../components/OpenMoji.astro';
 
 interface Props {
   title: string;
@@ -37,19 +38,32 @@ const {
     </script>
   </head>
   <body>
+    <div id="theme_container">
+      <canvas id="theme_canvas"></canvas>
+    </div>
     <header>
-      <nav>
+      <button id="hamburger" aria-label="Open menu"><OpenMoji code="1F354" alt="menu" /></button>
+      <nav id="nav-menu">
+        <button id="nav-close" aria-label="Close menu"><OpenMoji code="274C" alt="close" /></button>
         <ul>
-          <li><a href='/'>&#127969; Home</a></li>
-          <li><a href='/resume'>&#128216; CV</a></li>
-          <li><a href='/posts'>&#128221; Posts</a></li>
-          <li style="margin-left: auto">
-            <button id="theme-toggle" aria-label="Toggle color theme">Dark</button>
+          <li><a href='/'><OpenMoji code="1F3E1" alt="home" /> Home</a></li>
+          <li><a href='/resume'><OpenMoji code="1F4D8" alt="cv" /> CV</a></li>
+          <li><a href='/posts'><OpenMoji code="1F4DD" alt="posts" /> Posts</a></li>
+          <li><a href='/tech'><OpenMoji code="1F4BB" alt="laptop" /> Tech</a></li>
+          <li style="margin-left: auto"><button id="theme_button_default"><OpenMoji code="1F642" alt="smiley" /></button></li>
+          <li><button id="theme_button_autumn"><OpenMoji code="1F341" alt="maple leaf" /></button></li>
+          <li><button id="theme_button_winter"><OpenMoji code="26C4" alt="snowman" /></button></li>
+          <li><button id="theme_button_spring"><OpenMoji code="1F426" alt="bird" /></button></li>
+          <li><button id="theme_button_summer"><OpenMoji code="1F33B" alt="sunflower" /></button></li>
+          <li style="margin-left: 1rem">
+            <button id="theme-toggle" aria-label="Toggle color theme"><OpenMoji code="1F317" alt="theme" /> <span id="theme-label">Dark</span></button>
           </li>
         </ul>
       </nav>
+      <div id="nav-overlay"></div>
     </header>
     <slot />
+    <script is:inline src="/themes/dist/output.js"></script>
     <script is:inline>
       (function() {
         var btn = document.getElementById('theme-toggle');
@@ -68,7 +82,7 @@ const {
         }
 
         function updateButton(theme) {
-          btn.textContent = theme === 'dark' ? '🌗 Light' : '🌗 Dark';
+          document.getElementById('theme-label').textContent = theme === 'dark' ? 'Light' : 'Dark';
         }
 
         updateButton(getCurrentTheme());
@@ -76,6 +90,28 @@ const {
         btn.addEventListener('click', function() {
           setTheme(getCurrentTheme() === 'dark' ? 'light' : 'dark');
         });
+      })();
+    </script>
+    <script is:inline>
+      (function() {
+        var hamburger = document.getElementById('hamburger');
+        var nav = document.getElementById('nav-menu');
+        var close = document.getElementById('nav-close');
+        var overlay = document.getElementById('nav-overlay');
+
+        function openMenu() {
+          nav.classList.add('open');
+          overlay.classList.add('open');
+        }
+
+        function closeMenu() {
+          nav.classList.remove('open');
+          overlay.classList.remove('open');
+        }
+
+        hamburger.addEventListener('click', openMenu);
+        close.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
       })();
     </script>
   </body>

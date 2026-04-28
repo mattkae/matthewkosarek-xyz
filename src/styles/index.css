@@ -1,7 +1,7 @@
 :root {
   --bg: transparent;
   --color: black;
-  --link-color: darkviolet;
+  --link-color: #525dd7;
   --image-border: rgba(0, 0, 0, 0.3);
   --image-border-hover: rgba(0, 0, 0, 0.7);
   --image-overlay: rgba(0, 0, 0, 0.7);
@@ -16,7 +16,7 @@
   :root:not([data-theme="light"]) {
     --bg: rgba(13, 17, 23, 0.92);
     --color: #e6edf3;
-    --link-color: #b083f0;
+    --link-color: #848DF0;
     --image-border: rgba(255, 255, 255, 0.2);
     --image-border-hover: rgba(255, 255, 255, 0.5);
     --image-overlay: rgba(0, 0, 0, 0.85);
@@ -43,10 +43,10 @@
 }
 
 body {
-  width: 50vw;
+  width: 60vw;
   height: calc(100vh - 2rem);
   font-family: "Noto Sans", 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   background-color: var(--bg);
   color: var(--color);
   padding: 0;
@@ -67,8 +67,8 @@ header > h1 {
 
 header > nav {
   margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding-left: 0.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 4px dotted var(--theme-btn-border);
 }
 
 header > nav > ul {
@@ -85,16 +85,13 @@ header > nav > ul > li {
   align-items: center;
 }
 
-header > nav > ul a {
-  text-decoration: none;
-  color: var(--link-color);
-  font-size: 1rem;
-	border-bottom: 1px solid transparent;
+nav .openmoji {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
 }
 
-header > nav > ul a:hover {
-	opacity: 0.8;
-	text-decoration: underline;
+header > nav > ul a {
+  font-size: 1rem;
 }
 
 h1 {
@@ -109,6 +106,53 @@ h2 {
 
 section {
   width: 100%;
+}
+
+/* Index page sidebar layout */
+.index-layout {
+  display: flex;
+  gap: 2rem;
+}
+
+.sidebar {
+  margin-top: 1rem;
+  min-width: 140px;
+  max-width: 220px;
+  position: sticky;
+  top: 1rem;
+  align-self: flex-start;
+}
+
+.sidebar h2 {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 0.5rem;
+}
+
+.sidebar ul li a {
+  font-weight: 600;
+  display: block;
+}
+
+.sidebar ul li span {
+  display: block;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  margin-top: 0.1rem;
+}
+
+.index-main {
+  flex: 1;
+  min-width: 0;
 }
 
 p {
@@ -126,12 +170,8 @@ a:hover {
 /* Theme toggle button */
 #theme-toggle {
   background: none;
-  border: 1px solid var(--theme-btn-border);
-  color: var(--link-color);
-  border-radius: 3px;
-  padding: 0.1rem 0.5rem;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-family: inherit;
 }
 
@@ -232,67 +272,54 @@ input:focus {
 	z-index: -1;
 }
 
-/* Theme Selector */
-#theme_section {
-  position: fixed;
-  bottom: 1rem;
-  left: 0;
-  width: 100%;
-  text-align: center;
+/* Season theme buttons (in nav) */
+#theme_button_default,
+#theme_button_autumn,
+#theme_button_winter,
+#theme_button_spring,
+#theme_button_summer {
+  background: none;
+  color: var(--theme-btn-color);
+  cursor: pointer;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: opacity 100ms linear;
 }
 
-#theme_selector {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	bottom: 1rem;
-  pointer-events: all;
-  opacity: 1;
-  transition: opacity 150ms linear;
-	gap: 2rem;
+#theme_button_default:hover,
+#theme_button_autumn:hover,
+#theme_button_winter:hover,
+#theme_button_spring:hover,
+#theme_button_summer:hover {
+  opacity: 0.8;
 }
 
-#theme_selector.hidden {
-    pointer-events: none;
-    opacity: 0;
+
+/* Hamburger menu - hidden on desktop */
+#hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  cursor: pointer;
+  color: var(--color);
+  padding: 1rem;
+  margin-left: auto;
 }
 
-#theme_selector > button {
-	width: 6rem;
-	height: 2rem;
-	border-radius: 3px;
-	border: 1px solid var(--theme-btn-border);
-	color: var(--theme-btn-color);
-	background-color: var(--theme-btn-bg);
-	cursor: pointer;
-	transition: opacity 100ms linear;
+#nav-close {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  cursor: pointer;
+  color: var(--color);
+  align-self: flex-end;
+  padding: 1rem;
 }
 
-#theme_selector > button:hover {
-	opacity: 0.8;
-}
-
-#theme_selector > #theme_button_default {
-}
-
-#theme_selector > #theme_button_autumn {
-	background-color: orange;
-}
-
-#theme_selector > #theme_button_winter {
-	background-color: #79C0D7;
-}
-
-#theme_selector > #theme_button_spring {
-	background-color: #00FF7F;
-}
-
-#theme_selector > #theme_button_summer {
-  background-color: yellow;
-}
-
-.theme_button_text {
-  margin-left: 0.5rem;
+#nav-overlay {
+  display: none;
 }
 
 /* Phone screen adjustments */
@@ -304,23 +331,21 @@ only screen and (max-width:1280px) {
 
     body {
         width: 80vw !important;
+        overflow-x: hidden;
+    }
+
+    .index-layout {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .sidebar {
+        position: static;
     }
 }
 
 @media only screen and (device-width: 960px),
 only screen and (max-width:960px) {
-    #theme_selector {
-      margin-left: 1rem;
-      margin-right: 1rem;
-    }
-    .theme_button_text {
-      display: none;
-    }
-
-    #theme_selector > button {
-      width: 100%;
-    }
-
     .image_item_expanded_container > .image_item {
         width: 80vw;
     }
@@ -328,5 +353,75 @@ only screen and (max-width:960px) {
     #carousel > button {
         font-size: 6rem;
         top: calc(50% - 4rem);
+    }
+
+    #hamburger {
+        display: block;
+        position: fixed;
+        top: 0.5rem;
+        right: 5rem;
+        z-index: 1002;
+        padding: 0.5rem;
+    }
+
+    #nav-close {
+        display: block;
+    }
+
+    #nav-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: var(--theme-btn-bg, white);
+        z-index: 1001;
+        padding: 0 10vw;
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        box-sizing: border-box;
+    }
+
+    #nav-menu.open {
+        transform: translateX(0);
+    }
+
+    header:has(#nav-menu.open) #hamburger {
+        display: none;
+    }
+
+    #nav-menu > ul {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    #nav-menu > ul > li {
+        width: 100%;
+    }
+
+    #nav-menu > ul > li[style*="margin-left: auto"] {
+        margin-left: 0 !important;
+        margin-top: 1rem;
+    }
+
+    #nav-menu > ul > li[style*="margin-left: 1rem"] {
+        margin-left: 0 !important;
+    }
+
+    #nav-menu > ul button,
+    #nav-menu > ul a {
+        width: 100%;
+        text-align: center;
+    }
+
+    header > nav {
+        border-bottom: none;
+    }
+
+    #nav-overlay {
+        display: none;
     }
 }

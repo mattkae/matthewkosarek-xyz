@@ -3,18 +3,6 @@
         font-size: 12px;
     }
 
-    #resume_container {
-        flex-direction: column;
-    }
-
-    #resume_header {
-        flex-direction: row;
-    }
-
-    #resume_sidebar {
-        width: 100%;
-    }
-
     .skills_table_container {
         width: 100%;
         justify-content: space-evenly;

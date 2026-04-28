@@ -1,0 +1,15 @@
+---
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { join, dirname } from 'path';
+
+interface Props { code: string; alt: string; size?: string; }
+const { code, alt, size = '1.2em' } = Astro.props;
+
+const svgPath = join(
+  dirname(fileURLToPath(import.meta.url)),
+  `../../node_modules/openmoji/color/svg/${code}.svg`
+);
+const svg = readFileSync(svgPath, 'utf-8');
+---
+<span class="openmoji" role="img" aria-label={alt} style={`width:${size};height:${size};display:inline-flex;vertical-align:middle`} set:html={svg} />
