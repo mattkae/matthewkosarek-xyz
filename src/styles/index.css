@@ -355,11 +355,15 @@ only screen and (max-width:960px) {
         top: calc(50% - 4rem);
     }
 
+    body {
+      margin-top: 4rem;
+    }
+
     #hamburger {
         display: block;
         position: fixed;
         top: 0.5rem;
-        right: 5rem;
+        right: 2rem;
         z-index: 1002;
         padding: 0.5rem;
     }
