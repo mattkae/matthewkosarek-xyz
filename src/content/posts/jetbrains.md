@@ -38,7 +38,7 @@ Here is a tiny list of some the frustrations that I've encountered:
 - <u>The install is gigantic on disk</u>, leading me to avoid it on my older machines where space is limited.
 
 When all of these tiny issues come together, it makes me **NOT** want to program. I don't want to sit around and
-wait for startup times to get my ideas onto the screen. I don't want to worry that my CPU or RAM is going to be exhaused
+wait for startup times to get my ideas onto the screen. I don't want to worry that my CPU or RAM is going to be exhausted
 and I am going to have to restart my machine. I want to open my editor and immediately enter a flow state. I want the
 tooling to assist me when useful, and stay out of my way when not.
 
