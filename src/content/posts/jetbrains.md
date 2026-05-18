@@ -17,7 +17,7 @@ I want to love these products. I find the UI easy to understand. I find their de
 me to debug my problems with fantastic insight. All of the core ideas of JetBrains products are solid and
 well executed. For this reason, I really want to love them. I want to use CLion every day.
 
-But there is one teeny tiny problem: **the tool is so fricken slow**.
+But there is one teeny tiny problem: <u>**the tool is so fricken slow**</u>.
 
 It is so remarkably slow, and I cannot begin to understand these people that are telling me that it runs fast.
 Granted, I tend to run older hardware, but it seems that *most* other programs on my machine run
@@ -26,16 +26,16 @@ simple editing tasks feel sluggish.
 
 Here is a tiny list of some the frustrations that I've encountered:
 
-- I cannot instantly create a new file. I have to go through some "Create File" popup that *literally* has
+- <u>I cannot instantly create a new file.</u> I have to go through some "Create File" popup that *literally* has
   a loading screen associated with it. Why do I have to **load** to create a new file? The slow down does not
   happen all of the time, but enough that I hesitate when wanting to create a new file.
-- The startup times are just abysmal. It makes me not want to open my editor, which makes me hesitate to start doing
+- <u>The startup times are just abysmal.</u> It makes me not want to open my editor, which makes me hesitate to start doing
   work. If I have to sit their and stare at a splash screen at all, then I think something is wrong.
-- Switching projects has abysmal performance as well.
+- <u>Switching projects has abysmal performance</u> as well.
 - Remote Development has some weird quirks where - especially on slow machines - I will get disconnected abruptly.
 - I cannot for the life of me understand why it keeps re-indexing my codebase in certain circumstances. Perhaps
   this is some on-again off-again bug, but it comes back to bite me constantly.
-- The install is gigantic on disk, leading me to avoid it on my older machines where space is limited.
+- <u>The install is gigantic on disk</u>, leading me to avoid it on my older machines where space is limited.
 
 When all of these tiny issues come together, it makes me **NOT** want to program. I don't want to sit around and
 wait for startup times to get my ideas onto the screen. I don't want to worry that my CPU or RAM is going to be exhaused
