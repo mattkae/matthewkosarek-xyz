@@ -15,8 +15,7 @@ And this feels somewhat like a breakup. For a long time, I've been paying JetBra
 I've been using CLion for all of my day-to-day work for years now. The unfortunate part is that
 I want to love these products. I find the UI easy to understand. I find their defaults to be sane. The tooling allows
 me to debug my problems with fantastic insight. All of the core ideas of JetBrains products are solid and
-well executed. For this reason, I really want to love them. I want to use CLion every day and I want
-to use it everyday into the future.
+well executed. For this reason, I really want to love them. I want to use CLion every day.
 
 But there is one teeny tiny problem: **the tool is so fricken slow**.
 
