@@ -1,5 +1,5 @@
 ---
-title: "No More Jetbrains Products for Me"
+title: "No More JetBrains Products for Me"
 date: "2026-05-18"
 tags: ["tech"]
 ---
