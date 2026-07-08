@@ -81,7 +81,7 @@ struct LineItem {
 };
 
 inline i32 readPastSpaces(i32 i, const char* content) {
-	while (content[i] == ' ') i++;
+	while (content[i] == ' ' || content[i] == '\t' || content[i] == '\r') i++;
 	return i;
 }
 
@@ -93,7 +93,7 @@ inline i32 readPastLine(i32 i, const char* content) {
 inline i32 readToken(i32 i, const char* content, char* output) {
 	i32 tidx = 0;
 	i = readPastSpaces(i, content);
-	while (content[i] != ' ' && content[i] != '\n' && content[i] != '\0') {
+	while (content[i] != ' ' && content[i] != '\t' && content[i] != '\r' && content[i] != '\n' && content[i] != '\0') {
 	    output[tidx] = content[i];
 		i++;
 		tidx++;
@@ -143,11 +143,16 @@ Mesh3d Mesh3d_fromObj(Renderer3d* renderer, const char* content, const i32 len) 
 				i = readToken(i, content, buffer);
 				break;
 			case LineType_v: {
-				while (content[i] != '\n' && content[i] != '\0') {
+				// Bound to 3 components: OBJ lines may carry trailing tokens (e.g. a
+				// stray "\r" from CRLF files, or a 4th vertex weight), and the union
+				// only holds 3 slots — writing past it corrupts the stack.
+				while (content[i] != '\n' && content[i] != '\r' && content[i] != '\0' && lt.idx < 3) {
 					i = readToken(i, content, buffer);
+					if (buffer[0] == '\0') break;
 					lt.v.vertices[lt.idx] = atof(buffer);
 					lt.idx++;
 				}
+				i = readPastLine(i, content);
 
 				float fColor = randomFloatBetween(0.8, 1);
 				result.vertices.add({
@@ -157,12 +162,15 @@ Mesh3d Mesh3d_fromObj(Renderer3d* renderer, const char* content, const i32 len) 
 				break;
 			}
 			case LineType_f: {
-				while (content[i] != '\n' && content[i] != '\0') {
+				// Same bound as vertices: only the first 3 indices fit the union.
+				while (content[i] != '\n' && content[i] != '\r' && content[i] != '\0' && lt.idx < 3) {
 					i = readToken(i, content, buffer);
+					if (buffer[0] == '\0') break;
 					lt.v.indices[lt.idx] = atoi(buffer);
 					lt.idx++;
 				}
-				
+				i = readPastLine(i, content);
+
 				auto v1idx = lt.v.indices[0] - 1;
 				auto v2idx = lt.v.indices[1] - 1;
 				auto v3idx = lt.v.indices[2] - 1;
