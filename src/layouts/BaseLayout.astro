@@ -112,6 +112,11 @@ const {
         hamburger.addEventListener('click', openMenu);
         close.addEventListener('click', closeMenu);
         overlay.addEventListener('click', closeMenu);
+
+        // Close menu when a theme button is picked
+        nav.querySelectorAll('[id^="theme_button"]').forEach(function(themeBtn) {
+          themeBtn.addEventListener('click', closeMenu);
+        });
       })();
     </script>
   </body>

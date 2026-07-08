@@ -398,27 +398,44 @@ only screen and (max-width:960px) {
     }
 
     #nav-menu > ul {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         gap: 0.5rem;
     }
 
-    #nav-menu > ul > li {
-        width: 100%;
+    /* Main links: full-width rows, left-aligned */
+    #nav-menu > ul > li:has(> a) {
+        flex: 0 0 100%;
     }
 
-    #nav-menu > ul > li[style*="margin-left: auto"] {
+    #nav-menu > ul > li:has(> a) a {
+        width: 100%;
+        text-align: left;
+        font-size: 1.5rem;
+        padding: 0.75rem 0;
+    }
+
+    /* Theme buttons: single side-by-side row */
+    #nav-menu > ul > li:has(> button[id^="theme_button"]) {
+        flex: 1;
         margin-left: 0 !important;
         margin-top: 1rem;
     }
 
+    #nav-menu > ul > li:has(> button[id^="theme_button"]) button {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Dark/light toggle: full-width row */
     #nav-menu > ul > li[style*="margin-left: 1rem"] {
+        flex: 0 0 100%;
         margin-left: 0 !important;
     }
 
-    #nav-menu > ul button,
-    #nav-menu > ul a {
+    #nav-menu > ul > li[style*="margin-left: 1rem"] button {
         width: 100%;
-        text-align: center;
+        text-align: left;
     }
 
     header > nav {

@@ -59,10 +59,40 @@ html {
     margin-top: 0.2rem;
 }
 
-.experience-tech > svg {
+.tech-icon {
+    position: relative;
+    display: inline-flex;
+    margin-right: 0.5rem;
+}
+
+.tech-icon > svg {
     width: 1.125rem;
     height: 1.125rem;
-    margin-right: 0.5rem;
+    display: block;
+}
+
+.tech-icon::after {
+    content: attr(data-tech);
+    position: absolute;
+    bottom: calc(100% + 0.35rem);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.15rem 0.4rem;
+    border-radius: 0.25rem;
+    background: var(--tooltip-bg, #24292e);
+    color: var(--tooltip-fg, #fff);
+    font-size: 0.7rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+    z-index: 10;
+}
+
+.tech-icon:hover::after,
+.tech-icon:focus-visible::after {
+    opacity: 1;
 }
 
 .skills_table_container {
