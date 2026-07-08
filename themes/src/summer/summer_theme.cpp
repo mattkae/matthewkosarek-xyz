@@ -4,7 +4,6 @@
 #include "../mathlib.h"
 #include "../shaders/sun_frag.h"
 #include "../shaders/sun_vert.h"
-#include <vector>
 
 SummerTheme::SummerTheme(WebglContext* context)
 {
@@ -21,20 +20,45 @@ void SummerTheme::load(WebglContext* context) {
     renderer.load(context, shader_sun_vert, shader_sun_frag);
 	renderer.clearColor = Vector4(0, 181, 286, 255.f).toNormalizedColor();
 	sun.sectors = 180;
-	sun.radius = renderer.context->width / 4.f;
+	sun.radius = renderer.context->width / 6.f;
 	sun.load(&renderer);
+
+	sky.load(context);
+	water.load(context);
+	// Align the fake reflection with the sun disk: pointing up and into the
+	// scene (x = 0 keeps the glitter column centered under the sun).
+	water.setSun(Vector3(0.f, 0.4f, -1.f), Vector4(249, 215, 28, 255).toNormalizedColor());
 }
 
 void SummerTheme::update(f32 dtSeconds) {
 	sun.update(dtSeconds);
+	sky.update(dtSeconds);
+	water.update(dtSeconds);
 }
 
 void SummerTheme::render() {
     renderer.render();
+
+	// Gradient sky + clouds behind everything. It uses its own shader and
+	// disables depth writes, so restore the sun shader + projection and
+	// re-enable depth writes before drawing the sun.
+	sky.render();
+	useShader(renderer.shader);
+	setShaderMat4(renderer.uniforms.projection, renderer.projection);
+	glDepthMask(GL_TRUE);
+	// sky.render() disabled blending; the sun's soft glowing edge needs it back,
+	// otherwise its semi-transparent rim writes opaque as a hard white border.
+	glEnable(GL_BLEND);
+
 	sun.render(&renderer);
+	// Drawn last: the opaque water paints over the lower half of the sun,
+	// hiding the part below the waterline while reflecting the part above.
+	water.render();
 }
 
 void SummerTheme::unload() {
+	water.unload();
+	sky.unload();
 	sun.unload();
 }
 
@@ -61,7 +85,7 @@ void Sun::load(Renderer2d* renderer) {
 	}
 
 	mesh.load(&vertices.data[0], vertices.numElements, &indices.data[0], indices.numElements, renderer);
-	mesh.model = Mat4x4().translateByVec2(Vector2(renderer->context->width / 2.f, renderer->context->height / 2.f));
+	mesh.model = Mat4x4().translateByVec2(Vector2(renderer->context->width / 2.f, renderer->context->height * (3.f/ 4.f)));
 
 	timeUniform = getShaderUniform(renderer->shader, "time");
 

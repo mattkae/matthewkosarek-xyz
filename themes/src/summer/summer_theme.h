@@ -2,6 +2,8 @@
 #include "../types.h"
 #include "../renderer_2d.h"
 #include "../theme.h"
+#include "sky_model.h"
+#include "water_model.h"
 #include <vector>
 
 struct Sun {
@@ -22,6 +24,8 @@ public:
     SummerTheme(WebglContext*);
     ~SummerTheme();
 	Sun sun;
+	SkyModel sky;
+	WaterModel water{ Vector3(0.f, 0.f, -150.f), Vector3(600.f, 0.6f, 400.f) };
 	void load(WebglContext*);
 	void update(f32 dtSeconds);
 	void render();

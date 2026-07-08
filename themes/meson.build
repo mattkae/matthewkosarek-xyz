@@ -42,6 +42,10 @@ sources = files(
   'src/shaders/snowflake_vert.cpp',
   'src/shaders/grass_frag.cpp',
   'src/shaders/grass_vert.cpp',
+  'src/shaders/water_frag.cpp',
+  'src/shaders/water_vert.cpp',
+  'src/shaders/sky_frag.cpp',
+  'src/shaders/sky_vert.cpp',
 
   # Autumn theme
   'src/autumn/autumn_theme.cpp',
@@ -58,7 +62,9 @@ sources = files(
   'src/spring/grass_renderer.cpp',
 
   # Summer theme
-  'src/summer/summer_theme.cpp'
+  'src/summer/summer_theme.cpp',
+  'src/summer/water_model.cpp',
+  'src/summer/sky_model.cpp'
 )
 
 # Include directories
@@ -75,7 +81,7 @@ inc = include_directories(
 
 # Custom target to build shaders from GLSL files
 node = find_program('node')
-shader_script = meson.project_source_root() + '/src/tools/shader.js'
+shader_script = meson.project_source_root() + '/src/tools/shader.cjs'
 
 # List all GLSL shader files as inputs
 shader_inputs = files(
@@ -88,7 +94,11 @@ shader_inputs = files(
   'src/_shaders/snowflake.frag',
   'src/_shaders/snowflake.vert',
   'src/_shaders/grass.frag',
-  'src/_shaders/grass.vert'
+  'src/_shaders/grass.vert',
+  'src/_shaders/water.frag',
+  'src/_shaders/water.vert',
+  'src/_shaders/sky.frag',
+  'src/_shaders/sky.vert'
 )
 
 # Custom target that runs whenever shader files change
