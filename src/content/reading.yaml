@@ -1,0 +1,80 @@
+# Reading list, rendered by src/pages/reading.astro
+#
+# Add a new year by adding a top-level key. Within a year, append entries in the
+# order you read them (oldest first) -- the page reverses them so the most
+# recent shows up at the top.
+#
+# Per-entry fields:
+#   title   (required)
+#   author
+#   type    book | article        (default: book)
+#   status  done | reading | planned  (default: done)
+#   isbn    ISBN-10 or ISBN-13, links to https://openlibrary.org/isbn/<isbn>
+#   url     for articles, or to override the Open Library link
+#   note    optional one-liner shown under the title
+
+"2026":
+  year: 2026
+  entries:
+    - title: A Naturalist Along the Jersey Shore
+      author: Joanna Burger
+      isbn: "0813522994"
+
+    - title: The Lovely Bones
+      author: Alice Sebold
+      isbn: "9780316666343"
+
+    - title: The Odyssey
+      author: Homer
+      isbn: "9780393089059"
+      note: Translated by Emily Wilson
+
+    - title: "Sekret Machines Book 1: Chasing Shadows"
+      author: Tom DeLonge and A. J. Hartley
+      isbn: "9781943272150"
+
+    - title: Gulliver's Travels
+      author: Jonathan Swift
+      isbn: "9780141439495"
+
+    - title: SPQR
+      author: Mary Beard
+      isbn: "9780871404237"
+      status: reading
+
+    - title: Annihilation
+      author: Jeff VanderMeer
+      isbn: "9780374104092"
+      status: reading
+
+    - title: '"No Graphics API"'
+      author: Sebastian Aaltonen
+      type: article
+      url: https://www.sebastianaaltonen.com/blog/no-graphics-api
+
+"2025":
+  year: 2025
+  entries:
+    - title: "Gödel, Escher, Bach: An Eternal Golden Braid"
+      author: Douglas Hofstadter
+      isbn: "9780465026562"
+
+    - title: The Da Vinci Code
+      author: Dan Brown
+      isbn: "9780385504201"
+
+    - title: Wild
+      author: Cheryl Strayed
+      isbn: "9780307592736"
+
+    - title: The Republic
+      author: Plato
+      isbn: "9780140455113"
+
+    - title: Independent People
+      author: Halldór Laxness
+      isbn: "9780679767923"
+
+    - title: The Overstory
+      author: Richard Powers
+      isbn: "9780393635522"

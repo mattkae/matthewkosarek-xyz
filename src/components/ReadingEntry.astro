@@ -1,0 +1,62 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type ReadingYear = CollectionEntry<"reading">;
+type Entry = ReadingYear["data"]["entries"][number];
+
+interface Props {
+    entry: Entry;
+}
+
+const { entry } = Astro.props;
+
+const href =
+    entry.url ??
+    (entry.isbn ? `https://openlibrary.org/isbn/${entry.isbn}` : undefined);
+const isReading = entry.status === "reading";
+const statusLabel = isReading ? "Currently reading" : "Finished";
+---
+
+<li>
+    <p>
+        <span
+            class:list={[
+                "reading-status",
+                isReading ? "reading-status--reading" : "reading-status--done",
+            ]}
+            role="img"
+            aria-label={statusLabel}
+            title={statusLabel}
+        >
+            {
+                !isReading && (
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <path d="M3.6 8.4 6.4 11.2 12.4 4.8" />
+                    </svg>
+                )
+            }
+        </span>
+        {
+            href ? (
+                <a href={href} target="_blank" rel="noopener noreferrer">{entry.title}</a>
+            ) : (
+                <span class="reading-title">{entry.title}</span>
+            )
+        }
+        {entry.author && <span class="reading-author">by {entry.author}</span>}
+    </p>
+    {entry.note && <div class="reading-note">{entry.note}</div>}
+    {
+        entry.isbn && (
+            <div class="reading-isbn">
+                <a
+                    href={`https://openlibrary.org/isbn/${entry.isbn}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    ISBN {entry.isbn}
+                </a>
+            </div>
+        )
+    }
+</li>

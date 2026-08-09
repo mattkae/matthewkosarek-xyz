@@ -1,0 +1,60 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ReadingEntry from "../components/ReadingEntry.astro";
+import "../styles/post.css";
+import "../styles/sitemap.css";
+
+type ReadingYear = CollectionEntry<"reading">;
+type Entry = ReadingYear["data"]["entries"][number];
+
+const years = await getCollection("reading");
+years.sort((a: ReadingYear, b: ReadingYear) => b.data.year - a.data.year);
+
+// Entries are authored oldest-first within a year; show the most recent first.
+function newestFirst(entries: Entry[]): Entry[] {
+    return [...entries].reverse();
+}
+---
+
+<BaseLayout
+    title="Reading"
+    description="Books and articles I've read/am reading"
+>
+    <div id="content" class="content">
+        {
+            years.map((year: ReadingYear) => {
+                const entries = newestFirst(year.data.entries);
+                const books = entries.filter((e: Entry) => e.type === "book");
+                const articles = entries.filter(
+                    (e: Entry) => e.type === "article",
+                );
+
+                return (
+                    <section class="reading-year">
+                        <h2>{year.data.year}</h2>
+
+                        <div class="reading-year-body">
+                            <ul class="org-ul">
+                                {books.map((entry: Entry) => (
+                                    <ReadingEntry entry={entry} />
+                                ))}
+                            </ul>
+
+                            {articles.length > 0 && (
+                                <Fragment>
+                                    <h3 class="reading-subhead">Articles</h3>
+                                    <ul class="org-ul">
+                                        {articles.map((entry: Entry) => (
+                                            <ReadingEntry entry={entry} />
+                                        ))}
+                                    </ul>
+                                </Fragment>
+                            )}
+                        </div>
+                    </section>
+                );
+            })
+        }
+    </div>
+</BaseLayout>

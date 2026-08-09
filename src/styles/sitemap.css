@@ -134,3 +134,136 @@
 .org-ul > li > .sitemap_date + .sitemap_tag {
     margin-left: 0.75rem;
 }
+
+/* --- Reading list (src/pages/reading.astro) --- */
+
+.reading-year {
+    margin-bottom: 2.5rem;
+}
+
+.reading-year > h2 {
+    margin-bottom: 1rem;
+}
+
+.reading-year-body {
+    padding-left: 1.5rem;
+}
+
+/* The shared .org-ul > li > p is 0.5rem, so vertical-align can't center the
+   status dot against the 1rem title. Flex the row instead. */
+.reading-year-body .org-ul > li > p {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.reading-year-body .org-ul > li > p > a {
+    min-width: 0;
+}
+
+.reading-subhead {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+/* .org-ul > li > p shrinks to 0.5rem so the anchor can set its own size;
+   these siblings have to restate theirs. */
+.reading-title {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.reading-author {
+    font-size: 0.9rem;
+    font-style: italic;
+    opacity: 0.75;
+    margin-left: 0.4rem;
+}
+
+.reading-note {
+    width: 100%;
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--color);
+    opacity: 0.6;
+}
+
+.reading-isbn {
+    width: 100%;
+    font-size: 0.75rem;
+    opacity: 0.55;
+}
+
+.reading-isbn a {
+    color: var(--color);
+    text-decoration: none;
+    font-family: monospace;
+}
+
+.reading-isbn a:hover {
+    text-decoration: underline;
+    opacity: 1;
+}
+
+/* Status dot sitting to the left of the title. Sized in rem because the
+   enclosing .org-ul > li > p drops to 0.5rem. */
+.reading-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex: 0 0 auto;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.reading-status--done {
+    background: #3fa34d;
+    opacity: 0.8;
+}
+
+.reading-status--done svg {
+    width: 70%;
+    height: 70%;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* "Recording" indicator: a slow pulse plus an expanding halo. */
+.reading-status--reading {
+    background: #e2543a;
+    animation: reading-blink 2.4s ease-in-out infinite;
+}
+
+.reading-status--reading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    animation: reading-halo 2.4s ease-out infinite;
+}
+
+@keyframes reading-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+@keyframes reading-halo {
+    0% { box-shadow: 0 0 0 0 rgba(226, 84, 58, 0.5); }
+    70% { box-shadow: 0 0 0 0.45rem rgba(226, 84, 58, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(226, 84, 58, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reading-status--reading,
+    .reading-status--reading::after {
+        animation: none;
+    }
+}
