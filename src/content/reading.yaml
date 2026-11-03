@@ -44,6 +44,10 @@
     - title: Annihilation
       author: Jeff VanderMeer
       isbn: "9780374104092"
+
+    - title: It's Only Drowning
+      author: David Litt
+      isbn: "9781668035351"
       status: reading
 
     - title: '"No Graphics API"'
