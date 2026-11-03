@@ -15,10 +15,10 @@ copy-themes: themes
 	rsync -a themes/src/_shaders/ ./public/themes/src/_shaders/
 
 build: copy-themes
-	npm run build
+	bun run build
 
 dev:
-	npm run dev
+	bun run dev
 
 clean:
 	rm -rf dist public/themes

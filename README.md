@@ -24,7 +24,7 @@ make copy-themes
 
 ## Development
 ```sh
-npm install   # first time only
+bun install   # first time only
 make dev
 # visit http://localhost:4321
 ```

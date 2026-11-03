@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build Commands
 
 ```sh
-npm install          # install dependencies (first time)
+bun install          # install dependencies (first time)
 make build           # full build: WASM themes + Astro static site → dist/
 make dev             # start Astro dev server on http://localhost:4321
 make copy-themes     # build WASM themes and copy to public/themes/
@@ -13,7 +13,7 @@ make clean           # remove dist/ and public/themes/
 ./upload.sh          # deploy to production via rsync
 ```
 
-WASM theme build requires Emscripten SDK and Meson. If you only need the Astro site, `npm run build` skips themes.
+WASM theme build requires Emscripten SDK and Meson. If you only need the Astro site, `bun run build` skips themes.
 
 No linting, testing, or CI is configured.
 
