@@ -51,7 +51,7 @@
 
     - title: A Court of Thorns and Roses
       author: Sarah J. Maas
-      isbn: 9781619634442
+      isbn: "9781619634442"
       status: reading
 
     - title: '"No Graphics API"'
