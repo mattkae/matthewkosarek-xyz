@@ -48,6 +48,10 @@
     - title: It's Only Drowning
       author: David Litt
       isbn: "9781668035351"
+
+    - title: A Court of Thorns and Roses
+      author: Sarah J. Maas
+      isbn: 9781619634442
       status: reading
 
     - title: '"No Graphics API"'
